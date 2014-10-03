@@ -1,0 +1,166 @@
+#main.container-fluid
+  .row
+    = render 'shared/message'
+  /! playground
+  .row
+    .col-md-4.col-sm-6
+      .panel.panel-default
+        .panel-heading
+          a.pull-right href="#"  View all
+          h4 Bootstrap Examples
+        .panel-body
+          .list-group
+            a.list-group-item href="http://bootply.com/tagged/modal"  Modal / Dialog
+            a.list-group-item href="http://bootply.com/tagged/datetime"  Datetime Examples
+            a.list-group-item href="http://bootply.com/tagged/datatable"  Data Grids
+      .well
+        form.form-horizontal role="form" 
+          h4 What's New
+          .form-group style="padding:14px;" 
+            textarea.form-control placeholder=("Update your status") 
+          button.btn.btn-success.pull-right type="button"  Post
+          ul.list-inline
+            li
+              a href="#" 
+                i.glyphicon.glyphicon-align-left
+            li
+              a href="#" 
+                i.glyphicon.glyphicon-align-center
+            li
+              a href="#" 
+                i.glyphicon.glyphicon-align-right
+      .panel.panel-default
+        .panel-heading
+          a.pull-right href="#"  View all
+          h4 More Templates
+        .panel-body
+          img.img-circle.pull-right src="//placehold.it/150x150" /
+          a href="#"  Free @Bootply
+          .clearfix
+          | There a load of new free Bootstrap 3 ready templates at Bootply. All of these templates are free and don't require extensive customization to the Bootstrap baseline.
+          hr/
+          ul.list-unstyled
+            li
+              a href="http://www.bootply.com/templates"  Dashboard
+            li
+              a href="http://www.bootply.com/templates"  Darkside
+            li
+              a href="http://www.bootply.com/templates"  Greenfield
+    .col-md-4.col-sm-6
+      .well
+        form.form action="/" method="post" 
+          h4 Sign-up
+          .input-group.text-center
+            input.form-control.input-lg placeholder=("Enter your email address") type="text" /
+            span.input-group-btn
+              input.btn.btn-lg.btn-primary type="submit" >/
+              | OK
+      .panel.panel-default
+        .panel-heading
+          a.pull-right href="#"  View all
+          h4 Bootply Editor & Code Library
+        .panel-body
+          p
+            img.img-circle.pull-right src="//placehold.it/150x150" /
+            a href="#"  The Bootstrap Playground
+          .clearfix
+          hr/
+          | Design, build, test, and prototype using Bootstrap in real-time from your Web browser. Bootply combines the power of hand-coded HTML, CSS and JavaScript with the benefits of responsive design using Bootstrap. Find and showcase Bootstrap-ready snippets in the 100% free Bootply.com code repository.
+      .panel.panel-default
+        .panel-heading
+          a.pull-right href="#"  View all
+          h4 Portlet Heading
+        .panel-body
+          ul.list-group
+            li.list-group-item Modals
+            li.list-group-item Sliders / Carousel
+            li.list-group-item Thumbnails
+      .panel.panel-default
+        .panel-heading
+          a.pull-right href="#"  View all
+          h4 Upgrade to Bootstrap 3
+        .panel-body
+          img.img-circle.pull-right src="assets/u70.png" /
+          a href="#"  Guidance and Tools
+          .clearfix
+          hr/
+          p
+            | Migrating from Bootstrap 2.x to 3 is not a simple matter of swapping out the JS and CSS files.
+            | Bootstrap 3 is a major overhaul, and there are a lot of changes from Bootstrap 2.x.
+            a href="http://bootply.com/bootstrap-3-migration-guide"  This guidance
+            | is intended to help 2.x developers transition to 3.
+          h5
+            a href="http://google.com/+bootply"  More on Upgrading from +Bootply
+      .panel.panel-default
+        .panel-heading
+          a.pull-right href="#"  View all
+          h4 Profiles
+        .panel-body
+          | Check out some of our member profiles..
+          hr/
+          .well.well-sm
+            .media
+              a.thumbnail.pull-left href="#" 
+                img.media-object src="//placehold.it/80" /
+              .media-body
+                h4.media-heading John Doe
+                p
+                  span.label.label-info 10 photos
+                  span.label.label-primary 89 followers
+                p
+                  a.btn.btn-xs.btn-default href="#" 
+                    span.glyphicon.glyphicon-comment
+                    | Message
+                  a.btn.btn-xs.btn-default href="#" 
+                    span.glyphicon.glyphicon-heart
+                    | Favorite
+    .col-md-4.col-sm-6
+      .panel.panel-default
+        .panel-heading
+          a.pull-right href="#"  View all
+          h4 Portlet Heading
+        .panel-body
+          ul.list-group
+            li.list-group-item Bootply Playground
+            li.list-group-item Bootstrap Editor
+            li.list-group-item Bootstrap Templates
+      .panel.panel-default
+        .panel-heading
+          a.pull-right href="#"  View all
+          h4 Stackoverflow
+        .panel-body
+          img.img-circle.pull-right src="//placehold.it/150x150" /
+          a href="#"  Keyword: Bootstrap
+          .clearfix
+          hr/
+          p
+            | If you're looking for help with Bootstrap code, the
+            code twitter-bootstrap
+            | tag at
+            a href="http://stackoverflow.com/questions/tagged/twitter-bootstrap"  Stackoverflow
+            | is a good place to find answers.
+          hr/
+          form
+            .input-group
+              .input-group-btn
+                button.btn.btn-default +1
+                button.btn.btn-default
+                  i.glyphicon.glyphicon-share
+              input.form-control placeholder=("Add a comment..") type="text" /
+      .panel.panel-default
+        .panel-heading
+          a.pull-right href="#"  View all
+          h4 Inspiration
+        .panel-body
+          img.img-circle.pull-right src="//placehold.it/150" /
+          a href="#"  Articles
+          .clearfix
+          hr/
+          .clearfix
+          img.img-responsive.img-thumbnail.pull-right src="http://placehold.it/120x90/3333CC/FFF" /
+          p The more powerful (and 100% fluid) Bootstrap 3 grid now comes in 4 sizes (or "breakpoints"). Tiny (for smartphones), Small (for tablets), Medium (for laptops) and Large (for laptops/desktops).
+          .clearfix
+          hr/
+          .clearfix
+          img.img-responsive.img-thumbnail.pull-left src="http://placehold.it/120x90/33CC33/FFF" style="margin-right:5px;" /
+          p Mobile first" is a responsive Web design practice that prioritizes consideration of smart phones and mobile devices when creating Web pages.

@@ -1,0 +1,19 @@
+doctype html
+html
+  head
+    title SinglePage
+    meta[content="text/html; charset=US-ASCII" http-equiv="content-type"]
+    meta[charset="utf-8"]
+    meta[content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport"]
+    = stylesheet_link_tag "application", media: "all", "data-turbolinks-track" => true
+    = javascript_include_tag "application", "data-turbolinks-track" => true
+    = csrf_meta_tags
+  body
+    header
+      = render "shared/login_modal"
+      = render "shared/modal"
+      = render "shared/navbar"
+    = yield
+    / script references
+    script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"
+    = render "shared/footer"

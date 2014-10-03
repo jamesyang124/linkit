@@ -1,0 +1,66 @@
+nav.navbar.navbar-fixed-top.header
+  .col-md-12
+    .navbar-header
+      a.navbar-brand href="#"  News Room
+      button.navbar-toggle data-target="#navbar-collapse1" data-toggle="collapse" type="button" 
+        i.glyphicon.glyphicon-search
+    #navbar-collapse1.collapse.navbar-collapse
+      form.navbar-form.pull-left
+        .input-group style="max-width:470px;" 
+          input#srch-term.form-control name="srch-term" placeholder="Search" type="text" /
+          .input-group-btn
+            button.btn.btn-default.btn-primary type="submit" 
+              i.glyphicon.glyphicon-search
+      ul.nav.navbar-nav.navbar-right
+        li
+          /! = link_to "Sign in with Facebook", user_omniauth_authorize_path(:facebook), :"data-toggle" => "modal", :role => "button"
+        li
+          a data-toggle="modal" href="#loginModal" role="button"  Login
+        li
+          a data-toggle="modal" href="#aboutModal" role="button"  About
+        li.active
+          a href="#"  Posts
+        li
+          a.dropdown-toggle data-toggle="dropdown" href="#" 
+            i.glyphicon.glyphicon-bell
+          ul.dropdown-menu
+            li
+              a href="#" 
+                span.badge.pull-right> 2
+                | Link
+            li
+              a href="#" 
+                span.badge.pull-right> 0
+                | Link
+            li
+              a href="#" 
+                span.label.label-info.pull-right> 1
+                | Link
+        li
+          a#btnToggle href="#" 
+            i.glyphicon.glyphicon-th-large
+        li
+          a.dropdown-toggle data-toggle="dropdown" href="#" 
+            i.glyphicon.glyphicon-user
+          ul.nav.dropdown-menu
+            li
+              a href="#" 
+                i.glyphicon.glyphicon-user style="color:#1111dd;" 
+                | Profile
+/!            li
+/!              a href="#" 
+/!                i.glyphicon.glyphicon-dashboard style="color:#0000aa;" 
+/!                | Dashboard
+/!            li
+/!              a href="#" 
+/!                i.glyphicon.glyphicon-inbox style="color:#11dd11;" 
+/!                | Pages
+/!            li.nav-divider
+/!            li
+/!              a href="#" 
+/!                i.glyphicon.glyphicon-cog style="color:#dd1111;" 
+/!                | Settings
+/!            li
+/!              a href="#" 
+/!                i.glyphicon.glyphicon-plus
+/!                | More..
