@@ -1,7 +1,6 @@
 class Users::RegistrationsController < Devise::RegistrationsController
 
   def create
-    # use form tag, does not require strong params.
     @user = User.new(create_user)
     if @user.valid?
       @user.save!
