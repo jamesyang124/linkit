@@ -13,6 +13,8 @@ gem 'omniauth'
 gem 'omniauth-facebook'
 gem 'devise'
 
+gem 'bootstrap_form'
+
 group :doc do
   gem 'sdoc', require: false
 end
@@ -24,7 +26,7 @@ group :development, :test do
 end
 
 # Use ActiveModel has_secure_password
-# gem 'bcrypt-ruby', '~> 3.1.2'
+#gem 'bcrypt-ruby', '~> 3.1.2'
 
 # Use unicorn as the app server
 # gem 'unicorn'
