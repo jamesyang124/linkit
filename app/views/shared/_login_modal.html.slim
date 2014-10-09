@@ -10,13 +10,14 @@
           | Login
           br/
       .modal-body
-        = form_tag root_path, class: "form col-md-12 center-block" do
+        .col-md-12.center-block#session_message
+        = bootstrap_form_for :user, url: user_session_path, html: {class: "form col-md-12 center-block"}, remote: true do |f|
           .form-group
-            = text_field_tag "email", nil, placeholder: "Email",class: "form-control input-lg"
+            = f.text_field :email, placeholder: "Email", class: "form-control input-lg", hide_label: true
           .form-group
-            = password_field_tag "password", nil, placeholder: "Password", class: "form-control input-lg"
+            = f.password_field :password, placeholder: "Password", class: "form-control input-lg", hide_label: true
           .form-group
-            = submit_tag "Log In", class: "btn btn-primary btn-lg btn-block"
+            = f.submit "Login", class: "btn btn-success btn-lg btn-block"
           .form-group
             button.btn.btn-lg.btn-block [aria-hidden="true" data-dismiss="modal"] Cancel
       .modal-footer

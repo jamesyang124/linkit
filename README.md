@@ -3,13 +3,17 @@ linkit
 
 Left public posts by any facebook users.
 
-### To-do list
+### To-do List
 
 10/09/2014
 
-- SessionContrller.
+- OmniAuth
 
 ### Done Work
+
+10/09/2014
+
+- Done `Session#create` through ajax call.
 
 10/08/2014
 

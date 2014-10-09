@@ -48,7 +48,7 @@
               a href="http://www.bootply.com/templates"  Greenfield
     .col-md-4.col-sm-6
       .well
-        form.form action="/" method="post" 
+        = form_tag "/posts", class: "form"
           h4 Sign-up
           .input-group.text-center
             input.form-control.input-lg placeholder=("Enter your email address") type="text" /

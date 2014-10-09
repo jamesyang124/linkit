@@ -3,7 +3,10 @@ Linkit::Application.routes.draw do
 
   devise_scope :user do
     post "users" => "users/registrations#create", as: "user_registration"
-    #get "users" => "users/registrations#new", as: "new_user_registration"
+  end
+
+  as :user do
+    get "sign_in", to: "users/sessions#new"
   end
 
   root "posts#index"
