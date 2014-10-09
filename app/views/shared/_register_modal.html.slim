@@ -10,15 +10,16 @@
           | Register
           br/
       .modal-body
-        = form_tag user_registration_path, class: "form col-md-12 center-block" do
+        .col-md-12.center-block#registration_message
+        = bootstrap_form_for :user, url: user_registration_path, html: {class: "form col-md-12 center-block"}, remote: true do |f|
           .form-group
-            = text_field_tag "name", nil, placeholder: "Name", class: "form-control input-lg"
+            = f.text_field :name, placeholder: "Name", class: "form-control input-lg", hide_label: true
           .form-group
-            = text_field_tag "email", nil, placeholder: "Email", class: "form-control input-lg"
+            = f.text_field :email, placeholder: "Email", class: "form-control input-lg", hide_label: true
           .form-group
-            = password_field_tag "password", nil, placeholder: "Password", class: "form-control input-lg"
+            = f.password_field :password, placeholder: "Password", class: "form-control input-lg", hide_label: true
           .form-group
-            = submit_tag "Register", class: "btn btn-primary btn-lg btn-block"
+            = f.submit "Register", class: "btn btn-primary btn-lg btn-block"
           .form-group
             button.btn.btn-lg.btn-block [aria-hidden="true" data-dismiss="modal"] Cancel
       .modal-footer

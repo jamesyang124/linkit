@@ -1,0 +1,4 @@
+- @user.errors.messages.each do |key, msg|
+  .alert.alert-danger.alert-dismissable
+    button.close [aria-hidden="true" data-dismiss="alert" type= "button"] ×
+    = key.to_s.capitalize + " #{msg.join}."
