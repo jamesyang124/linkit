@@ -14,6 +14,7 @@ gem 'omniauth-facebook'
 gem 'devise'
 
 gem 'bootstrap_form'
+gem "thin"
 
 group :doc do
   gem 'sdoc', require: false

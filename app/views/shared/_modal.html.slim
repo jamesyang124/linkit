@@ -4,7 +4,14 @@
     .modal-content
       .modal-header
         button.close [aria-hidden="true" data-dismiss="modal" type="button"] ×
-        h2.text-center About
+        h2.text-center
+          - if user_signed_in? and current_user.image
+            img.img-circle src="#{current_user.image}"
+          - else
+            img.img-circle src="assets/u100.png"
+          br/
+          | About
+          br/
       .modal-body
         .col-md-12.text-center
           a href="http://www.bootply.com/DwnjTNuvVt" This Bootstrap Template

@@ -13,26 +13,27 @@ nav.navbar.navbar-fixed-top.header
               i.glyphicon.glyphicon-search
       ul.nav.navbar-nav.navbar-right
         li
-          /! = link_to "Sign in with Facebook", user_omniauth_authorize_path(:facebook), :"data-toggle" => "modal", :role => "button"
-        li
           - if user_signed_in?
             = link_to "Logout", destroy_user_session_path, method: "delete", 
             :"data-toggle" => "modal", :role => "button"
           - else
             a data-toggle="modal" href="#loginModal" role="button" Login
-        li
-          a data-toggle="modal" href="#RegisterModal" role="button"  Register
+        - unless user_signed_in?
+          li
+            a data-toggle="modal" href="#RegisterModal" role="button"  Register
         li
           a#btnToggle href="#" 
             i.glyphicon.glyphicon-th-large
-        li
-          a.dropdown-toggle data-toggle="dropdown" href="#" 
-            i.glyphicon.glyphicon-user
-          ul.nav.dropdown-menu
-            li
-              a href="#" 
-                i.glyphicon.glyphicon-user style="color:#1111dd;" 
-                | Profile
+/!        li
+/!          a data-toggle="modal" href="#aboutModal" role="button" About
+/!        li
+/!          a.dropdown-toggle data-toggle="dropdown" href="#" 
+/!            i.glyphicon.glyphicon-user
+/!          ul.nav.dropdown-menu
+/!            li
+/!              a href="#" 
+/!                i.glyphicon.glyphicon-user style="color:#1111dd;" 
+/!                | Profile
 /!        li.active
 /!          a href="#"  Posts
 /!        li

@@ -5,4 +5,14 @@ class User < ActiveRecord::Base
   devise :omniauthable, :omniauth_providers => [:facebook]
 
   has_many :posts
+
+  def self.from_omniauth(request_auth)
+    where(provider: request_auth.provider, uid: request_auth.uid).first_or_create do |user|
+      user.email = request_auth.info.email
+      user.name = request_auth.info.name
+      user.password = Devise.friendly_token[0,20]
+      # portrait image url.
+      user.image = request_auth.info.image
+    end
+  end
 end

@@ -5,15 +5,18 @@ Left public posts by any facebook users.
 
 ### To-do List
 
-10/09/2014
-
-- OmniAuth
+- Decide Posts layout.
+- Rspec test for all authentication process.
 
 ### Done Work
 
 10/09/2014
 
-- Done `Session#create` through ajax call.
+- `OmniAuth` integration done. Move facebook sign-in button to login dialog.
+
+10/09/2014
+
+- Done `Session#create` through ajax call. Routing path done.
 
 10/08/2014
 
