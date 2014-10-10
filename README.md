@@ -1,7 +1,9 @@
 linkit
 ======
 
-Left public posts by any facebook users.
+Share links and posts.
+
+![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-10-09.png)
 
 ### To-do List
 
@@ -12,10 +14,8 @@ Left public posts by any facebook users.
 
 10/09/2014
 
+- Change default `font-family` to `font-family: 'Bree Serif', serif`.
 - `OmniAuth` integration done. Move facebook sign-in button to login dialog.
-
-10/09/2014
-
 - Done `Session#create` through ajax call. Routing path done.
 
 10/08/2014

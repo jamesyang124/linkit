@@ -91,4 +91,23 @@ h3,h4,h5 {
 
 #main {
  padding-top:72px;
+ font-family: 'Bree Serif', serif;
+}
+
+#navbar-collapse1{
+  font-family: 'Bree Serif', serif;
+  font-size: 16px;
+}
+
+.navbar-brand{
+  font-family: 'Bree Serif', serif;
+  font-size: 30px;
+}
+
+#loginModal{
+  font-family: 'Bree Serif', serif;
+}
+
+#RegisterModal{
+  font-family: 'Bree Serif', serif; 
 }
