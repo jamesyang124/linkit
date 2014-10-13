@@ -1,4 +1,6 @@
 Linkit::Application.routes.draw do
+  root "posts#show"
+  
   devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks", registrations: "users/registrations", sessions: "users/sessions"}, skip: [:registrations, :sessions]
 
   devise_scope :user do
@@ -7,6 +9,5 @@ Linkit::Application.routes.draw do
     delete "users/sign_out" => "users/sessions#destroy", as: "destroy_user_session"
   end
 
-  root "posts#index"
   resources :posts
 end

@@ -9,18 +9,21 @@ gem 'turbolinks'
 gem 'jbuilder', '~> 1.2'
 
 gem 'slim'
+
+gem 'bootstrap_form'
+gem 'embedly'
+gem 'figaro'
+
 gem 'omniauth'
 gem 'omniauth-facebook'
 gem 'devise'
-
-gem 'bootstrap_form'
-gem "thin"
 
 group :doc do
   gem 'sdoc', require: false
 end
 
 group :development, :test do
+  gem "thin"
   gem 'pry'
   gem 'sqlite3'
   gem 'rspec-rails'

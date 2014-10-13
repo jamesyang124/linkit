@@ -15,6 +15,5 @@ class Users::SessionsController < Devise::SessionsController
   # log out
   def destroy
     super
-    set_flash_message :notice, :signed_out
   end
 end

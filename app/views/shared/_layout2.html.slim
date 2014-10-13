@@ -22,38 +22,13 @@
                 i.glyphicon.glyphicon-align-right
     .col-md-4.col-sm-6
       .well
-        form.form-horizontal role="form" 
-          h4 What's New
-          .form-group style="padding:14px;" 
-            textarea.form-control placeholder=("Update your status") 
-          button.btn.btn-success.pull-right type="button"  Post
-          ul.list-inline
-            li
-              a href="#" 
-                i.glyphicon.glyphicon-align-left
-            li
-              a href="#" 
-                i.glyphicon.glyphicon-align-center
-            li
-              a href="#" 
-                i.glyphicon.glyphicon-align-right
-    .col-md-4.col-sm-6
-      .well
-        form.form-horizontal role="form" 
-          h4 What's New
-          .form-group style="padding:14px;" 
-            textarea.form-control placeholder=("Update your status") 
-          button.btn.btn-success.pull-right type="button"  Post
-          ul.list-inline
-            li
-              a href="#" 
-                i.glyphicon.glyphicon-align-left
-            li
-              a href="#" 
-                i.glyphicon.glyphicon-align-center
-            li
-              a href="#" 
-                i.glyphicon.glyphicon-align-right
+        = bootstrap_form_for :post, url: "/posts", class: "form", method: "post" do |f|
+          h4 Share Interested Links
+          .input-group.text-center
+            = f.text_field :link, placeholder: "Add new link", class: "form-control input-lg", id: "url", hide_label: true
+            span.input-group-btn
+              = f.submit "Post", class: "btn btn-lg btn-primary"
+          .selector-wrapper
     .col-md-4.col-sm-6
       .well
         form.form-horizontal role="form" 

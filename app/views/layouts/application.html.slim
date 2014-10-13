@@ -1,14 +1,14 @@
 doctype html
 html
   head
-    title SinglePage
+    title Linkit
     meta[content="text/html; charset=US-ASCII" http-equiv="content-type"]
     meta[charset="utf-8"]
     meta[content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport"]
-    link href='http://fonts.googleapis.com/css?family=Bree+Serif' rel='stylesheet' type='text/css'   
     = stylesheet_link_tag "application", media: "all", "data-turbolinks-track" => true
     = javascript_include_tag "application", "data-turbolinks-track" => true
     = csrf_meta_tags
+    = render "layouts/external_resources"
   body
     header
       = render "shared/login_modal"
@@ -16,6 +16,7 @@ html
       = render "shared/modal"
       = render "shared/navbar"
     = yield
-    / script references
-    script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"
     = render "shared/footer"
+    / Embde.ly script references
+    javascript:
+      $('#url').preview({key: "#{ENV["embedly_api_key"]}"})

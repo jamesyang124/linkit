@@ -12,6 +12,10 @@ Share links and posts.
 
 ### Done Work
 
+10/13/2014
+
+- Integrated with Embed.ly preview.
+
 10/09/2014
 
 - Change default `font-family` to `font-family: 'Bree Serif', serif`.

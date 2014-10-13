@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141010031428) do
+ActiveRecord::Schema.define(version: 20141013231005) do
 
   create_table "posts", force: true do |t|
     t.string   "title"
@@ -19,6 +19,10 @@ ActiveRecord::Schema.define(version: 20141010031428) do
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "link"
+    t.string   "thumbnail_url"
+    t.integer  "thumbnail_width"
+    t.integer  "thumbnail_height"
   end
 
   create_table "users", force: true do |t|
