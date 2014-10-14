@@ -1,48 +1,33 @@
 #main.container-fluid
   .row
     = render 'shared/message'
-  /! playground
+    /! playground
+.isotype
   .row
-    .col-md-4.col-sm-6
-      .well
-        form.form-horizontal role="form" 
-          h4 What's New
-          .form-group style="padding:14px;" 
-            textarea.form-control placeholder=("Update your status") 
-          button.btn.btn-success.pull-right type="button"  Post
-          ul.list-inline
-            li
-              a href="#" 
-                i.glyphicon.glyphicon-align-left
-            li
-              a href="#" 
-                i.glyphicon.glyphicon-align-center
-            li
-              a href="#" 
-                i.glyphicon.glyphicon-align-right
-    .col-md-4.col-sm-6
-      .well
+    - if @posts.first
+      .isotype-item.panel.panel-default
+        .panel-thumbnail
+          = link_to @posts.first.link
+            img.img-responsive src="#{@posts.first.thumbnail_url}"/
+        .panel-body
+          = link_to @posts.first.link
+            p.lead = @posts.first.title
+          text_area = @posts.first.body
+    .isotype-item
+      .well#preview
         = bootstrap_form_for :post, url: "/posts", class: "form", method: "post" do |f|
-          h4 Share Interested Links
+          h4 Share Link
           .input-group.text-center
-            = f.text_field :link, placeholder: "Add new link", class: "form-control input-lg", id: "url", hide_label: true
+            = f.text_field :link, placeholder: "Link it!", class: "form-control input-lg", id: "url", hide_label: true
             span.input-group-btn
               = f.submit "Post", class: "btn btn-lg btn-primary"
-          .selector-wrapper
-    .col-md-4.col-sm-6
-      .well
-        form.form-horizontal role="form" 
-          h4 What's New
-          .form-group style="padding:14px;" 
-            textarea.form-control placeholder=("Update your status") 
-          button.btn.btn-success.pull-right type="button"  Post
-          ul.list-inline
-            li
-              a href="#" 
-                i.glyphicon.glyphicon-align-left
-            li
-              a href="#" 
-                i.glyphicon.glyphicon-align-center
-            li
-              a href="#" 
-                i.glyphicon.glyphicon-align-right
+          /.selector-wrapper
+    - @posts.count > 1 && @posts[1..-1].each do |post|
+      .isotype-item.panel.panel-default
+        .panel-thumbnail
+          = link_to post.link
+            img.img-responsive src="#{post.thumbnail_url}"/
+        .panel-body
+          = link_to post.link
+            p.lead = post.title
+          text_area = post.body

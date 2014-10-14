@@ -6,12 +6,14 @@ class PostsController < ApplicationController
   end
 
   def show
+    @posts = Post.all
+    #require 'pry'; binding.pry
     render :index
   end
 
   def new; end
 
-  def create   
+  def create
     @post = Post.new(user_id: current_user.id)
     @post.save_link link_params[:link]
 

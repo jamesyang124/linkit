@@ -3,11 +3,12 @@ linkit
 
 Share links and posts.
 
+![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-10-14.png)
+
 ![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-10-09.png)
 
 ### To-do List
 
-- Decide Posts layout.
 - Rspec test for all authentication process.
 
 ### Done Work
@@ -15,6 +16,11 @@ Share links and posts.
 10/13/2014
 
 - Integrated with Embed.ly preview.
+- `Post` model now save Embedly response object's information.
+- [Center input frames](http://stackoverflow.com/questions/18153234/center-a-div-using-bootstrap-3-markup-or-css)
+- Dynamic Grid Layout: [isotope](http://isotope.metafizzy.co/index.html)
+- Done front end Layout, post now only save unique links.
+- Iamge now properly filled through Embed.ly fill api.
 
 10/09/2014
 

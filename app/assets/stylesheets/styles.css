@@ -111,3 +111,20 @@ h3,h4,h5 {
 #RegisterModal{
   font-family: 'Bree Serif', serif; 
 }
+
+/*  */
+
+body {
+  background: url("/stardust.png") ;
+}
+
+.isotype .isotype-item { 
+  width: 23.8%;
+  margin-left: 1%;
+}
+
+/* 
+#preview{
+  margin-bottom: 210px;
+}
+*/

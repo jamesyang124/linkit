@@ -16,7 +16,14 @@ html
       = render "shared/modal"
       = render "shared/navbar"
     = yield
-    = render "shared/footer"
+    / = render "shared/footer"
     / Embde.ly script references
     javascript:
+      var $container = $('.isotype').isotope({
+        // main isotope options
+        itemSelector: '.isotype-item'
+      })
+      $container.imagesLoaded( function() {
+        $container.isotope('layout')
+      });
       $('#url').preview({key: "#{ENV["embedly_api_key"]}"})
