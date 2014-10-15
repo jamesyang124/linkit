@@ -1,7 +1,7 @@
 doctype html
 html
   head
-    title Linkit
+    title linkit
     meta[content="text/html; charset=US-ASCII" http-equiv="content-type"]
     meta[charset="utf-8"]
     meta[content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport"]
@@ -23,7 +23,20 @@ html
         // main isotope options
         itemSelector: '.isotype-item'
       })
-      $container.imagesLoaded( function() {
+      
+      $container.imagesLoaded(function() {
         $container.isotope('layout')
       });
-      $('#url').preview({key: "#{ENV["embedly_api_key"]}"})
+
+      $('#url').preview({key: "#{ENV["embedly_api_key"]}"
+      })
+    
+      $("#srch-term").bind("keyup", function() {
+        $container.isotope({
+          filter: function() {
+          var name = $(this).find('#iso-filtering').text().toLowerCase();
+          var search = $('#srch-term').val().toLowerCase();
+          return name.match(search);
+        }});
+      });
+      

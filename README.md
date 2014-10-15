@@ -13,6 +13,10 @@ Share links and posts.
 
 ### Done Work
 
+10/14/2014
+
+- Change `nav-bar` layout, now support client-side search ignore letter case.
+
 10/13/2014
 
 - Integrated with Embed.ly preview.

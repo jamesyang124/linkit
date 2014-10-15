@@ -1,16 +1,10 @@
 nav.navbar.navbar-fixed-top.header
   .col-md-12
     .navbar-header
-      a.navbar-brand href="#" Linkit
+      a.navbar-brand href="#" linkit
       button.navbar-toggle data-target="#navbar-collapse1" data-toggle="collapse" type="button" 
         i.glyphicon.glyphicon-search
     #navbar-collapse1.collapse.navbar-collapse
-      form.navbar-form.pull-left
-        .input-group style="max-width:470px;" 
-          input#srch-term.form-control name="srch-term" placeholder="Search" type="text" /
-          .input-group-btn
-            button.btn.btn-default.btn-primary type="submit" 
-              i.glyphicon.glyphicon-search
       ul.nav.navbar-nav.navbar-right
         li
           - if user_signed_in?
@@ -21,9 +15,16 @@ nav.navbar.navbar-fixed-top.header
         - unless user_signed_in?
           li
             a data-toggle="modal" href="#RegisterModal" role="button"  Register
-        li
-          a#btnToggle href="#" 
-            i.glyphicon.glyphicon-th-large
+      form.navbar-form.pull-right
+        .input-group style="max-width:470px;" 
+          input#srch-term.form-control name="srch-term" placeholder="Search" type="text" style="width: 225px;"/
+          .input-group-btn
+            a.btn.btn-default.btn-primary#clean href="/" 
+              i.glyphicon.glyphicon-refresh
+          
+/        li
+/          a#btnToggle href="#" 
+/            i.glyphicon.glyphicon-th-large
 /        li
 /          a data-toggle="modal" href="#aboutModal" role="button" About
 /        li

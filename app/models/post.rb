@@ -13,7 +13,7 @@ class Post < ActiveRecord::Base
     if response[:thumbnail_url]
       post.thumbnail_url = resize_image_size(response[:thumbnail_width], response[:thumbnail_url])
     else
-      post.thumbnail_url = "/blank.png"
+      #post.thumbnail_url = "/blank.png"
     end
 
     post.link = link_url
@@ -27,7 +27,7 @@ class Post < ActiveRecord::Base
 
   def resize_image_size(width, thumbnail_url)
     if !width.nil? and width < 340
-      image_url = "http://i.embed.ly/1/display/fill?color=ddd&height=340&width=340&url=".concat ERB::Util.url_encode(thumbnail_url)
+      image_url = "http://i.embed.ly/1/display/fill?color=fff&height=340&width=340&url=".concat ERB::Util.url_encode(thumbnail_url)
       image_url.concat "&key=#{ENV['embedly_api_key']}"
     else
       thumbnail_url
