@@ -1,0 +1,50 @@
+javascript:
+  var $container = $('.isotype').isotope({
+    // main isotope options
+    itemSelector: '.isotype-item'
+  })
+      
+  $container.imagesLoaded(function() {
+    $container.isotope('layout')
+  });
+
+  $('#url').preview({key: "#{ENV["embedly_api_key"]}"})
+
+  $("#srch-term").bind("keyup", function() {
+    $container.isotope({
+      filter: function() {
+        var name = $(this).find('#iso-filtering').text().toLowerCase();
+        var search = $('#srch-term').val().toLowerCase();
+        return name.match(search);
+    }});
+  });
+
+  // https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Mutation_events
+  //$(".selector-wrapper").bind("DOMSubtreeModified", function(){
+    // render layout again.
+  //  $container.isotope('layout');
+  //});
+
+  $(".iso-shuffle").bind("click", function(){
+    $container.isotope('shuffle');
+  });
+
+  var target = document.querySelector('.selector-wrapper');
+ 
+  // create an observer instance
+  var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if(mutation.type == "childList"){
+        $container.isotope('layout');
+      }
+    });    
+  });
+ 
+  // configuration of the observer:
+  var config = { attributes: true, childList: true, characterData: true };
+   
+  // pass in the target node, as well as the observer options
+  observer.observe(target, config);
+   
+  // later, you can stop observing
+  //observer.disconnect();

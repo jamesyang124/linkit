@@ -2,6 +2,7 @@ class PostsController < ApplicationController
   before_action :authenticate_user!, except: [:show]
 
   def index
+    #require 'pry'; binding.pry
     @posts = Post.all
   end
 

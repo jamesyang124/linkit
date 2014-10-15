@@ -15,16 +15,16 @@ nav.navbar.navbar-fixed-top.header
         - unless user_signed_in?
           li
             a data-toggle="modal" href="#RegisterModal" role="button"  Register
+        li
+          a#btnToggle.iso-shuffle href="#" 
+           i.glyphicon.glyphicon-th-large
       form.navbar-form.pull-right
         .input-group style="max-width:470px;" 
           input#srch-term.form-control name="srch-term" placeholder="Search" type="text" style="width: 225px;"/
           .input-group-btn
             a.btn.btn-default.btn-primary#clean href="/" 
-              i.glyphicon.glyphicon-refresh
-          
-/        li
-/          a#btnToggle href="#" 
-/            i.glyphicon.glyphicon-th-large
+              i.glyphicon.glyphicon-refresh    
+        
 /        li
 /          a data-toggle="modal" href="#aboutModal" role="button" About
 /        li

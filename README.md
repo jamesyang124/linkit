@@ -10,13 +10,17 @@ Share links and posts.
 ### To-do List
 
 - Rspec test for all authentication process.
+- Infinte scroll :bulb:
+
 
 ### Done Work
 
 10/14/2014
 
 - Change `nav-bar` layout, now support client-side search ignore letter case.
-
+- finally add `share links` DOMSubtreeModified javascript, and re-render isotype layout.
+  - [https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Mutation_events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Mutation_events)
+  - [https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver)
 10/13/2014
 
 - Integrated with Embed.ly preview.

@@ -17,26 +17,6 @@ html
       = render "shared/navbar"
     = yield
     / = render "shared/footer"
-    / Embde.ly script references
-    javascript:
-      var $container = $('.isotype').isotope({
-        // main isotope options
-        itemSelector: '.isotype-item'
-      })
-      
-      $container.imagesLoaded(function() {
-        $container.isotope('layout')
-      });
+    = render "shared/isotype_embedly.js"
 
-      $('#url').preview({key: "#{ENV["embedly_api_key"]}"
-      })
-    
-      $("#srch-term").bind("keyup", function() {
-        $container.isotope({
-          filter: function() {
-          var name = $(this).find('#iso-filtering').text().toLowerCase();
-          var search = $('#srch-term').val().toLowerCase();
-          return name.match(search);
-        }});
-      });
       

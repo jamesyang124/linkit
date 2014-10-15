@@ -23,6 +23,7 @@ group :doc do
 end
 
 group :development, :test do
+  gem "better_errors"
   gem "thin"
   gem 'pry'
   gem 'sqlite3'
