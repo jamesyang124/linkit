@@ -1,18 +1,10 @@
 class PostsController < ApplicationController
-  before_action :authenticate_user!, except: [:show]
+  before_action :authenticate_user!, except: [:index]
 
+  # root, publicly render.
   def index
-    #require 'pry'; binding.pry
     @posts = Post.all
   end
-
-  def show
-    @posts = Post.all
-    #require 'pry'; binding.pry
-    render :index
-  end
-
-  def new; end
 
   def create
     @post = Post.new(user_id: current_user.id)
@@ -20,13 +12,6 @@ class PostsController < ApplicationController
 
     redirect_to root_path
   end
-  
-  # update specifi id's content :post
-  def update; end
-  # edit specific id's content :get
-  def edit; end
-  
-  def destroy; end
 
   private
 

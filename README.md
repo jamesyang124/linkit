@@ -12,7 +12,6 @@ Share links and posts.
 - Rspec test for all authentication process.
 - Infinte scroll :bulb:
 
-
 ### Done Work
 
 10/14/2014

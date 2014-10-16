@@ -56,6 +56,7 @@ GEM
     erubis (2.7.0)
     eventmachine (1.0.3)
     execjs (2.2.1)
+    fabrication (2.11.3)
     faraday (0.9.0)
       multipart-post (>= 1.2, < 3)
     figaro (1.0.0)
@@ -191,6 +192,7 @@ DEPENDENCIES
   coffee-rails (~> 4.0.0)
   devise
   embedly
+  fabrication
   figaro
   jbuilder (~> 1.2)
   jquery-rails
