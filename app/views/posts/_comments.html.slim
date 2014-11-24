@@ -1,0 +1,24 @@
+.chat
+  .chatbox
+    = image_tag('pink-30x30.png', :alt => "",:width => "30px", :height => "30px" )
+    b#cname = post.user.name
+    br/
+    |  via  
+    b= post.provider_name
+    |  on 
+    b= post.created_at.strftime("%m/%d/%Y")
+  - @chat = rand(3)
+  - @chat.times do
+    .chatbox
+      = image_tag('pink-30x30.png' , :alt => "",:width => "30px", :height => "30px" )
+      b#cname = "Fuo Young"
+      p = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus dictum urna cursus porttitor scelerisque. Vivamus sed dignissim nunc. Curabitur molestie ipsum dui. Donec ullamcorper nulla ac purus vestibulum lobortis. Praesent vestibulum tristique nibh sed venenatis. Mauris varius eros ipsum, a tempus sem porttitor rutrum. Fusce eget lacinia lectus. Mauris sit amet ex quis dolor molestie tincidunt. Curabitur in quam quis lectus ultrices laoreet ut ut justo. Nunc vel tincidunt leo. Ut et vulputate felis."
+  .chatbox
+    - if current_user.image
+      = image_tag(current_user.image, :alt => "",:width => "30px", :height => "30px")
+    - else
+      = image_tag('pink-30x30.png', :alt => "",:width => "30px", :height => "30px")
+    b#cname = current_user.name
+    br/
+    = form_tag root_path, id: "comment-box" do
+      = text_area_tag(:message, "Hi, nice site", size: "35x3", style: "background: #f2f0f0;")

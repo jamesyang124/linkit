@@ -17,6 +17,7 @@ class Post < ActiveRecord::Base
     post.link = link_url
     post.title = response[:title]
     post.body = response[:description]
+    post.provider_name = response[:provider_name]
 
     post.save
   end

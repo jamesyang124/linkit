@@ -14,7 +14,7 @@
           = link_to @posts.first.link
             p.lead#iso-filtering = @posts.first.title
           text_area = @posts.first.body
-          hr/
+        = render 'comments', post: @posts.first
     .isotype-item
       .well
         = bootstrap_form_for :post, url: "/posts", class: "form", method: "post" do |f|
@@ -34,17 +34,4 @@
           = link_to post.link
             p.lead#iso-filtering = post.title
           text_area = post.body
-        .chat
-          .chatbox
-            = image_tag('pink-30x30.png', :alt => "",:width => "30px", :height => "30px" )
-            b= "John Doll"
-            |  via  
-            b= "Jane Door"
-            |  onto 
-            b = "balaba"
-          - @chat = rand(3)
-          - @chat.times do
-            .chatbox
-              = image_tag('pink-30x30.png' , :alt => "",:width => "30px", :height => "30px" )
-              b = "Fuo Young"
-              p = "This is aloagaoijodsjo jdo jeij ish ushd qoijwdoq!! maihi lokosajoidjaiushdiauhsc"
+        = render 'comments', post: post, user: current_user

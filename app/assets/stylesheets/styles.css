@@ -129,32 +129,39 @@ body {
   background: #f2f0f0;
   /*margin: 0 -15px;*/
 }
+
 .chatbox {
     border-top: 1px solid white;
     border-bottom: 1px solid rgba(#000,.1);
     padding: 15px 15px;
-    padding-left: 50px;
-    @include pie-clearfix;
+    padding-left: 60px;
     
-    &:last-child {
-      border-bottom: none;
-    }
+    @include pie-clearfix;
+}
 
-    &:first-child {
-      color: #b29c9c;
-      b {
-        color: #8c7e7e;
-      }
-    }
+.chatbox:first-child {
+  color: #b29c9c;
+}
+
+.chatbox:first-child #cname {
+  color: #262626;
+}
+
+.chatbox:last-child {
+  border-bottom: none;
 }
 
 .chatbox img {
-  margin-left: -35px;
+  margin-left: -45px;
   float: left;
 }
 .chatbox b {
   /*padding-left: 15px;*/
   font-weight: bold;
+}
+
+#comment-box {
+  padding-top: 15px;
 }
 /* 
 #preview{
