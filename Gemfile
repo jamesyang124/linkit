@@ -29,6 +29,7 @@ group :development, :test do
   gem 'pry'
   gem 'sqlite3'
   gem 'rspec-rails'
+  #gem "middleman"
 end
 
 # Use ActiveModel has_secure_password

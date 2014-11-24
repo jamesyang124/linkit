@@ -8,7 +8,6 @@ in your HTML file.
 license: MIT
 author: bootply.com
 */
-
 @import url(http://fonts.googleapis.com/css?family=Roboto:400);
 body {
   background-color:#e0e0e0;
@@ -126,6 +125,37 @@ body {
   margin-left: 1%;
 }
 
+.chat {
+  background: #f2f0f0;
+  /*margin: 0 -15px;*/
+}
+.chatbox {
+    border-top: 1px solid white;
+    border-bottom: 1px solid rgba(#000,.1);
+    padding: 15px 15px;
+    padding-left: 50px;
+    @include pie-clearfix;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:first-child {
+      color: #b29c9c;
+      b {
+        color: #8c7e7e;
+      }
+    }
+}
+
+.chatbox img {
+  margin-left: -35px;
+  float: left;
+}
+.chatbox b {
+  /*padding-left: 15px;*/
+  font-weight: bold;
+}
 /* 
 #preview{
   margin-bottom: 210px;

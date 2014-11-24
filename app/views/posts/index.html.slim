@@ -34,3 +34,17 @@
           = link_to post.link
             p.lead#iso-filtering = post.title
           text_area = post.body
+        .chat
+          .chatbox
+            = image_tag('pink-30x30.png', :alt => "",:width => "30px", :height => "30px" )
+            b= "John Doll"
+            |  via  
+            b= "Jane Door"
+            |  onto 
+            b = "balaba"
+          - @chat = rand(3)
+          - @chat.times do
+            .chatbox
+              = image_tag('pink-30x30.png' , :alt => "",:width => "30px", :height => "30px" )
+              b = "Fuo Young"
+              p = "This is aloagaoijodsjo jdo jeij ish ushd qoijwdoq!! maihi lokosajoidjaiushdiauhsc"
