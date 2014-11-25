@@ -19,6 +19,17 @@ javascript:
     }});
   });
 
+  // when comment box focused, show button and re-render layout.
+  $('.comment_area').focus(function(){
+    $(this).next().show();
+    $container.isotope('layout');
+  });
+
+  $('.comment_area').focusout(function(){
+    $(this).next().hide();
+    $container.isotope('layout');
+  });
+
   // https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Mutation_events
   //$(".selector-wrapper").bind("DOMSubtreeModified", function(){
     // render layout again.

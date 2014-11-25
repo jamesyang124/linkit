@@ -10,4 +10,6 @@ $('#btnToggle').click(function(){
     $(this).addClass('on');
   }
 });
+
+$('.comment_area').next().hide();
 });

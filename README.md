@@ -16,6 +16,10 @@ Share links and posts.
 
 ### Done Work
 
+11/24/2014
+
+- Add chatbox, comment layout.
+
 10/14/2014
 
 - Change `nav-bar` layout, now support client-side search ignore letter case.
