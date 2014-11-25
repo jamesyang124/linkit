@@ -5,8 +5,6 @@ Share links and posts.
 
 ![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-11-25-2.png)
 
-![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-11-25.png)
-
 ![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-10-14.png)
 
 ![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-10-09.png)

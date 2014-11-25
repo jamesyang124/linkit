@@ -13,7 +13,7 @@
         .panel-body
           = link_to @posts.first.link
             p.lead#iso-filtering = @posts.first.title
-          text_area = @posts.first.body
+          p = @posts.first.body
         = render 'comments', post: @posts.first
     .isotype-item
       .well
@@ -33,5 +33,5 @@
         .panel-body
           = link_to post.link
             p.lead#iso-filtering = post.title
-          text_area = post.body
+          p = post.body
         = render 'comments', post: post
