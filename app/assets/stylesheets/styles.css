@@ -134,8 +134,8 @@ body {
     border-top: 1px solid white;
     border-bottom: 1px solid rgba(#000,.1);
     padding: 15px 15px;
-    padding-left: 60px;
-    
+    padding-left: 65px;
+
     @include pie-clearfix;
 }
 
@@ -152,16 +152,19 @@ body {
 }
 
 .chatbox img {
-  margin-left: -45px;
+  margin-left: -50px;
   float: left;
 }
+
+.chatbox .img-circle{
+  height: 40px;
+  width: 40px;
+  vertical-align: middle;
+}
+
 .chatbox b {
   /*padding-left: 15px;*/
   font-weight: bold;
-}
-
-#comment-box {
-  
 }
 /* 
 #preview{
