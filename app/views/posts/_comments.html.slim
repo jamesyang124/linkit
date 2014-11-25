@@ -21,4 +21,6 @@
     b#cname = current_user.name
     br/
     = form_tag root_path, id: "comment-box" do
-      = text_area_tag(:message, "Hi, nice site", size: "35x3", style: "background: #f2f0f0;")
+      .form-group style="padding-right:15px;" 
+        textarea.form-control placeholder=("Left your comment..")
+      = submit_tag "submit", class: "btn btn-default btn-primary"
