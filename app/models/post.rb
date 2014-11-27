@@ -1,6 +1,7 @@
 class Post < ActiveRecord::Base
   belongs_to :user
   validates_uniqueness_of :link
+  acts_as_commentable
 
   def save_link(link_url)
     post = self

@@ -9,5 +9,7 @@ Linkit::Application.routes.draw do
     delete "users/sign_out" => "users/sessions#destroy", as: "destroy_user_session"
   end
 
-  resources :posts, except: [:show, :new, :edit, :update]
+  resources :posts, except: [:show, :new, :edit, :update] do
+    resources :comments, only: [:create]
+  end
 end

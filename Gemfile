@@ -18,6 +18,8 @@ gem 'omniauth'
 gem 'omniauth-facebook'
 gem 'devise'
 
+gem 'acts_as_commentable'
+
 group :doc do
   gem 'sdoc', require: false
 end
@@ -29,6 +31,7 @@ group :development, :test do
   gem 'pry'
   gem 'sqlite3'
   gem 'rspec-rails'
+  gem 'meta_request'
   #gem "middleman"
 end
 

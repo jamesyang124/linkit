@@ -5,17 +5,17 @@
     /! playground
 .isotype
   .row
-    - if @posts.first
+    - if @first_post
       .isotype-item.panel.panel-default.iso-filter
         .panel-thumbnail
-          = link_to @posts.first.link
-            img.img-responsive src="#{@posts.first.thumbnail_url}"/
+          = link_to @first_post.link
+            img.img-responsive src="#{@first_post.thumbnail_url}"/
         .panel-body
-          = link_to @posts.first.link
-            p.lead#iso-filtering = @posts.first.title
-          p = @posts.first.body
-        = render 'comments', post: @posts.first
-    .isotype-item
+          = link_to @first_post.link
+            p.lead#iso-filtering = @first_post.title
+          p = @first_post.body
+        = render 'comments', post: @first_post
+    .isotype-item.corner-stamp
       .well
         = bootstrap_form_for :post, url: "/posts", class: "form", method: "post" do |f|
           h4 Share Link
@@ -25,13 +25,14 @@
               = f.submit "Post", class: "btn btn-lg btn-primary"
           /hr/
         .selector-wrapper
-    - @posts.count > 1 && @posts[1..-1].each do |post|
-      .isotype-item.panel.panel-default.iso-filter
-        .panel-thumbnail
-          = link_to post.link
-            img.img-responsive src="#{post.thumbnail_url}"/
-        .panel-body
-          = link_to post.link
-            p.lead#iso-filtering = post.title
-          p = post.body
-        = render 'comments', post: post
+    - @posts.find_each do |post|
+      - if post != @first_post
+        .isotype-item.panel.panel-default.iso-filter
+          .panel-thumbnail
+            = link_to post.link
+              img.img-responsive src="#{post.thumbnail_url}"/
+          .panel-body
+            = link_to post.link
+              p.lead#iso-filtering = post.title
+            p = post.body
+          = render 'comments', post: post
