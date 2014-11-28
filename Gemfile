@@ -32,6 +32,8 @@ group :development, :test do
   gem 'sqlite3'
   gem 'rspec-rails'
   gem 'meta_request'
+  gem 'shoulda-matchers', require: false
+  gem 'database_cleaner'
   #gem "middleman"
 end
 

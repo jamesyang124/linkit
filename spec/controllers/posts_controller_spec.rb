@@ -1,5 +1,4 @@
 require 'rails_helper'
-require 'spec_helper'
 
 describe PostsController do 
   it_behaves_like "visiter_visited" do 
@@ -22,7 +21,7 @@ describe PostsController do
       link_url = "http://localhost:3000"
 
       # mock Post#save_link method.
-      allow_any_instance_of(Post).to receive(:save_link).with(link_url).and_return(Fabricate(:post, user_id: user.id))
+      allow_any_instance_of(Post).to receive(:save_link).with(link_url).and_return(Fabricate(:post, user_id: user.id, link_url: link_url))
 
       post :create, post: { link: link_url }
       expect(response).to redirect_to root_path

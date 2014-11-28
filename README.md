@@ -16,11 +16,16 @@ Share links and posts.
 
 ### Done Work
 
+11/28/2014
+
+- Use `Fabricate.build` to get instance before save.
+
 11/26/2014
 
 - Build Comment model under Post model. updated nested routes, new comment controller actions, and comments views are modified.
 - Fix the js to hide the submit button of unfocused text_area.
 - Rspec test for Comment model start.
+- Add offset to skip first record for batch fetching.
 
 11/24/2014
 

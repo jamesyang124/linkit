@@ -1,5 +1,6 @@
 class Post < ActiveRecord::Base
   belongs_to :user
+  validates_presence_of :user_id, :title, :body, :provider_name, :link
   validates_uniqueness_of :link
   acts_as_commentable
 
@@ -18,7 +19,7 @@ class Post < ActiveRecord::Base
     post.link = link_url
     post.title = response[:title]
     post.body = response[:description]
-    post.provider_name = response[:provider_name]
+    post.provider_name = response[:provider_name] || "Unknown source"
 
     post.save
   end

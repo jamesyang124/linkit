@@ -25,14 +25,14 @@
               = f.submit "Post", class: "btn btn-lg btn-primary"
           /hr/
         .selector-wrapper
-    - @posts.find_each do |post|
-      - if post != @first_post
-        .isotype-item.panel.panel-default.iso-filter
-          .panel-thumbnail
-            = link_to post.link
-              img.img-responsive src="#{post.thumbnail_url}"/
-          .panel-body
-            = link_to post.link
-              p.lead#iso-filtering = post.title
-            p = post.body
-          = render 'comments', post: post
+    /* skip first record, offset: 1 */
+    - @posts.find_each(offset: 1) do |post|
+      .isotype-item.panel.panel-default.iso-filter
+        .panel-thumbnail
+          = link_to post.link
+            img.img-responsive src="#{post.thumbnail_url}"/
+        .panel-body
+          = link_to post.link
+            p.lead#iso-filtering = post.title
+          p = post.body
+        = render 'comments', post: post
