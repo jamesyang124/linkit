@@ -1,8 +1,8 @@
 class CommentsController < ApplicationController
 
-  def index; end
-  def show; end
-  def new; end
+  # def index; end
+  # def show; end
+  # def new; end
 
   def create
     @post = Post.find(params[:post_id])
@@ -18,9 +18,9 @@ class CommentsController < ApplicationController
     redirect_to root_path
   end
 
-  def edit; end
-  def update; end
-  def destroy; end
+  # def edit; end
+  # def update; end
+  # def destroy; end
 
   private
 

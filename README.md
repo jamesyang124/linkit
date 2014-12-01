@@ -16,6 +16,10 @@ Share links and posts.
 
 ### Done Work
 
+12/01/2014
+
+- Write Omni auth test for User model. Post model rspec test done too.
+
 11/28/2014
 
 - Use `Fabricate.build` to get instance before save.
