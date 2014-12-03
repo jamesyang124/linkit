@@ -13,4 +13,6 @@ class Comment < ActiveRecord::Base
 
   # NOTE: Comments belong to a user
   belongs_to :user
+
+  scope :post_comments, ->(post_id) { select(:user_id).where(commentable_id: post_id) }
 end

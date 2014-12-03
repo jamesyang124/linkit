@@ -26,7 +26,7 @@
           /hr/
         .selector-wrapper
     /* skip first record, offset: 1 */
-    - @posts.find_each(offset: 1) do |post|
+    - @posts.find_each(start: @first_post.id + 1, batch_size: 100) do |post|
       .isotype-item.panel.panel-default.iso-filter
         .panel-thumbnail
           = link_to post.link

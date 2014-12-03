@@ -16,9 +16,19 @@ Share links and posts.
 
 ### Done Work
 
+12/03/2014
+
+- design email html template.
+
+12/02/2014
+
+- done mailgun email notification service.
+
+- `Linkit::Application._all_autoload_paths` to get autoload paths, it loads all directories under `./app` folder by default. 
+
 12/01/2014
 
-- Write Omni auth test for User model. Post model rspec test done too.
+- Write Omni auth test for User model. Post and Comment model rspec test done too.
 
 11/28/2014
 

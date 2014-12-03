@@ -15,7 +15,7 @@
       - if c.user && c.user.image
         = image_tag(c.user.image, :alt => "", class: "img-circle")
       - else
-      = image_tag('pink-30x30.png', :width => "40px", :height => "40px", :alt => "", class: "img-circle")
+        = image_tag('pink-30x30.png', :width => "40px", :height => "40px", :alt => "", class: "img-circle")
       b#cname = c.user.name
       p = c.comment
   - if current_user

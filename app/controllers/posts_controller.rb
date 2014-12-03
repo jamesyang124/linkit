@@ -3,9 +3,11 @@ class PostsController < ApplicationController
 
   # root, publicly render.
   def index
+    # @posts = Post.includes([:comments, :user]).offset(1).load
+    # @first_post = Post.first
     # eager loading
     @posts = Post.includes([:comments, :user]).load
-    @first_post = @posts.shift
+    @first_post = @posts.first
   end
 
   def create

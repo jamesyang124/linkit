@@ -3,6 +3,8 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
+  helper_method :post_comment_users, :user_emails
+
   private
 
   # session redirection
@@ -17,5 +19,13 @@ class ApplicationController < ActionController::Base
   # omniauth failed redirect back.
   def new_session_path(scope)
     root_path
+  end
+
+  def post_comment_users(post_id = nil)
+    Comment.post_comments(post_id).map(&:user_id).uniq
+  end
+
+  def user_emails(users = [])
+    User.find_emails(users).map(&:email).join(", ")
   end
 end

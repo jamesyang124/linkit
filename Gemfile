@@ -19,6 +19,7 @@ gem 'omniauth-facebook'
 gem 'devise'
 
 gem 'acts_as_commentable'
+gem 'rest-client', require: false
 
 group :doc do
   gem 'sdoc', require: false
