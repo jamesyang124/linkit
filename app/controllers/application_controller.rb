@@ -25,7 +25,7 @@ class ApplicationController < ActionController::Base
     Comment.post_comments(post_id).map(&:user_id).uniq
   end
 
-  def user_emails(users = [])
+  def mail_list(users = [])
     User.find_emails(users).map(&:email).join(", ")
   end
 end

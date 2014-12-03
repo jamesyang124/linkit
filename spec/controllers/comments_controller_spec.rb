@@ -30,7 +30,7 @@ describe CommentsController do
     end
 
     it "send email to poster and commenters after new comment created" do
-      expect(assigns(:res)).to include("Thank you")
+      expect(assigns(:res)["message"]).to include("Queued. Thank you.")
     end
   end
 end

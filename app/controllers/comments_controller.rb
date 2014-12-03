@@ -13,7 +13,7 @@ class CommentsController < ApplicationController
 
       comment.save
       # send email to all poster and commenters.
-      @res = broadcast_emails(@post.id, @post.title, comment.comment, comment.user.name)
+      @res = JSON.parse(send_emails(@post, comment))
     else
       # set error flash
     end
@@ -30,19 +30,25 @@ class CommentsController < ApplicationController
     params.require(:comment).permit!
   end
 
-  def broadcast_emails(post_id, title, comment, commenter_name)
-    users = post_comment_users(post_id)
-    emails = user_emails(users)
-    html_str = render_to_string template: "layouts/email_message"
+  def send_emails(post, comment)
+    mail_params = build_mail_params(post, comment)
+    CommentMailService.send_message(mail_params)
+  end
 
-    payload = {
-      html: html_str,
-      comment: comment,
-      emails: emails,
-      title: title,
-      commenter_name: commenter_name
+  def build_mail_params(post, comment)
+    users = post_comment_users(@post.id)
+    emails = mail_list(users)
+
+    # set layout to false, remove default layout template.
+    html_str = render_to_string template: "layouts/email_message", layout: false
+
+    {
+      users: users,
+      mail_list: emails,
+      title: @post.title,
+      html_str: html_str,
+      commenter_name: comment.user.name,
+      comment: comment.comment
     }
-
-    CommentMailService.broadcast_emails(payload)
   end
 end

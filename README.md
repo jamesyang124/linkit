@@ -18,7 +18,10 @@ Share links and posts.
 
 12/03/2014
 
-- design email html template.
+- Refactor mail params building in Comment controller and Comment Mail Service for mail sending services.
+- Add recipient variables to mailgun message.
+- Email notification now support html template. Designed email html template.
+- add rspec for new scopes.
 
 12/02/2014
 
