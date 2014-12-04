@@ -6,7 +6,9 @@ html
     meta[charset="utf-8"]
     meta[content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport"]
     = stylesheet_link_tag "application", media: "all", "data-turbolinks-track" => true
+    = stylesheet_link_tag "//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"
     = javascript_include_tag "application", "data-turbolinks-track" => true
+    / = auto_discovery_link_tag(:rss, posts_url)
     = csrf_meta_tags
     = render "layouts/external_resources"
   body

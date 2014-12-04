@@ -36,7 +36,7 @@ class CommentsController < ApplicationController
   end
 
   def build_mail_params(post, comment)
-    users = post_comment_users(post.id)
+    users = post_commenters(post.id)
     emails = mail_list(users)
 
     # set layout to false, remove default layout template.

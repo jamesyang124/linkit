@@ -22,4 +22,22 @@ describe User do
     user = User.from_omniauth(request_auth)
     expect(User.last).to eq(user)
   end
+
+  let(:users) do 
+    [Fabricate(:user), Fabricate(:user, email: "email2@email.com"), Fabricate(:user, email: "email3@email.com")].map(&:id)
+  end
+
+  it "::find_emails" do
+    emails = User.find_emails(users)
+    
+    expect(emails).not_to be_empty
+    expect(emails.map(&:email)).not_to include(nil)
+  end
+
+  it "::find_email_names" do
+    names = User.find_email_names(users)
+    
+    expect(names).not_to be_empty
+    expect(names.map(&:name)).not_to include(nil)
+  end
 end

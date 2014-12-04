@@ -5,8 +5,8 @@ nav.navbar.navbar-fixed-top.header
       button.navbar-toggle data-target="#navbar-collapse1" data-toggle="collapse" type="button" 
         i.glyphicon.glyphicon-search
     #navbar-collapse1.collapse.navbar-collapse
-      ul.nav.navbar-nav.navbar-right
-        li
+      ul.nav.navbar-nav.navbar-right style="font-size: large;"
+        li 
           - if user_signed_in?
             = link_to "Logout", destroy_user_session_path, method: "delete", 
             :"data-toggle" => "modal", :role => "button"
@@ -14,17 +14,19 @@ nav.navbar.navbar-fixed-top.header
             a data-toggle="modal" href="#loginModal" role="button" Login
         - unless user_signed_in?
           li
-            a data-toggle="modal" href="#RegisterModal" role="button"  Register
+            a data-toggle="modal" href="#RegisterModal" role="button" Register 
         li
           a#btnToggle.iso-shuffle href="#" 
-           i.glyphicon.glyphicon-th-large
+            i.fa.fa-th.fa-lg
+        li
+          = link_to posts_path(format: "rss")
+            i.fa.fa-rss.fa-lg
       form.navbar-form.pull-right
         .input-group style="max-width:470px;" 
           input#srch-term.form-control name="srch-term" placeholder="Search" type="text" style="width: 225px;"/
           .input-group-btn
             a.btn.btn-default.btn-primary#clean href="/" 
-              i.glyphicon.glyphicon-refresh    
-        
+              i.fa.fa-refresh.fa-spin    
 /        li
 /          a data-toggle="modal" href="#aboutModal" role="button" About
 /        li

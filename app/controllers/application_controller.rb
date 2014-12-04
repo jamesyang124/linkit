@@ -21,8 +21,8 @@ class ApplicationController < ActionController::Base
     root_path
   end
 
-  def post_comment_users(post_id = nil)
-    Comment.post_comments(post_id).map(&:user_id).uniq
+  def post_commenters(post_id = nil)
+    Comment.post_commenters(post_id).map(&:user_id).uniq
   end
 
   def mail_list(users = [])

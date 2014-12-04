@@ -13,13 +13,24 @@ Share links and posts.
 
 ### To-do List
 
-- redirection for counting link clicks.
-- add rspec for new scopes.  
-- rss feed build  
+- `git log --all --graph`
+- `ri Struct` to find manual in shell.
+- redirection for counting link clicks => rss guid can be merged by this.
 - Infinte scroll :bulb:  
 - Email links should direct to **production** url.  
 
 ### Done Work & Notes
+
+12/04/2014
+
+- Add rspec for new scopes: `User::find_emails`, `User::find_email_names`, `Comment::post_commenters`.
+- `posts_url`, `url_for` are helpers for getting url string.
+- RSS feed done. Use Font Awesome for display icon.
+  * [http://apidock.com/rails/v1.0.0/Builder/XmlMarkup](http://apidock.com/rails/v1.0.0/Builder/XmlMarkup)
+  * [http://apidock.com/rails/ActionController/Base/url_for](http://apidock.com/rails/ActionController/Base/url_for)
+  * [http://railscasts.com/episodes/87-generating-rss-feeds-revised?view=asciicast](http://railscasts.com/episodes/87-generating-rss-feeds-revised?view=asciicast)
+  * [http://intertwingly.net/wiki/pie/Rss20AndAtom10Compared](http://intertwingly.net/wiki/pie/Rss20AndAtom10Compared)
+- Add `auto_dicover_link_tag` in html header to allow broswer auto detect rss or atom feed reader.
 
 12/03/2014
 
