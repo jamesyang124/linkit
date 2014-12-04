@@ -3,6 +3,8 @@ linkit
 
 Share links and posts.
 
+![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-12-03-1.png)
+
 ![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-11-25-2.png)
 
 ![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-10-14.png)
@@ -11,21 +13,31 @@ Share links and posts.
 
 ### To-do List
 
-- Rspec test for all authentication process.
-- Infinte scroll :bulb:
+- redirection for counting link clicks.
+- add rspec for new scopes.  
+- rss feed build  
+- Infinte scroll :bulb:  
+- Email links should direct to **production** url.  
 
-### Done Work
+### Done Work & Notes
 
 12/03/2014
 
-- Refactor mail params building in Comment controller and Comment Mail Service for mail sending services.
-- Add recipient variables to mailgun message.
-- Email notification now support html template. Designed email html template.
-- add rspec for new scopes.
-
+- Popular email clients like Gmail strip out `<style>` tag. so we alter email's css style tags to inline style. 
+- Slim `=>` after `|` left a line for convertion, or next tag may treated as text. 
+- Refactor mail params building in Comment controller and Comment Mail Service for mail sending services.  
+- Add recipient variables to mailgun message. interpolation by `%recipient.name%`.  
+- Email notification now support html template. Designed email html template.  
+  * [http://documentation.mailgun.com/user_manual.html#sending-via-api](http://documentation.mailgun.com/user_manual.html#sending-via-api)  
+  * [https://ruby-china.org/topics/8155](https://ruby-china.org/topics/8155)  
+  
 12/02/2014
 
 - done mailgun email notification service.
+- put richest content type in last type, text `text/plain` then html `text/html` in last part. So mailgun payload should set `payload[:text]` prior than `payload[:html]`.  
+  * [http://www.w3.org/Protocols/rfc1341/7_2_Multipart.html](http://www.w3.org/Protocols/rfc1341/7_2_Multipart.html)  
+
+    > In general, user agents that compose multipart/alternative entities should place the body parts in increasing order of preference, that is, with the preferred format last. For fancy text, the sending user agent should put the plainest format first and the richest format last.
 
 - `Linkit::Application._all_autoload_paths` to get autoload paths, it loads all directories under `./app` folder by default. 
 

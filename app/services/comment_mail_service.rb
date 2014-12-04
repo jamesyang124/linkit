@@ -14,8 +14,8 @@ class CommentMailService < ApplicationController
 
     payload[:from] = "Linkit <notifications@linkit.com>"
     payload[:to] = payload.delete :mail_list
-    payload[:text] = "Commenter #{payload[:commenter_name]} left comment:\n #{payload[:comment]}"
     payload[:subject] = "New comment for post - #{payload[:title]}"
+    payload[:text] = "Commenter #{payload[:commenter_name]} left comment:\n #{payload[:comment]}"
     payload[:html] = payload.delete :html_str
     payload.delete :commenter_name
     payload.delete :comment
@@ -27,12 +27,17 @@ class CommentMailService < ApplicationController
     recipient_variables = {}
     User.find_email_names(mail_params[:users]).each do |u|
       recipient_variables[u.email] = {
-        "name" => u.name
+        "name" => u.name,
+        "commenter" => mail_params[:commenter_name],
+        "title" => mail_params[:title],
+        "comment" => mail_params[:comment],
+        "image" => mail_params[:image]
       }
     end
 
     mail_params.delete :users
-    mail_params[:recipient_variables] = recipient_variables
+    # conver hash to JSON string.
+    mail_params[:"recipient-variables"] = JSON.generate(recipient_variables)
     mail_params
   end
 end
