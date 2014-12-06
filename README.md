@@ -13,8 +13,6 @@ Share links and posts.
 
 ### To-do List
 
-- Infinte scroll :bulb:  
-- `ri Struct` to find manual in shell.
 - redirection for counting link clicks => rss guid can be merged by this.
 - use `counter_cache: true` to set comments count.
 - Email links should direct to **production** url.  
@@ -34,6 +32,11 @@ Share links and posts.
 
 ### Done Work & Notes
 
+12/06/2014
+
+- Fix issue to directly request an empty page by query string.
+- `ri Struct` to find manual in shell.
+
 12/05/2014
 
 - Use **Kaminari** to set pagination, inifinite scroll.
@@ -41,6 +44,7 @@ Share links and posts.
   * [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a)
   * [https://github.com/metafizzy/isotope/issues/76](https://github.com/metafizzy/isotope/issues/76)
 - Remove Infinite Scroll loading image and message.
+- User `blur()` to switch show/hide commit button.
 
 12/04/2014
 

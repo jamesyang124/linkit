@@ -4,6 +4,8 @@ class Post < ActiveRecord::Base
   validates_uniqueness_of :link
   acts_as_commentable
 
+  # paginates_per 4
+
   def save_link(link_url)
     post = self
     
