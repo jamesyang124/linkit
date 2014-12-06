@@ -37,6 +37,12 @@ Share links and posts.
 - Fix issue to directly request an empty page by query string.
 - `ri Struct` to find manual in shell.
 - Set post order to DESC.
+- Reset items opacity animation after ImageLoaded.
+- Add a back to top button in nav bar.
+- Custom Start and finish loadin effect.
+  * [http://thefrontrowblog.tumblr.com/](http://thefrontrowblog.tumblr.com/)
+  * [https://github.com/paulirish/infinite-scroll/issues/176](https://github.com/paulirish/infinite-scroll/issues/176)
+- Fix Flash message width, add bottom alert message when scroll to last page.
 
 12/05/2014
 

@@ -23,19 +23,53 @@ javascript:
   $(".isotype").infinitescroll({
     navSelector: "nav.pagination",
     nextSelector: "nav.pagination a[rel=next]",
-    itemSelector: ".infinite-items" 
+    itemSelector: ".infinite-items",
+    prefill: true,
+    loading: {
+      start: function(options) {
+      // Do something here.
+        //$("#iso-layout").css({  "display": "block",   opacity: 0.7, "width":$(document).width(),"height":$(document).height()});
+        $('#load').fadeIn("fast");
+
+        $(this).data('infinitescroll').beginAjax(options)
+      },
+      finished: function() {
+      // Do something here.
+        //$("#iso-layout").css({  "display": "block",   opacity: 1, "width":$(document).width(),"height":$(document).height()});
+        $('#load').fadeOut("fast");
+      }
+    },
+    errorCallback: function(errorType) {
+      if (errorType == "done") { 
+        //$("#iso-layout").css({  "display": "block",   opacity: 1, "width":$(document).width(),"height":$(document).height()});
+        $('#load').fadeOut("fast");
+        //$(document).scroll("#bottom-msg");
+
+        $("<div class='row alert alert-warning bottom-alert' id='bottom-msg' role='alert'> No more posts, click to <a href='#main' class='alert-link' id='bottom-alert'> back to top</a></div>").insertAfter("#iso-layout");
+        
+        $("#bottom-alert").click(function(){
+            $('html body').animate({
+              scrollTop: 0,
+              }, 1500
+            );
+        });
+      }
+    }
   }, function(newElements){
     var $newElems = $(newElements);
+    $newElems.css({ opacity: 0 });
 
     //$('#url').focus();
     // leave current focus
     $('.comment_area').blur();
     $('.comment-submit').hide();
-    $container.isotope('appended', $newElems);
-    $container.isotope('layout');
+    //$container.isotope('layout');
     
     $container.imagesLoaded(function() {
-      $container.isotope('layout')
+      //$('#main').css({ opacity: 0;});
+      $newElems.animate({ opacity: 1 });
+      //$container.isotope('layout');
+      $container.isotope('appended', $newElems);
     });
 
     $('.comment_area').focus(function(){

@@ -1,10 +1,12 @@
 / = render "shared/layout2"
+span#load
+  i.fa.fa-spinner.fa-5x.fa-spin
 #main.container-fluid
   .row
     = render 'shared/message'
     /! playground
     = paginate @posts
-  .row.isotype
+  .row.isotype#iso-layout
     - if @posts.first_page?
       - first_post = @posts.shift
       .isotype-item.panel.panel-default.iso-filter

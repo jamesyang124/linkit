@@ -179,10 +179,10 @@ p {
 }
 
 .isotype-item.corner-stamp {
-  width: 48.5%;
+  width: 48.4%;
 }
 
-.isotype-item.corner-stamp h4 {
+.isotype-item.corner-stamp {
   text-align: center;
 }
 
@@ -192,6 +192,26 @@ p {
 
 #main {
   padding-top: 65px;
+}
+
+#load {
+  display: none;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  text-align: center;
+  position: fixed; 
+  color: #42A7FB;
+  font-size: 3em;
+  margin-left: -6.8%;
+  margin-top: -100px;
+}
+
+.alert {
+  text-align: center;
+  font-size: 20px;
+  margin-left: 0.1%;
+  margin-right: 0.1%;
 }
 
 /* 

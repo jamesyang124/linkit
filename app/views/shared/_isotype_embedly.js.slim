@@ -20,6 +20,13 @@ javascript:
     $container.isotope('layout')
   });
 
+  $("#back-top").click(function(){
+    $('html body').animate({
+      scrollTop: 0,
+      }, 700
+    );
+  });
+
   // https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Mutation_events
 
   // when link thumbnail content pop up, layout render again.
@@ -31,6 +38,8 @@ javascript:
   $(".iso-shuffle").bind("click", function(){
     $container.isotope('shuffle');
   });
+
+  //$container.isotope('bindResize');
 
 //  var target = document.querySelector('.selector-wrapper');
 
