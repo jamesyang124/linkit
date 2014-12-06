@@ -3,30 +3,32 @@
   .row
     = render 'shared/message'
     /! playground
+    = paginate @posts
 .isotype
   .row
-    - if @first_post
+    - if @posts.first_page?
+      - first_post = @posts.shift
       .isotype-item.panel.panel-default.iso-filter
         .panel-thumbnail
-          = link_to @first_post.link
-            img.img-responsive src="#{@first_post.thumbnail_url}"/
+          = link_to first_post.link
+            img.img-responsive src="#{first_post.thumbnail_url}"/
         .panel-body
-          = link_to @first_post.link
-            p.lead#iso-filtering = @first_post.title
-          p = @first_post.body
-        = render 'comments', post: @first_post
-    .isotype-item.corner-stamp
-      .well
-        = bootstrap_form_for :post, url: "/posts", class: "form", method: "post" do |f|
-          h4 Share Link
-          .input-group.text-center
-            = f.text_field :link, placeholder: "Link it!", class: "form-control input-lg", id: "url", hide_label: true
-            span.input-group-btn
-              = f.submit "Post", class: "btn btn-lg btn-primary"
-          /hr/
-        .selector-wrapper
+          = link_to first_post.link
+            p.lead#iso-filtering = first_post.title
+          p = first_post.body
+        = render 'comments', post: first_post
+      .isotype-item.corner-stamp
+        .well
+          = bootstrap_form_for :post, url: "/posts", class: "form", method: "post" do |f|
+            h4 Share Link
+            .input-group.text-center
+              = f.text_field :link, placeholder: "Link it!", class: "form-control input-lg", id: "url", hide_label: true
+              span.input-group-btn
+                = f.submit "Post", class: "btn btn-lg btn-primary"
+            /hr/
+          .selector-wrapper
     /* skip first record, offset: 1 */
-    - @posts.find_each(start: @first_post.id + 1, batch_size: 100) do |post|
+    - @posts.each do |post|
       .isotype-item.panel.panel-default.iso-filter
         .panel-thumbnail
           = link_to post.link

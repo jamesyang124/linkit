@@ -13,13 +13,31 @@ Share links and posts.
 
 ### To-do List
 
-- `git log --all --graph`
+- Infinte scroll :bulb:  
 - `ri Struct` to find manual in shell.
 - redirection for counting link clicks => rss guid can be merged by this.
-- Infinte scroll :bulb:  
+- use `counter_cache: true` to set comments count.
 - Email links should direct to **production** url.  
 
+#### Security
+
+- each user access application, a new session will create on server side and send a cookie to client.
+- Then application store user id to that session, from now on, every request, the application load user by user id in session.
+- The session id in cookie identify the proper session in application.
+- To secure cookie => force SSL connection.
+- In Rails 2, store session to client side rather than server by CookieStore.
+  * Rails will get session hash from client and does not require session id for every request anymore.
+  * To prevent session hash tampering, a digest (with SHA1) is calculated from the session with a server-side secret and inserted into the end of the cookie.
+- `config.secret_key_base` to customed a key for the SHA1 algorithm.
+- In same domain, cookie sent from server and server get client cookie in later every request.
+- Cookie store user data, Session store the identity for the user.
+
 ### Done Work & Notes
+
+12/05/2014
+
+- Use **Kaminari** to set pagination, inifinite scroll.
+  * [http://www.sitepoint.com/infinite-scrolling-rails-practice/](http://www.sitepoint.com/infinite-scrolling-rails-practice/)
 
 12/04/2014
 

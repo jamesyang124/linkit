@@ -9,10 +9,10 @@ gem 'turbolinks'
 gem 'jbuilder', '~> 1.2'
 
 gem 'slim'
-
 gem 'bootstrap_form'
 gem 'embedly'
 gem 'figaro'
+gem 'kaminari'
 
 gem 'omniauth'
 gem 'omniauth-facebook'
@@ -20,6 +20,8 @@ gem 'devise'
 
 gem 'acts_as_commentable'
 gem 'rest-client', require: false
+
+
 
 group :doc do
   gem 'sdoc', require: false
