@@ -1,0 +1,9 @@
+.isotype-item.panel.panel-default.iso-filter.infinite-items
+  .panel-thumbnail
+    = link_to post.link
+      img.img-responsive src="#{post.thumbnail_url}"/
+  .panel-body
+    = link_to post.link
+      p.lead#iso-filtering = post.title
+    p = post.body
+  = render 'comments', post: post

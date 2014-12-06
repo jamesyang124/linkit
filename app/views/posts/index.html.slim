@@ -4,8 +4,7 @@
     = render 'shared/message'
     /! playground
     = paginate @posts
-.isotype
-  .row
+  .row.isotype
     - if @posts.first_page?
       - first_post = @posts.shift
       .isotype-item.panel.panel-default.iso-filter
@@ -29,12 +28,4 @@
           .selector-wrapper
     /* skip first record, offset: 1 */
     - @posts.each do |post|
-      .isotype-item.panel.panel-default.iso-filter
-        .panel-thumbnail
-          = link_to post.link
-            img.img-responsive src="#{post.thumbnail_url}"/
-        .panel-body
-          = link_to post.link
-            p.lead#iso-filtering = post.title
-          p = post.body
-        = render 'comments', post: post
+      = render 'post_partial', post: post

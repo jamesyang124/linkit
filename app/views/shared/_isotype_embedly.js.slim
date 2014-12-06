@@ -2,10 +2,6 @@ javascript:
   var $container = $('.isotype').isotope({
     // main isotope options
     itemSelector: '.isotype-item'
-  })
-      
-  $container.imagesLoaded(function() {
-    $container.isotope('layout')
   });
 
   $('#url').preview({key: "#{ENV["embedly_api_key"]}"})
@@ -18,42 +14,39 @@ javascript:
         return name.match(search);
     }});
   });
+  
+  $container.imagesLoaded(function() {
+    $container.isotope('layout')
+  });
 
-  $('.comment-submit').hide();
+  // https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Mutation_events
 
-  // when comment box focused, show button and re-render layout.
-  $('.comment_area').focus(function(){
-    $('.comment-submit').filter(":visible").hide();
-    $(this).next().show();
+  // when link thumbnail content pop up, layout render again.
+  $(".selector-wrapper").bind("DOMSubtreeModified", function(){
+    // render layout again.
     $container.isotope('layout');
   });
-  
-  // https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Mutation_events
-  //$(".selector-wrapper").bind("DOMSubtreeModified", function(){
-    // render layout again.
-  //  $container.isotope('layout');
-  //});
 
   $(".iso-shuffle").bind("click", function(){
     $container.isotope('shuffle');
   });
 
-  var target = document.querySelector('.selector-wrapper');
- 
+//  var target = document.querySelector('.selector-wrapper');
+
   // create an observer instance
-  var observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-      if(mutation.type == "childList"){
-        $container.isotope('layout');
-      }
-    });    
-  });
+//  var observer = new MutationObserver(function(mutations) {
+//    mutations.forEach(function(mutation) {
+//      if(mutation.type == "childList"){
+//        $container.isotope('layout');
+//      }
+//    });    
+//  });
  
   // configuration of the observer:
-  var config = { attributes: true, childList: true, characterData: true };
+  //var config = { attributes: true, childList: true, characterData: true };
    
   // pass in the target node, as well as the observer options
-  observer.observe(target, config);
+  //observer.observe(target, config);
    
   // later, you can stop observing
   //observer.disconnect();

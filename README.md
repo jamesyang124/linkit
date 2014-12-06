@@ -38,6 +38,9 @@ Share links and posts.
 
 - Use **Kaminari** to set pagination, inifinite scroll.
   * [http://www.sitepoint.com/infinite-scrolling-rails-practice/](http://www.sitepoint.com/infinite-scrolling-rails-practice/)
+  * [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a)
+  * [https://github.com/metafizzy/isotope/issues/76](https://github.com/metafizzy/isotope/issues/76)
+- Remove Infinite Scroll loading image and message.
 
 12/04/2014
 

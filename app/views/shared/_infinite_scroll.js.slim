@@ -1,0 +1,35 @@
+javascript:
+  $('nav.pagination').hide();
+
+  $('.comment-submit').hide();
+  // when comment box focused, show button and re-render layout.
+  $('.comment_area').focus(function(){
+    $('.comment-submit').filter(":visible").hide();
+    $(this).next().show();
+    $container.isotope('layout');
+  });
+
+
+  var $container = $('.isotype').isotope({
+    // main isotope options
+    itemSelector: '.isotype-item'
+  });
+
+  $(".isotype").infinitescroll({
+    navSelector: "nav.pagination",
+    nextSelector: "nav.pagination a[rel=next]",
+    itemSelector: ".infinite-items" 
+  }, function(newElements){
+    var $newElems = $(newElements);
+    $newElems.imagesLoaded(function(){
+      $container.isotope('appended', $newElems );
+    });
+
+    $('.comment-submit').hide();
+
+    $('.comment_area').focus(function(){
+      $('.comment-submit').filter(":visible").hide();
+      $(this).next().show();
+      $container.isotope('layout');
+    });
+  });

@@ -4,7 +4,7 @@ class PostsController < ApplicationController
   # root, publicly render.
   def index
     # eager loading
-    @posts = Post.includes([:comments, :user]).page(params[:page]).per(4)
+    @posts = Post.includes([:comments, :user]).order('created_at').page(params[:page]).per(4)
   end
 
   def create
