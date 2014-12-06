@@ -178,6 +178,22 @@ p {
   word-wrap: break-word;
 }
 
+.isotype-item.corner-stamp {
+  width: 48.5%;
+}
+
+.isotype-item.corner-stamp h4 {
+  text-align: center;
+}
+
+#masonry-bottom-spaced .isotype-item {
+  margin-bottom: 3;
+}
+
+#main {
+  padding-top: 65px;
+}
+
 /* 
 #preview{
   margin-bottom: 210px;

@@ -36,6 +36,7 @@ Share links and posts.
 
 - Fix issue to directly request an empty page by query string.
 - `ri Struct` to find manual in shell.
+- Set post order to DESC.
 
 12/05/2014
 

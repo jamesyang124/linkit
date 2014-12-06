@@ -19,9 +19,9 @@
       .isotype-item.corner-stamp
         .well
           = bootstrap_form_for :post, url: "/posts", class: "form", method: "post" do |f|
-            h4 Share Link
+            /! h4 Share Link to Every One
             .input-group.text-center
-              = f.text_field :link, placeholder: "Link it!", class: "form-control input-lg", id: "url", hide_label: true
+              = f.text_field :link, placeholder: "Share Link..", class: "form-control input-lg", id: "url", hide_label: true
               span.input-group-btn
                 = f.submit "Post", class: "btn btn-lg btn-primary"
             /hr/

@@ -33,6 +33,10 @@ javascript:
     $('.comment-submit').hide();
     $container.isotope('appended', $newElems);
     $container.isotope('layout');
+    
+    $container.imagesLoaded(function() {
+      $container.isotope('layout')
+    });
 
     $('.comment_area').focus(function(){
       $('.comment-submit').filter(":visible").hide();

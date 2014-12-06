@@ -5,7 +5,7 @@ class PostsController < ApplicationController
   def index
     # eager loading
     #count = Post.count
-    @posts = Post.includes([:comments, :user]).order('created_at').page(params[:page]).per(4)
+    @posts = Post.includes([:comments, :user]).order('created_at DESC').page(params[:page]).per(8)
 
     if request_empty_page
       flash[:notice] = "No more posts, redirect back to first page."
