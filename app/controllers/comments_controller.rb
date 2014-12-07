@@ -11,13 +11,18 @@ class CommentsController < ApplicationController
       comment.comment = comment_params[:comment]
       comment.user = current_user
 
+      @post.increment(:comments_count)
       comment.save
       # send email to all poster and commenters.
       @res = JSON.parse(send_emails(@post, comment))
     else
       # set error flash
     end
-    redirect_to root_path
+
+    respond_to do |format|
+      format.html { redirect_to root_path }
+      format.js { render file: "/posts/ajax_comment.js.erb" }
+    end
   end
 
   # def edit; end

@@ -13,9 +13,29 @@ Share links and posts.
 
 ### To-do List
 
-- redirection for counting link clicks => rss guid can be merged by this.
-- use `counter_cache: true` to set comments count.
 - Email links should direct to **production** url.  
+
+### AJAX call
+
+- `ajaxSuccess` listen to the ajax call from document.
+- `$.ajax().success()` fire a ajax request.
+
+```ruby
+# set form or any POST request to `remote: true`
+form_for root_path, remote: true do |f|
+  # do something
+end
+
+# set action respond to javascript.
+def action
+  respond_to do |f|
+    # instance variables can be called in that template.
+    f.js { render "js_file/erb" }
+  end
+end
+
+# append proper node to current DOM.
+```
 
 #### Security
 
@@ -34,6 +54,7 @@ Share links and posts.
 
 12/06/2014
 
+- Make AJAX call for comment form. and update comment count. relayout items.
 - Fix issue to directly request an empty page by query string.
 - `ri Struct` to find manual in shell.
 - Set post order to DESC.
@@ -46,6 +67,8 @@ Share links and posts.
 - Use `pluck(:column)` to select single column
 - Turbo link will execute request more than 1 time. Disable when you redirect to outside url.
 - Add counter cache for comments count.
+- redirection for counting link clicks => rss guid can be merged by this.
+- use `counter_cache: true` to set comments count.
 
 12/05/2014
 

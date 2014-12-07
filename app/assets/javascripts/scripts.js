@@ -10,4 +10,10 @@ $(document).ready(function(){/* jQuery toggle layout */
       $(this).addClass('on');
     }
   });
+
+  //$( document ).ajaxSuccess(function( event, xhr, settings ) {
+  //  console.log(event);
+  //  console.log(xhr);
+  //  console.log(settings);
+  //});
 });

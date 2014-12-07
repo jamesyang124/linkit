@@ -1,0 +1,24 @@
+
+// insert new comment before comment form box.
+$("#comment-form-<%= @post.id %>").before("<%= j render( 'posts/ajax_comment', c: @post.comments.last) %>");
+
+// update comment counts
+$("#comment-<%= @post.id %>").text("<%= @post.comments_count %>");
+
+// clean textarea text values.
+$("#comment-form-<%= @post.id %> textarea").val("");
+
+// animation for comment insertion
+$("#comment-form-<%= @post.id %>").prev().css({ opacity: 0 });
+
+$("#comment-form-<%= @post.id %>").prev().animate({ opacity: 1 }, "slow");
+
+var $container = $('.isotype').isotope({
+    // main isotope options
+    itemSelector: '.isotype-item'
+});
+
+$container.imagesLoaded(function() {
+  $container.isotope('layout');
+});
+

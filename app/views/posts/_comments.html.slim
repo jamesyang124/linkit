@@ -1,6 +1,6 @@
 .comments
   p.pull-left 
-    b= post.comments_count
+    b id="comment-#{post.id}" = post.comments_count
     = " " + (post.comments_count > 1 ? "comments" : "comment")
   p.pull-right
     |  visited 
@@ -27,11 +27,11 @@
       b#cname = c.user.name
       p = c.comment
   - if current_user
-    .chatbox
+    .chatbox id="comment-form-#{post.id}"
       - if current_user.image
         = image_tag(current_user.image, :alt => "", class: "img-circle")
       - else
         = image_tag('pink-30x30.png', :width => "40px", :height => "40px", :alt => "", class: "img-circle")
-      = form_for [post, Comment.new], html: {id: "comment-box"} do |f|
+      = form_for [post, Comment.new], html: {id: "comment-box"}, remote: true do |f|
         = f.text_area :comment, placeholder: "Add a comment..", rows: "3", class: "textarea form-group form-control comment_area"
         = f.submit "Comment", class: "btn btn-sm btn-primary comment-submit"
