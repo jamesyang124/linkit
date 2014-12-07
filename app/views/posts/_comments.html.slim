@@ -1,3 +1,11 @@
+.comments
+  p.pull-left 
+    b= post.comments_count
+    = " " + (post.comments_count > 1 ? "comments" : "comment")
+  p.pull-right
+    |  visited 
+    b= post.click_count
+    |  times
 .chat
   .chatbox
     - if post.user && post.user.image

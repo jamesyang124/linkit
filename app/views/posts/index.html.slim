@@ -11,10 +11,10 @@ span#load
       - first_post = @posts.shift
       .isotype-item.panel.panel-default.iso-filter
         .panel-thumbnail
-          = link_to first_post.link
+          = link_to post_redirection_path(first_post), :"data-no-turbolink" => true
             img.img-responsive src="#{first_post.thumbnail_url}"/
         .panel-body
-          = link_to first_post.link
+          = link_to post_redirection_path(first_post), :"data-no-turbolink" => true
             p.lead#iso-filtering = first_post.title
           p = first_post.body
         = render 'comments', post: first_post

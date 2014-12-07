@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141126033406) do
+ActiveRecord::Schema.define(version: 20141207015328) do
 
   create_table "comments", force: true do |t|
     t.string   "title",            limit: 50, default: ""
@@ -39,6 +39,8 @@ ActiveRecord::Schema.define(version: 20141126033406) do
     t.integer  "thumbnail_width"
     t.integer  "thumbnail_height"
     t.string   "provider_name"
+    t.integer  "click_count",      default: 0
+    t.integer  "comments_count",   default: 0
   end
 
   create_table "users", force: true do |t|

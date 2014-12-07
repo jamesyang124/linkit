@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  before_action :authenticate_user!, except: [:index]
+  before_action :authenticate_user!, except: [:index, :redirect_post]
 
   # root, publicly render.
   def index
@@ -18,6 +18,20 @@ class PostsController < ApplicationController
     @post.save_link link_params[:link]
 
     redirect_to root_path
+  end
+
+  def redirect_post
+    post = Post.find(params[:post_id])
+    redirect_url = post.link
+
+    if redirect_url.nil?
+      flash[:error] = "Wrong redirection link."
+      
+      redirect_to root_path
+    else
+      post.increment(:click_count, 1).save
+      redirect_to redirect_url 
+    end
   end
 
   private

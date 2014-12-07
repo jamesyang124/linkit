@@ -6,6 +6,8 @@ class Post < ActiveRecord::Base
 
   # paginates_per 4
 
+  #before_save :set_default_click_count
+
   def save_link(link_url)
     post = self
     
@@ -25,6 +27,10 @@ class Post < ActiveRecord::Base
 
     post.save
   end
+
+  #def set_default_click_count
+  #  click_count ||= 0
+  #end
 
   private
 

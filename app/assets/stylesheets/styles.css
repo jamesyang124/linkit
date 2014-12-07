@@ -125,6 +125,15 @@ body {
   margin-left: 1%;
 }
 
+.comments {
+  color: #4285f4;
+  padding-bottom: 8%;
+
+  padding-right: 15px;
+  padding-left: 15px;
+  font-size: 16px;
+}
+
 .chat {
   background: #f2f0f0;
   /*margin: 0 -15px;*/
@@ -180,6 +189,16 @@ p {
 
 .isotype-item.corner-stamp {
   width: 48.4%;
+}
+
+.isotype-item .panel-body {
+  padding-bottom: 5px;
+  margin-bottom: -5px;
+}
+
+.isotype-item .lead {
+  margin-bottom: 10px;
+  font-size: 1.5;
 }
 
 .isotype-item.corner-stamp {

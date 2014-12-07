@@ -43,6 +43,9 @@ Share links and posts.
   * [http://thefrontrowblog.tumblr.com/](http://thefrontrowblog.tumblr.com/)
   * [https://github.com/paulirish/infinite-scroll/issues/176](https://github.com/paulirish/infinite-scroll/issues/176)
 - Fix Flash message width, add bottom alert message when scroll to last page.
+- Use `pluck(:column)` to select single column
+- Turbo link will execute request more than 1 time. Disable when you redirect to outside url.
+- Add counter cache for comments count.
 
 12/05/2014
 
