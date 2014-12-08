@@ -15,7 +15,6 @@ Share links and posts.
 
 ### To-do List
 
-- Redesign input layout.
 - prepare to deploy.
 - Email links should direct to **production** url.
 
@@ -55,6 +54,11 @@ end
 - Cookie store user data, Session store the identity for the user.
 
 ### Done Work & Notes
+
+12/08/2014
+
+- Redesign input layout. add tabs for search or share link.
+- Integrate Search input with Share input. Use tab pills to switch pane.
 
 12/07/2014
 

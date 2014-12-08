@@ -5,17 +5,35 @@ span#load
   .row
     = render 'shared/message'
     /! playground
-    = paginate @posts
+    = paginate @posts 
   .row
     .well.col-md-10.col-md-offset-1#input-row
-      = bootstrap_form_for :post, url: "/posts", class: "form", method: "post" do |f|
-        /! h4 Share Link to Every One
-        .input-group.text-center
-          = f.text_field :link, placeholder: "Share Link..", class: "form-control input-lg", id: "url", hide_label: true
-          span.input-group-btn
-            = f.submit "Post", class: "btn btn-lg btn-primary"
-        /hr/
-      .selector-wrapper
+
+      div role="tabpanel"
+        ul class="nav nav-pills" role="tablist"
+          li role="presentation" class="active" 
+            a href="#share" aria-controls="share" role="tab" data-toggle="tab" Share
+          li role="presentation"
+            a href="#search" aria-controls="search" role="tab" data-toggle="tab" Search
+          li role="presentation"        
+        div class="tab-content"
+          div role="tabpanel" class="tab-pane active" id="share"
+            = bootstrap_form_for :post, url: "/posts", class: "form", method: "post" do |f|
+              /! h4 Share Link to Every One
+              .input-group.text-center
+                = f.text_field :link, placeholder: "Share Link..", class: "form-control input-lg", id: "url", hide_label: true
+                span.input-group-btn
+                  = f.submit "Post", class: "btn btn-lg btn-primary"
+                  /hr/
+            .selector-wrapper
+          div role="tabpanel" class="tab-pane" id="search" 
+            form.form
+              .input-group
+                input#srch-term.form-control.input-lg name="srch-term" placeholder="Search" type="text"
+                span.input-group-btn
+                  a.btn.btn-lg.btn-primary#reset-layout href="/?page=1" 
+                    i.fa.fa-refresh.fa-spin 
+
   .row.isotype.col-md-offset-1.col-md-10#iso-layout
     - if @posts.first_page?
       - first_post = @posts.shift
