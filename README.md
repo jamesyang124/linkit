@@ -13,7 +13,8 @@ Share links and posts.
 
 ### To-do List
 
-- Email links should direct to **production** url.  
+- prepare to deploy.
+- Email links should direct to **production** url.
 
 ### AJAX call
 
@@ -51,6 +52,38 @@ end
 - Cookie store user data, Session store the identity for the user.
 
 ### Done Work & Notes
+
+12/07/2014
+
+- use `nettop`, `ps aux` to find process and port, `top` only top list processes that have most resource usage. 
+- `to delete self-signed SSL certificate` go `/usr/local/etc/nginx` and delete `server.crt, server.csr, server.key` files.
+- Use pow. after creating project, set `.ruby-version, .ruby-gemset` and export rvm env to `.powenv` by `rvm env . > .powenv`. And don't forget `touch tmp/restart.txt` in your Rails app.
+- Because we now go through https, call beack from Omni auth server will now go https(443) to back to our app, set nginx reverse proxy port to `443`, and set facebook site url to `https:app_name.dev`
+
+```sh
+server {
+        listen       443 ssl;
+        server_name  *.dev;
+
+        ssl_certificate      server.crt;
+        ssl_certificate_key  server.key;
+
+        ssl_session_cache    shared:SSL:1m;
+        ssl_session_timeout  5m;
+
+        ssl_ciphers  HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers  on;
+
+        location / {
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto https;
+            proxy_set_header X-Forwarded-Port 443;
+            proxy_redirect off;
+            proxy_pass http://127.0.0.1;
+        }
+    }
+```
 
 12/06/2014
 
