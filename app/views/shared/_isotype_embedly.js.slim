@@ -2,7 +2,10 @@ javascript:
 
   var $container = $('.isotype').isotope({
     // main isotope options
-    itemSelector: '.isotype-item'
+    itemSelector: '.isotype-item',
+    masonry: {
+      gutter: 30
+    }
   });
 
   $('#url').preview({key: "#{ENV["embedly_api_key"]}"})

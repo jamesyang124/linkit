@@ -3,6 +3,8 @@ linkit
 
 Share links and posts.
 
+![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-12-07.png)
+
 ![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-12-03-1.png)
 
 ![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-11-25-2.png)
@@ -13,6 +15,7 @@ Share links and posts.
 
 ### To-do List
 
+- Redesign input layout.
 - prepare to deploy.
 - Email links should direct to **production** url.
 
@@ -55,6 +58,7 @@ end
 
 12/07/2014
 
+- Redesign the layout.
 - use `nettop`, `ps aux` to find process and port, `top` only top list processes that have most resource usage. 
 - `to delete self-signed SSL certificate` go `/usr/local/etc/nginx` and delete `server.crt, server.csr, server.key` files.
 - Use pow. after creating project, set `.ruby-version, .ruby-gemset` and export rvm env to `.powenv` by `rvm env . > .powenv`. And don't forget `touch tmp/restart.txt` in your Rails app.
