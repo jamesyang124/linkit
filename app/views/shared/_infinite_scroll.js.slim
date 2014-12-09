@@ -45,7 +45,7 @@ javascript:
         $('#load').fadeOut("fast");
         //$(document).scroll("#bottom-msg");
 
-        $("<div class='row col-md-10 col-md-offset-1 alert alert-warning bottom-alert' id='bottom-msg' role='alert'> No more posts, click to <a href='#main' class='alert-link' id='bottom-alert'> back to top</a></div>").insertAfter("#iso-layout");
+        $("<div class='row col-md-alert alert alert-warning bottom-alert' id='bottom-msg' role='alert'> No more posts, click to <a href='#main' class='alert-link' id='bottom-alert'> back to top</a></div>").insertAfter("#iso-layout");
         
         $("#bottom-alert").click(function(){
             $('html body').animate({
@@ -70,6 +70,7 @@ javascript:
       $newElems.animate({ opacity: 1 });
       //$container.isotope('layout');
       $container.isotope('appended', $newElems);
+      $container.isotope('layout');
     });
 
     $('.comment_area').focus(function(){

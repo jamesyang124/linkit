@@ -11,11 +11,10 @@ span#load
 
       div role="tabpanel"
         ul class="nav nav-pills" role="tablist"
-          li role="presentation" class="active" 
-            a href="#share" aria-controls="share" role="tab" data-toggle="tab" Share
-          li role="presentation"
-            a href="#search" aria-controls="search" role="tab" data-toggle="tab" Search
-          li role="presentation"        
+          li role="presentation" class="active search-tab" 
+            a#navp-share href="#share" aria-controls="share" role="tab" data-toggle="tab" Share
+          li role="presentation" class="search-tab"
+            a#navp-search href="#search" aria-controls="search" role="tab" data-toggle="tab" Search     
         div class="tab-content"
           div role="tabpanel" class="tab-pane active" id="share"
             = bootstrap_form_for :post, url: "/posts", class: "form", method: "post" do |f|
@@ -29,23 +28,12 @@ span#load
           div role="tabpanel" class="tab-pane" id="search" 
             form.form
               .input-group
-                input#srch-term.form-control.input-lg name="srch-term" placeholder="Search" type="text"
+                input#srch-term.form-control.input-lg name="srch-term" placeholder="Keyword.." type="text"
                 span.input-group-btn
                   a.btn.btn-lg.btn-primary#reset-layout href="/?page=1" 
                     i.fa.fa-refresh.fa-spin 
 
   .row.isotype.col-md-offset-1.col-md-10#iso-layout
-    - if @posts.first_page?
-      - first_post = @posts.shift
-      .isotype-item.panel.panel-default.iso-filter
-        .panel-thumbnail
-          = link_to post_redirection_path(first_post), :"data-no-turbolink" => true
-            img.img-responsive src="#{first_post.thumbnail_url}"/
-        .panel-body
-          = link_to post_redirection_path(first_post), :"data-no-turbolink" => true
-            p.lead#iso-filtering = first_post.title
-          p = first_post.body
-        = render 'comments', post: first_post
     /* skip first record, offset: 1 */
     - @posts.each do |post|
       = render 'post_partial', post: post

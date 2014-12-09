@@ -30,4 +30,5 @@ Linkit::Application.configure do
   # devise
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 
+  #config.action_controller.perform_caching = true
 end

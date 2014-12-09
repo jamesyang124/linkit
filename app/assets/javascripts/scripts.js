@@ -11,6 +11,22 @@ $(document).ready(function(){/* jQuery toggle layout */
     }
   });
 
+  $("#back-top").click(function(){
+    $('html body').animate({
+      scrollTop: 0,
+      }, 700
+    );
+  });
+
+  $('#nav-search').click(function(){
+    $('html body').animate({
+      scrollTop: 0,
+      }, 700
+    );
+    $("#navp-search").click();
+    $("#srch-term").focus();
+  });
+
   //$( document ).ajaxSuccess(function( event, xhr, settings ) {
   //  console.log(event);
   //  console.log(xhr);

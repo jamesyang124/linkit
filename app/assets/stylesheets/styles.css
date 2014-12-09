@@ -8,7 +8,12 @@ in your HTML file.
 license: MIT
 author: bootply.com
 */
+/*
 @import url(//fonts.googleapis.com/css?family=Roboto:400);
+*/
+
+@import url(//fonts.googleapis.com/css?family=PT+Sans);
+
 body {
   background-color:#e0e0e0;
   -webkit-font-smoothing: antialiased;
@@ -90,16 +95,19 @@ h3,h4,h5 {
 
 #main {
  padding-top:72px;
- font-family: 'Bree Serif', serif;
+ font-family: 'PT Sans', sans-serif;
+ /*font-family: 'Bree Serif', serif;*/
 }
 
 #navbar-collapse1{
-  font-family: 'Bree Serif', serif;
+  /* font-family: 'Bree Serif', serif; */
+  font-family: 'PT Sans', sans-serif;
   font-size: 16px;
 }
 
 .navbar-brand{
-  font-family: 'Bree Serif', serif;
+  /* font-family: 'Bree Serif', serif; */
+  font-family: 'PT Sans', sans-serif;
   font-size: 30px;
 }
 
@@ -118,7 +126,8 @@ h3,h4,h5 {
 body {
   /* background: url("/stardust.png"); */
   background-color: #8ad8ed;
-  font-family: 'Bree Serif', serif; 
+  font-family: 'PT Sans', sans-serif;
+  /* font-family: 'Bree Serif', serif; */
 }
 
 .isotype-item {
@@ -189,6 +198,8 @@ body {
 /* break long words to fit the proper size*/
 p {
   word-wrap: break-word;
+  letter-spacing: 1px;
+  line-height: 170%;
 }
 
 .isotype-item .panel-body {
@@ -231,7 +242,7 @@ p {
 }
 
 .input-group {
-  margin-top: 2%;
+  margin-top: 0.3%;
 }
 
 #nav-bar {
@@ -241,6 +252,45 @@ p {
 .alert {
   text-align: center;
   font-size: 20px;
+  margin-left: 10.4%;
+}
+
+.alert-dismissable .close{
+  top: 2px;
+}
+
+.col-md-alert {
+  width: 79%;
+  clear: both;
+}
+
+.search-tab {
+  margin-right: 1%
+}
+
+.nav-pills:before {
+  display: none;
+}
+
+.nav-pills:after {
+  display: none;
+}
+
+.col-md-alert-head {
+  width: 78%;
+  clear: both;
+  margin-bottom: 1%;
+  margin-top: 1%;
+}
+
+.nav.nav-pills>li>a {
+  padding: 12px 15px;
+}
+
+.nav-pills>li.active>a, 
+.nav-pills>li.active>a:hover, 
+.nav-pills>li.active>a:focus {
+  background-color: #4285f4;
 }
 
 /*

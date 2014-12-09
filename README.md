@@ -15,6 +15,8 @@ Share links and posts.
 
 ### To-do List
 
+- Fragment Cache imgages.
+- Add search icon on nav bar.
 - prepare to deploy.
 - Email links should direct to **production** url.
 
@@ -59,6 +61,7 @@ end
 
 - Redesign input layout. add tabs for search or share link.
 - Integrate Search input with Share input. Use tab pills to switch pane.
+- Add facvicon.
 
 12/07/2014
 

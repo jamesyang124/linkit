@@ -1,14 +1,13 @@
 - flash.each do |key, msg| 
-  .col-md-10.col-md-offset-1
-    - if key == :notice
-      .alert.alert-info.alert-dismissable
-        button.close [aria-hidden="true" data-dismiss="alert" type= "button"] ×
-        = msg.html_safe
-    - elsif key == :alert
-      .alert.alert-warning.alert-dismissable
-        button.close [aria-hidden="true" data-dismiss="alert" type= "button"] ×
-        = msg.html_safe
-    - elsif key == :error
-      .alert.alert-danger.alert-dismissable
-        button.close [aria-hidden="true" data-dismiss="alert" type= "button"] ×
-        = msg.html_safe
+  - if key == :notice
+    .col-md-alert-head.alert.alert-info.alert-dismissable
+      button.close [aria-hidden="true" data-dismiss="alert" type= "button"] ×
+      = msg.html_safe
+  - elsif key == :alert
+    .col-md-alert-head.alert.alert-warning.alert-dismissable
+      button.close [aria-hidden="true" data-dismiss="alert" type= "button"] ×
+      = msg.html_safe
+  - elsif key == :error
+    .col-md-alert-head.alert.alert-danger.alert-dismissable
+      button.close [aria-hidden="true" data-dismiss="alert" type= "button"] ×
+      = msg.html_safe
