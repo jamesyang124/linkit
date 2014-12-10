@@ -1,0 +1,214 @@
+/*
+
+  function itemHtml(parseData){  
+      var item = document.createElement('div');
+      item.className = "isotype-item panel panel-default iso-filter infinite-items"
+      
+      // panel thumbnail
+
+      var panel_thumbnail = document.createElement('div');
+      panel_thumbnail.className = "panel-thumbnail";
+
+      var post_link = post_link_tag(parseData.post_id);
+
+      var post_image = document.createElement("img");
+      $(post_image).attr({
+        class: "img-responsive",
+        src: parseData.thumbnail_url
+      });
+
+      post_link.appendChild(post_image);
+      panel_thumbnail.appendChild(post_link);
+
+      // panel body
+
+      var panel_body = document.createElement('div');
+      panel_body.className = "panel-body";
+
+      var post_lead = post_link_tag(parseData.post_id);
+      var post_title = document.createElement("p");
+      $(post_title).attr({
+        class: "lead",
+        id: "iso-filtering"
+      });
+      $(post_title).text(parseData.title);
+
+      // post body
+
+      var post_body = document.createElement('p');
+      post_body.className = "post-body";
+      $(post_body).text(parseData.body);
+
+      post_lead.appendChild(post_title);
+      panel_body.appendChild(post_lead);
+      panel_body.appendChild(post_body);
+
+      // commments container
+
+      var comments = document.createElement('div');
+      comments.className = "comments";
+
+      // comments count and visited times
+
+      var comment_count = document.createElement('p');
+      comment_count.className = "pull-left";
+
+      var b = document.createElement('b');
+      $(b).attr({
+        id: "comment-" + parseData.post_id
+      });
+      $(b).text(parseData.comments_count);
+
+      comment_count.appendChild(b);
+      // test ternary in later
+      comment_count.appendChild(document.createTextNode( parseData.comments_count > 1 ? ' comments' : ' comment'));
+      
+      // visited times
+
+      var click_count = document.createElement('p');
+      click_count.className = "pull-right";
+
+      var b = document.createElement('b');
+      $(b).text(parseData.click_count);
+
+      click_count.appendChild(document.createTextNode(" visited "));
+      click_count.appendChild(b);
+      // test ternary in later
+      click_count.appendChild(document.createTextNode( parseData.click_count > 1 ? ' times' : ' time'));
+
+
+      comments.appendChild(comment_count);
+      comments.appendChild(click_count);
+
+      // chat box
+
+      var chat = document.createElement('div');
+      chat.className = "chat";
+
+      //var chatbox = document.createElement('div');
+      //chatbox.className = "chatbox";
+
+      chat.appendChild(chat_box_poster(parseData));
+
+      for (var j in parseData.comments){
+        var c_box = comment_box(parseData.comments[j]);
+        chat.appendChild(c_box);
+      }
+
+    
+      // chatbox form
+      var clone = $('.chatbox-form').clone()[0];
+      
+      $(clone).attr({
+        id: "comment-form-" + parseData.post_id
+      });
+
+      $(clone).find('form').attr({
+        action: "/posts/" + parseData.post_id + "/comments"
+      });
+
+      chat.appendChild(clone);
+
+      //console.log(panel_thumbnail);
+
+      item.appendChild(panel_thumbnail);
+      item.appendChild(panel_body);
+      item.appendChild(comments);
+      item.appendChild(chat);
+
+      //console.log(item);
+      return item;
+  }
+
+  function post_link_tag(id){
+    var post_link = document.createElement('a');
+    $(post_link).attr({
+      "data-no-turbo-link": true,
+      href: "/redirect/" + id
+    });
+    return post_link;
+  }
+
+  function chat_box_poster(data){
+    var chatbox = document.createElement('div');
+    chatbox.className = "chatbox";
+
+    var img = document.createElement('img');
+    img.className = 'img-circle';
+    $(img).attr({
+      src: data.poster_image !== null ? data.poster_image : "/assets/pink-30x30.png"
+    });
+
+    chatbox.appendChild(img);
+
+    // bold poster name
+
+    var b = document.createElement('b');
+    $(b).text(data.poster);
+    $(b).attr({
+      id: "cname"
+    });
+    chatbox.appendChild(b);
+    chatbox.appendChild(document.createElement("br"));
+    chatbox.appendChild(document.createTextNode(" via "));
+
+    b = document.createElement('b');
+    $(b).text(data.provider_name);
+    chatbox.appendChild(b);
+    chatbox.appendChild(document.createTextNode(" on "));
+
+    
+    b = document.createElement('b');
+    $(b).text(data.created_at);
+    chatbox.appendChild(b);
+
+    return chatbox;
+  };
+
+  function comment_box(data){
+    var chatbox = document.createElement('div');
+    chatbox.className = "chatbox";
+
+    var img = document.createElement('img');
+    img.className = 'img-circle';
+    $(img).attr({
+      src: data.commenter_image !== null ? data.commenter_image : "/assets/pink-30x30.png"
+    });
+
+    chatbox.appendChild(img);
+
+    // bold poster name
+
+    var b = document.createElement('b');
+    $(b).text(data.commenter);
+    $(b).attr({
+      id: "cname"
+    });
+    chatbox.appendChild(b);
+
+    // comment body
+
+    var comment_body = document.createElement('p');
+    comment_body.appendChild(document.createTextNode(data.comment));
+  
+    chatbox.appendChild(comment_body);
+
+    return chatbox;
+  };
+
+  */
+  /*
+
+
+            $('#load').fadeOut("fast");
+            //$(document).scroll("#bottom-msg");
+
+            $("<div class='row col-md-alert alert alert-warning bottom-alert' id='bottom-msg' role='alert'> No more posts, click to <a href='#main' class='alert-link' id='bottom-alert'> back to top</a></div>").insertAfter("#iso-layout");
+        
+            $("#bottom-alert").click(function(){
+                $('html body').animate({
+                  scrollTop: 0,
+                  }, 1500
+                );
+            });
+  */

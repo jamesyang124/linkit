@@ -45,7 +45,7 @@ javascript:
     //var $newElems = $(newElements);
     //$newElems.css({ opacity: 0 });
 
-    console.log(newElements);
+    //console.log(newElements);
 
     //var page = opts.state.currPage;
     var items = [];
@@ -56,13 +56,13 @@ javascript:
       items[items.length] = item;
     }
 
-    //$(items).css({ opacity: 0 });
+    $(items).css({ opacity: 0 });
     $container.append($(items));
     
     $container.imagesLoaded(function() {
-      //$(items).animate({ opacity: 1 }, "slow");
-      //$container.isotope('layout');
+      $(items).animate({ opacity: 1 }, "slow");
       $container.isotope("appended", $(items));
+      $container.isotope('layout');
     });
     
     //$('#url').focus();
@@ -70,7 +70,7 @@ javascript:
    
     $('.comment_area').blur();
     $('.comment-submit').hide();
-    //$container.isotope('layout');
+    $container.isotope('layout');
     
     $('.comment_area').focus(function(){
       $('.comment-submit').filter(":visible").hide();
@@ -254,7 +254,7 @@ javascript:
     chatbox.appendChild(b);
 
     return chatbox;
-  };
+  }
 
   function comment_box(data){
     var chatbox = document.createElement('div');
@@ -285,4 +285,21 @@ javascript:
     chatbox.appendChild(comment_body);
 
     return chatbox;
-  };
+  }
+
+
+  /*
+
+
+            $('#load').fadeOut("fast");
+            //$(document).scroll("#bottom-msg");
+
+            $("<div class='row col-md-alert alert alert-warning bottom-alert' id='bottom-msg' role='alert'> No more posts, click to <a href='#main' class='alert-link' id='bottom-alert'> back to top</a></div>").insertAfter("#iso-layout");
+        
+            $("#bottom-alert").click(function(){
+                $('html body').animate({
+                  scrollTop: 0,
+                  }, 1500
+                );
+            });
+  */

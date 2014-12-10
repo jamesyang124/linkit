@@ -5,7 +5,7 @@ class PostsController < ApplicationController
   def index
     # eager loading
     #count = Post.count
-    @posts = Post.includes([:comments, :user]).order('created_at DESC').page(params[:page]).per(6)
+    @posts = Post.includes([:comments, :user]).order('created_at DESC').page(params[:page]).per(8)
 
     #respond_to do |format|
     #  format.html { render :index }
