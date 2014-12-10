@@ -5,12 +5,17 @@ class PostsController < ApplicationController
   def index
     # eager loading
     #count = Post.count
-    @posts = Post.includes([:comments, :user]).order('created_at DESC').page(params[:page]).per(8)
+    @posts = Post.includes([:comments, :user]).order('created_at DESC').page(params[:page]).per(6)
 
-    if request_empty_page
-      flash[:notice] = "No more posts, redirect back to first page."
-      redirect_to root_path
-    end
+    #respond_to do |format|
+    #  format.html { render :index }
+    #  format.json { render :json => @posts}
+    #end
+
+    #if request_empty_page
+    #  flash[:notice] = "No more posts, redirect back to first page."
+    #  redirect_to root_path
+    #end
   end
 
   def create

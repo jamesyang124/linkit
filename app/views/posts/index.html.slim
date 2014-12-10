@@ -5,10 +5,9 @@ span#load
   .row
     = render 'shared/message'
     /! playground
-    = paginate @posts 
+    = paginate @posts, remote: true, html: { :"data-type" => :json }
   .row
     .well.col-md-10.col-md-offset-1#input-row
-
       div role="tabpanel"
         ul class="nav nav-pills" role="tablist"
           li role="presentation" class="active search-tab" 
@@ -32,7 +31,6 @@ span#load
                 span.input-group-btn
                   a.btn.btn-lg.btn-primary#reset-layout href="/?page=1" 
                     i.fa.fa-refresh.fa-spin 
-
   .row.isotype.col-md-offset-1.col-md-10#iso-layout
     /* skip first record, offset: 1 */
     - @posts.each do |post|

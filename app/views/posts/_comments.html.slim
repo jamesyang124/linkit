@@ -27,7 +27,7 @@
       b#cname = c.user.name
       p = c.comment
   - if current_user
-    .chatbox id="comment-form-#{post.id}"
+    .chatbox.chatbox-form id="comment-form-#{post.id}"
       - if current_user.image
         = image_tag(current_user.image, :alt => "", class: "img-circle")
       - else

@@ -18,14 +18,13 @@ $(document).ready(function(){/* jQuery toggle layout */
     );
   });
 
-  $('#nav-search').click(function(){
-    $('html body').animate({
-      scrollTop: 0,
-      }, 700
-    );
-    $("#navp-search").click();
-    $("#srch-term").focus();
-  });
+  //$("#navp-search").click(function(){
+    //$("#srch-term").focus();
+  //});
+
+  //$('#navp-share').click(function(){
+  //  $('#url').focus();
+  //});
 
   //$( document ).ajaxSuccess(function( event, xhr, settings ) {
   //  console.log(event);

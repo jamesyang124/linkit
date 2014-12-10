@@ -196,7 +196,7 @@ body {
 }
 
 /* break long words to fit the proper size*/
-p {
+.post-body {
   word-wrap: break-word;
   letter-spacing: 1px;
   line-height: 170%;

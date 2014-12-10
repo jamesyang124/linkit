@@ -5,5 +5,5 @@
   .panel-body
     = link_to post_redirection_path(post), :"data-no-turbolink" => true
       p.lead#iso-filtering = post.title
-    p = post.body
+    p.post-body = post.body
   = render 'comments', post: post

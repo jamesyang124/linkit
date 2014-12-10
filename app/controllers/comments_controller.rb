@@ -21,7 +21,7 @@ class CommentsController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to root_path }
-      format.js { render file: "/posts/ajax_comment.js.erb" }
+      format.js { render file: "/posts/ajax_comment.js.erb", layout: false }
     end
   end
 

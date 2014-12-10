@@ -15,8 +15,12 @@ Share links and posts.
 
 ### To-do List
 
+- fix 100% or 110% zoom size of input field.
+- Change infinite scroll to get json data, then render the data in client side.
+- change `_showdone_message` when ajax call to the end.
+- Capybara and integration test should on.
 - Fragment Cache imgages.
-- Add search icon on nav bar.
+- make input tabs as three list items. via js to switch them.
 - prepare to deploy.
 - Email links should direct to **production** url.
 
