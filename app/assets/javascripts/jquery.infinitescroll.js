@@ -481,9 +481,10 @@
 
         // Show done message
         _showdonemsg: function infscr_showdonemsg() {
-            /*
+            
             var opts = this.options;
 
+            /*
             // if behavior is defined and this function is extended, call that instead of default
             if (!!opts.behavior && this['_showdonemsg_'+opts.behavior] !== undefined) {
                 this['_showdonemsg_'+opts.behavior].call(this);
@@ -498,21 +499,11 @@
                 $(this).parent().fadeOut(opts.loading.speed);
             });
 
-            // user provided callback when done
-            opts.errorCallback.call($(opts.contentSelector)[0],'done');
             */
 
-            $('#load').fadeOut("fast");
-            //$(document).scroll("#bottom-msg");
-
-            $("<div class='row col-md-alert alert alert-warning bottom-alert' id='bottom-msg' role='alert'> No more posts, click to <a href='#main' class='alert-link' id='bottom-alert'> back to top</a></div>").insertAfter("#iso-layout");
-        
-            $("#bottom-alert").click(function(){
-                $('html body').animate({
-                  scrollTop: 0,
-                  }, 1500
-                );
-            });
+            // user provided callback when done
+            opts.errorCallback.call($(opts.contentSelector)[0],'done');
+            
         },
 
         // grab each selector option and see if any fail
@@ -562,6 +553,8 @@
 
             // increment the URL bit. e.g. /page/3/
             opts.state.currPage++;
+
+            var end_page = false;
 
             // Manually control maximum page
             if ( opts.maxPage !== undefined && opts.state.currPage > opts.maxPage ){
@@ -615,6 +608,12 @@
                         url: desturl,
                         success: function (data, textStatus, jqXHR) {
                             condition = (typeof (jqXHR.isResolved) !== 'undefined') ? (jqXHR.isResolved()) : (textStatus === 'success' || textStatus === 'notmodified');
+                            
+                            var end_page = false;
+                            if (data.length === 0){
+                                end_page = true;
+                            }
+                            
                             if (opts.appendCallback) {
                                 // if appendCallback is true, you must defined template in options.
                                 // note that data passed into _loadcallback is already an html (after processed in opts.template(data)).
@@ -632,10 +631,14 @@
                                 }
                             } else {
                                 // if appendCallback is false, we will pass in the JSON object. you should handle it yourself in your callback.
-                                if (condition) {
+                                if (condition && !end_page) {
                                     instance._loadcallback(box, data, desturl);
                                 } else {
-                                    instance._error('end');
+                                    if (end_page === true){
+                                        instance._showdonemsg();    
+                                    }else{
+                                        instance._error('end');  
+                                    }
                                 }
                             }
                         },
@@ -647,7 +650,6 @@
 
                     break;
             }
-            return instance._error;
         },
 
         // Retrieve next set of content items

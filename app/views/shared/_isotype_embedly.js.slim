@@ -23,8 +23,6 @@ javascript:
     $container.isotope('layout')
   });
 
-  // https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Mutation_events
-
   // when link thumbnail content pop up, layout render again.
   $(".selector-wrapper").bind("DOMSubtreeModified", function(){
     // render layout again.
@@ -34,25 +32,3 @@ javascript:
   $(".iso-shuffle").bind("click", function(){
     $container.isotope('shuffle');
   });
-
-  //$container.isotope('bindResize');
-
-//  var target = document.querySelector('.selector-wrapper');
-
-  // create an observer instance
-//  var observer = new MutationObserver(function(mutations) {
-//    mutations.forEach(function(mutation) {
-//      if(mutation.type == "childList"){
-//        $container.isotope('layout');
-//      }
-//    });    
-//  });
- 
-  // configuration of the observer:
-  //var config = { attributes: true, childList: true, characterData: true };
-   
-  // pass in the target node, as well as the observer options
-  //observer.observe(target, config);
-   
-  // later, you can stop observing
-  //observer.disconnect();

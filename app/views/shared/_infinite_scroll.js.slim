@@ -40,7 +40,21 @@ javascript:
         $('#load').fadeOut("fast");
       }
     },
-    appendCallback: false
+    appendCallback: false,
+    errorCallback: function(errorType) {
+      if (errorType == "done") { 
+        $('#load').fadeOut("fast");
+
+        $("<div class='row col-md-alert alert alert-warning bottom-alert' id='bottom-msg' role='alert'> No more posts, click to <a href='#main' class='alert-link' id='bottom-alert'> back to top</a></div>").insertAfter("#iso-layout");
+        
+        $("#bottom-alert").click(function(){
+            $('html body').animate({
+              scrollTop: 0,
+              }, 1500
+            );
+        });
+      }
+    }
   }, function(newElements, opts){
     //var $newElems = $(newElements);
     //$newElems.css({ opacity: 0 });
@@ -60,7 +74,7 @@ javascript:
     $container.append($(items));
     
     $container.imagesLoaded(function() {
-      $(items).animate({ opacity: 1 }, "slow");
+      //$(items).animate({ opacity: 1 }, "slow");
       $container.isotope("appended", $(items));
       $container.isotope('layout');
     });
@@ -70,7 +84,7 @@ javascript:
    
     $('.comment_area').blur();
     $('.comment-submit').hide();
-    $container.isotope('layout');
+    //$container.isotope('layout');
     
     $('.comment_area').focus(function(){
       $('.comment-submit').filter(":visible").hide();
@@ -94,7 +108,7 @@ javascript:
   function itemHtml(parseData){  
       var item = document.createElement('div');
       item.className = "isotype-item panel panel-default iso-filter infinite-items"
-      
+
       // panel thumbnail
 
       var panel_thumbnail = document.createElement('div');
@@ -176,9 +190,6 @@ javascript:
       var chat = document.createElement('div');
       chat.className = "chat";
 
-      //var chatbox = document.createElement('div');
-      //chatbox.className = "chatbox";
-
       chat.appendChild(chat_box_poster(parseData));
 
       for (var j in parseData.comments){
@@ -188,26 +199,27 @@ javascript:
 
     
       // chatbox form
-      var clone = $('.chatbox-form').clone()[0];
+      var clone = $('.chatbox-form').clone();
       
-      $(clone).attr({
-        id: "comment-form-" + parseData.post_id
-      });
+      if (clone.length > 1){
+        clone = clone[0];
 
-      $(clone).find('form').attr({
-        action: "/posts/" + parseData.post_id + "/comments"
-      });
-
-      chat.appendChild(clone);
-
-      //console.log(panel_thumbnail);
+        $(clone).attr({
+          id: "comment-form-" + parseData.post_id
+        });
+  
+        $(clone).find('form').attr({
+          action: "/posts/" + parseData.post_id + "/comments"
+        });
+  
+        chat.appendChild(clone);
+      }
 
       item.appendChild(panel_thumbnail);
       item.appendChild(panel_body);
       item.appendChild(comments);
       item.appendChild(chat);
 
-      //console.log(item);
       return item;
   }
 
@@ -224,13 +236,13 @@ javascript:
     var chatbox = document.createElement('div');
     chatbox.className = "chatbox";
 
-    var img = document.createElement('img');
-    img.className = 'img-circle';
-    $(img).attr({
+    var image = document.createElement('img');
+    image.className = 'img-circle';
+    $(image).attr({
       src: data.poster_image !== null ? data.poster_image : "/assets/pink-30x30.png"
     });
 
-    chatbox.appendChild(img);
+    chatbox.appendChild(image);
 
     // bold poster name
 
@@ -286,20 +298,3 @@ javascript:
 
     return chatbox;
   }
-
-
-  /*
-
-
-            $('#load').fadeOut("fast");
-            //$(document).scroll("#bottom-msg");
-
-            $("<div class='row col-md-alert alert alert-warning bottom-alert' id='bottom-msg' role='alert'> No more posts, click to <a href='#main' class='alert-link' id='bottom-alert'> back to top</a></div>").insertAfter("#iso-layout");
-        
-            $("#bottom-alert").click(function(){
-                $('html body').animate({
-                  scrollTop: 0,
-                  }, 1500
-                );
-            });
-  */
