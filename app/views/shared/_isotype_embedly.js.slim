@@ -8,7 +8,8 @@ javascript:
     }
   });
 
-  $('#url').preview({key: "#{ENV["embedly_api_key"]}"})
+  $('#url').preview({key: "#{ENV["embedly_api_key"]}"});
+  $container.isotope('layout');
 
   $("#srch-term").bind("keyup", function() {
     $container.isotope({

@@ -15,9 +15,8 @@ Share links and posts.
 
 ### To-do List
 
+- start front end performance optimize, use image uploader to compress image size.
 - fix 100% or 110% zoom size of input field.
-- Change infinite scroll to get json data, then render the data in client side.
-- change `_showdone_message` when ajax call to the end.
 - Capybara and integration test should on.
 - Fragment Cache imgages.
 - make input tabs as three list items. via js to switch them.
@@ -60,6 +59,17 @@ end
 - Cookie store user data, Session store the identity for the user.
 
 ### Done Work & Notes
+
+12/10/2014
+
+- rewrite DOM generation approach, create element by string instead.
+
+12/09/2014
+
+- redesign loading effect, let it shine.
+- Change infinite scroll to get json data, then render the data in client side.
+- Infinite scroll now get json data and genreate DOM elements then insert it.
+- change `_showdone_message` when ajax call to the end.
 
 12/08/2014
 

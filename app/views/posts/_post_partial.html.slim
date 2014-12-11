@@ -1,7 +1,7 @@
 .isotype-item.panel.panel-default.iso-filter.infinite-items
   .panel-thumbnail
     = link_to post_redirection_path(post), :"data-no-turbolink" => true
-      img.img-responsive src="#{post.thumbnail_url}"/
+      img.img-responsive src="#{post.thumbnail_url}" style="width: '319px';"
   .panel-body
     = link_to post_redirection_path(post), :"data-no-turbolink" => true
       p.lead#iso-filtering = post.title

@@ -35,8 +35,8 @@ class Post < ActiveRecord::Base
   private
 
   def resize_image_size(width, thumbnail_url)
-    if width.nil? || width < 340
-      image_url = "http://i.embed.ly/1/display/fill?color=fff&height=340&width=340&url=".concat ERB::Util.url_encode(thumbnail_url)
+    if width.nil? || width != 319
+      image_url = "//i.embed.ly/1/image/resize?grow=true&width=319&height=319&url=".concat ERB::Util.url_encode(thumbnail_url)
       image_url.concat "&key=#{ENV['embedly_api_key']}"
     else
       thumbnail_url

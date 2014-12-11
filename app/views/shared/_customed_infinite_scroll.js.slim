@@ -1,0 +1,88 @@
+javascript:
+
+  var $container = $('.isotype').isotope({
+    // main isotope options
+    itemSelector: '.isotype-item'
+  });
+
+  $('nav.pagination').hide();
+
+  $('.comment-submit').hide();
+  $('.comment_area').focus(function(){
+    $('.comment-submit').filter(":visible").hide();
+    $(this).next().show();
+    $container.isotope('layout');
+  });
+
+  $('#url, #srch-term').focus(function(){
+    $('.comment-submit').hide();
+    $container.isotope('layout');
+  });
+
+  function interval() {
+    $( "#load" ).fadeIn(800).fadeOut(800);
+  };
+
+  var res;
+
+  $(".isotype").infinitescroll({
+    navSelector: "nav.pagination",
+    nextSelector: "nav.pagination a[rel=next]",
+    itemSelector: ".infinite-items",
+    prefill: true,
+    dataType: "json",
+    loading: {
+      start: function(options) {
+        res = setInterval(interval(), 4);
+        $(this).data('infinitescroll').beginAjax(options);
+      },
+      finished: function() {
+        clearInterval(res);
+      }
+    },
+    appendCallback: false,
+    errorCallback: function(errorType) {
+      if (errorType == "done") { 
+        clearInterval(res);
+
+        $("<div class='row col-md-alert alert alert-warning bottom-alert' id='bottom-msg' role='alert'> No more posts, click to <a href='#main' class='alert-link' id='bottom-alert'> back to top</a></div>").insertAfter("#iso-layout");
+        
+        $("#bottom-alert").click(function(){
+            $('html body').animate({
+              scrollTop: 0,
+              }, 1500
+            );
+        });
+      }
+    }
+  }, function(newElements, opts){
+    //console.log(newElements);
+
+    var items = "";
+
+    for (var i = 0; i < newElements.length; i++) {
+      var newItem = genElement(newElements[i]);
+      items += newItem;
+    }
+
+    $container.append($(items));
+    $('.new-item').css({ opacity: 0 });
+
+    $container.imagesLoaded(function() {
+      //$('.new-item').animate({ opacity: 1 }, "slow");
+      //$container.isotope('layout');
+
+      $container.isotope("appended", $('.new-item'));
+      $('.new-item').removeClass('new-item');
+    });
+
+    $('.comment_area').blur();
+    $('.comment-submit').hide();
+    $container.isotope('layout');
+    
+    $('.comment_area').focus(function(){
+      $('.comment-submit').filter(":visible").hide();
+      $(this).next().show();
+      $container.isotope('layout');
+    });
+  });

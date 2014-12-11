@@ -14,4 +14,5 @@ json.array!(@posts) do |post|
     json.commenter c.user.name
     json.commenter_image c.user.image
   end
+  json.user_image current_user.image
 end

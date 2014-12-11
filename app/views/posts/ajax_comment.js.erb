@@ -11,14 +11,13 @@ $("#comment-form-<%= @post.id %> textarea").val("");
 // animation for comment insertion
 $("#comment-form-<%= @post.id %>").prev().css({ opacity: 0 });
 
-$("#comment-form-<%= @post.id %>").prev().animate({ opacity: 1 }, "slow");
-
 var $container = $('.isotype').isotope({
     // main isotope options
     itemSelector: '.isotype-item'
 });
 
 $container.imagesLoaded(function() {
+  $("#comment-form-<%= @post.id %>").prev().animate({ opacity: 1 }, "slow");
   $container.isotope('layout');
 });
 

@@ -7,4 +7,4 @@ unset MAGLEV_HOME
 unset RBXOPT
 export RUBY_VERSION='ruby-2.1.0'
 export ENABLE_HTTPS="yes"
-export POW_TIMEOUT=3600
+export RAILS_ENV=development

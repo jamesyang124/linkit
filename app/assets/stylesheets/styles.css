@@ -137,9 +137,9 @@ body {
 }
 
 .comments {
+  background-color: rgba(255, 255, 80, 0.27);
   color: #4285f4;
-  padding-bottom: 8%;
-  margin-bottom: 3%;
+  padding-bottom: 10%;
 
   padding-right: 5%;
   padding-left: 5%;
@@ -153,16 +153,15 @@ body {
 }
 
 .chatbox {
-    border-top: 1px solid white;
-    border-bottom: 1px solid rgba(#000,.1);
+    border-bottom: 1px solid #8ad8ed;
     padding: 15px 15px 5px 15px;
     padding-left: 65px;
-
     /*@include pie-clearfix;*/
 }
 
 .chatbox:first-child {
   color: #b29c9c;
+  border-top: 1px solid #8ad8ed;
   padding-bottom: 15px;
 }
 
@@ -202,9 +201,9 @@ body {
   line-height: 170%;
 }
 
-.isotype-item .panel-body {
-  padding-bottom: 5px;
-  margin-bottom: -5px;
+.isotype-item > .panel-body {
+  border-top: 1px solid #8ad8ed;
+  background-color: rgba(255, 255, 80, 0.27);
 }
 
 .isotype-item .lead {
