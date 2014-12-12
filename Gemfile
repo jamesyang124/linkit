@@ -21,6 +21,8 @@ gem 'devise'
 gem 'acts_as_commentable'
 gem 'rest-client', require: false
 
+gem 'mini_magick'
+gem 'sidekiq'
 
 
 group :doc do

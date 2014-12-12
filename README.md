@@ -16,6 +16,7 @@ Share links and posts.
 ### To-do List
 
 - start front end performance optimize, use image uploader to compress image size.
+- Consider using ruby-box + miniMagick instead of carrierwave.
 - fix 100% or 110% zoom size of input field.
 - Capybara and integration test should on.
 - Fragment Cache imgages.
@@ -59,6 +60,11 @@ end
 - Cookie store user data, Session store the identity for the user.
 
 ### Done Work & Notes
+
+12/11/2014
+
+- resize thumbnail by MiniMagick. should execute by sidekiq.
+- add link to index ?
 
 12/10/2014
 

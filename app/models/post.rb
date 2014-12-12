@@ -10,14 +10,41 @@ class Post < ActiveRecord::Base
 
   def save_link(link_url)
     post = self
-    
+
     embedly_api = Embedly::API.new key: ENV["embedly_api_key"]
     obj = embedly_api.oembed :url => link_url
     response = obj.first.marshal_dump
 
     # call Embedly image resize api to get resized image.
     if response[:thumbnail_url]
-      post.thumbnail_url = resize_image_size(response[:thumbnail_width], response[:thumbnail_url])
+      
+      # file uplaoding, put to lib in later
+    
+      image = MiniMagick::Image.open(response[:thumbnail_url])
+      
+#      require 'pry'; binding.pry
+
+      image.combine_options do |i|
+        # if lareger resize to width 319
+        i.resize "319x>"
+        # if smaller resize to width 319
+        i.resize "319x<"
+        i.quality 92
+      end
+
+      image_name = image.path.split("/").last
+
+
+      # uploading to box
+      @box_session = FileUploadService.authentication();
+
+
+
+
+
+      image.write("#{Rails.root}/public/images/#{image_name}")
+      #post.thumbnail_url = resize_image_size(response[:thumbnail_width], response[:thumbnail_url])
+      post.thumbnail_url = "/images/#{image_name}"
     end
 
     post.link = link_url

@@ -15,9 +15,15 @@ class PostsController < ApplicationController
   end
 
   def create
-    @post = Post.new(user_id: current_user.id)
-    @post.save_link link_params[:link]
-
+    #require 'pry'; binding.pry
+    
+    # add link to index?
+    if Post.find_by(link: link_params[:link])
+      flash[:notice] = "The post link has been shared."
+    else
+      @post = Post.new(user_id: current_user.id)
+      @post.save_link link_params[:link]
+    end
     redirect_to root_path
   end
 
