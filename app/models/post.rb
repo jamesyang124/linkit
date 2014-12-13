@@ -16,6 +16,9 @@ class Post < ActiveRecord::Base
     response = obj.first.marshal_dump
 
     # call Embedly image resize api to get resized image.
+
+    #require 'pry'; binding.pry
+
     if response[:thumbnail_url]
       
       # file uplaoding, put to lib in later
@@ -23,7 +26,6 @@ class Post < ActiveRecord::Base
       image = MiniMagick::Image.open(response[:thumbnail_url])
       
 #      require 'pry'; binding.pry
-
       image.combine_options do |i|
         # if lareger resize to width 319
         i.resize "319x>"

@@ -15,14 +15,10 @@ Share links and posts.
 
 ### To-do List
 
-- rename image name in AWS.
+- Rename image name in AWS.
+- put image uploading to background jobs.
 - batch image loading.
-- start front end performance optimize, use image uploader to compress image size.
-- Consider using ruby-box + miniMagick instead of carrierwave.
-- fix 100% or 110% zoom size of input field.
 - Capybara and integration test should on.
-- Fragment Cache imgages.
-- make input tabs as three list items. via js to switch them.
 - prepare to deploy.
 - Email links should direct to **production** url.
 
@@ -73,10 +69,11 @@ end
 
 12/12/2014
 
+- Use `delegate` from parent node to register events and handlers for all target children now and future.
 - to Avoid back top jump around then scroll top, return false for onClick function.
 - allowed empty body post.
 - failed validation with wrong returned sql message.
-- Image file now storing in Amazon S3.
+- Image file now storing in Amazon S3, compressed by ImageMagick.
   * [http://docs.aws.amazon.com/AWSRubySDK/latest/AWS/S3/S3Object.html](http://docs.aws.amazon.com/AWSRubySDK/latest/AWS/S3/S3Object.html)
 
 12/11/2014
