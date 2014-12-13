@@ -15,8 +15,6 @@ class PostsController < ApplicationController
   end
 
   def create
-    #require 'pry'; binding.pry
-    
     # add link to index?
     if Post.find_by(link: link_params[:link])
       flash[:notice] = "The post link has been shared."

@@ -45,7 +45,7 @@ javascript:
       if (errorType == "done") { 
         clearInterval(res);
 
-        $("<div class='row col-md-alert alert alert-warning bottom-alert' id='bottom-msg' role='alert'> No more posts, click to <span class='alert-link' id='bottom-alert' style='cursor: pointer;'> back to top</a></div>").insertAfter("#iso-layout");
+        $("<div class='row col-md-alert alert alert-warning bottom-alert' id='bottom-msg' role='alert'> No more posts, click to <a class='alert-link' id='bottom-alert' href='#' onClick='return false;'> back to top</a></div>").insertAfter("#iso-layout");
         
         $("#bottom-alert").click(function(){
             $('html body').animate({

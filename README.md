@@ -15,6 +15,8 @@ Share links and posts.
 
 ### To-do List
 
+- rename image name in AWS.
+- batch image loading.
 - start front end performance optimize, use image uploader to compress image size.
 - Consider using ruby-box + miniMagick instead of carrierwave.
 - fix 100% or 110% zoom size of input field.
@@ -23,6 +25,14 @@ Share links and posts.
 - make input tabs as three list items. via js to switch them.
 - prepare to deploy.
 - Email links should direct to **production** url.
+
+### AWS example
+
+- [http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html](http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html)
+- [http://www.rubydoc.info/github/aws/aws-sdk-ruby/AWS/S3/S3Object:url_for](http://www.rubydoc.info/github/aws/aws-sdk-ruby/AWS/S3/S3Object:url_for)
+- object is a k-v pair, key represent the path to that object.
+  - ex: sub folder of bucket root, `/images` will be set as `key: images/`.
+  - `client.put_object(bucket_name: "#{bucket_name}", key: "images/#{name}", acl: "public-read", data: file)`, file is a File object which support `#read` method.
 
 ### AJAX call
 
@@ -60,6 +70,14 @@ end
 - Cookie store user data, Session store the identity for the user.
 
 ### Done Work & Notes
+
+12/12/2014
+
+- to Avoid back top jump around then scroll top, return false for onClick function.
+- allowed empty body post.
+- failed validation with wrong returned sql message.
+- Image file now storing in Amazon S3.
+  * [http://docs.aws.amazon.com/AWSRubySDK/latest/AWS/S3/S3Object.html](http://docs.aws.amazon.com/AWSRubySDK/latest/AWS/S3/S3Object.html)
 
 12/11/2014
 

@@ -32,6 +32,7 @@ $(document).ready(function(){/* jQuery toggle layout */
       scrollTop: 0,
       }, 700
     );
+    return false;
   });
 
   $('#nav-search').click(function(){

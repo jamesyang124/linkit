@@ -23,6 +23,8 @@ gem 'rest-client', require: false
 
 gem 'mini_magick'
 gem 'sidekiq'
+# version 1 api
+gem 'aws-sdk', '~> 1.59.1'
 
 
 group :doc do
