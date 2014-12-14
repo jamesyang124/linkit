@@ -2,7 +2,6 @@ json.array!(@posts) do |post|
   json.post_id post.id
   json.title post.title
   json.body post.body
-  json.thumbnail_url post.thumbnail_url
   json.provider_name post.provider_name
   json.click_count post.click_count
   json.poster post.user.name
@@ -14,5 +13,10 @@ json.array!(@posts) do |post|
     json.commenter c.user.name
     json.commenter_image c.user.image
   end
-  json.user_image current_user.image
+  json.thumbnail_url post.thumbnail_url
+  
+  if current_user
+    json.user_image current_user.image
+    json.comment_available true
+  end
 end

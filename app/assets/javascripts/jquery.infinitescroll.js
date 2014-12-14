@@ -65,10 +65,10 @@
         pathParse: undefined,
         dataType: 'html',
         appendCallback: true,
-        bufferPx: 100,
+        bufferPx: 40,
         errorCallback: function () { },
         infid: 0, //Instance ID
-        pixelsFromNavToBottom: undefined,
+        pixelsFromNavToBottom: 2200,
         path: undefined, // Either parts of a URL as an array (e.g. ["/page/", "/"] or a function that takes in the page number and returns a URL
         prefill: false, // When the document is smaller than the window, load data until the document is larger or links are exhausted
         maxPage: undefined // to manually control maximum page (when maxPage is undefined, maximum page limitation is not work)
@@ -420,6 +420,9 @@
             this._debug('math:', pixelsFromWindowBottomToBottom, opts.pixelsFromNavToBottom);
 
             // if distance remaining in the scroll (including buffer) is less than the orignal nav to bottom....
+            //console.log(pixelsFromWindowBottomToBottom - opts.bufferPx);
+            //console.log(pixelsFromWindowBottomToBottom);
+            
             return (pixelsFromWindowBottomToBottom - opts.bufferPx < opts.pixelsFromNavToBottom);
 
         },

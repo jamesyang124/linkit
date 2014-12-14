@@ -5,19 +5,12 @@ class PostsController < ApplicationController
   def index
     # eager loading
     #count = Post.count
-    @posts = Post.includes([:comments, :user]).order('created_at DESC').page(params[:page]).per(8)
+    @posts = Post.includes([:comments, :user]).order('created_at DESC').page(params[:page]).per(9)
 
     # for query page number over the max page.
     if request_empty_page
       flash[:notice] = "No more posts, post it or back to first page."
       render :index
-    elsif request.env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"
-      @base64_image = []
-      @posts.each do |i|
-        s3 = AWS::S3.new(access_key_id: ENV['amazon_s3_key'], secret_access_key: ENV['amazon_s3_secret'])
-        
-#        s3.buckets['linkit-jy124'].objects[].
-      end
     end
   end
 

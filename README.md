@@ -67,6 +67,10 @@ end
 
 ### Done Work & Notes
 
+12/14/2014
+
+- fix error in scroll top js code, store image that file size less than 32767 bytes by data-uri foramt, o.w. upload to AWS.
+
 12/13/2014
 
 - add `link` and `guid` for rss, looking feasible approach to use data uri for image downloading.

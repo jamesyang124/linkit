@@ -17,31 +17,30 @@ class Post < ActiveRecord::Base
 
     # call Embedly image resize api to get resized image.
 
-    #require 'pry'; binding.pry
 
     if response[:thumbnail_url]
       
       # file uplaoding, put to lib in later
-    
-      image = MiniMagick::Image.open(response[:thumbnail_url])
-      
-#      require 'pry'; binding.pry
-      image.combine_options do |i|
-        # if lareger resize to width 319
-        i.resize "319x>"
-        # if smaller resize to width 319
-        i.resize "319x<"
-        i.quality 92
-      end
-
-      #image_name = image.path.split("/").last
-      # uploading to box
-      post.thumbnail_url = FileUploadService.upload_link(image.path, image);
-
       #require 'pry'; binding.pry
-      #image.write("#{Rails.root}/public/images/#{image_name}")
-      #post.thumbnail_url = resize_image_size(response[:thumbnail_width], response[:thumbnail_url])
-      # = "/images/#{image_name}"
+
+      begin
+
+        image = MiniMagick::Image.open(response[:thumbnail_url])
+        #      require 'pry'; binding.pry
+        image.combine_options do |i|
+          # if lareger resize to width 319
+          i.resize "354x>"
+          # if smaller resize to width 319
+          i.resize "354x<"
+          i.quality 92
+        end
+
+        post.thumbnail_url = FileUploadService.upload_link(image.path, image);
+
+        #require 'pry'; binding.pry
+      rescue StandardError => e
+        p e.message
+      end
     end
 
     post.link = link_url

@@ -27,10 +27,10 @@ javascript:
       if (errorType == "done") { 
         //clearInterval(res);
 
-        $("<div class='row col-md-alert alert alert-warning bottom-alert' id='bottom-msg' role='alert'> No more posts, click to <a class='alert-link' id='bottom-alert' href='#' onClick='return false;'> back to top</a></div>").insertAfter("#iso-layout");
+        $("<div class='row'><div class='col-md-alert-head alert alert-warning bottom-alert' id='bottom-msg' role='alert'> No more posts, click to <a class='alert-link' id='bottom-alert' onClick='return false;'> back to top</a></div></div>").insertAfter("#iso-layout");
         
         $("#bottom-alert").click(function(){
-            $('html body').animate({
+            $('html, body').animate({
               scrollTop: 0,
               }, 1500
             );
@@ -38,21 +38,14 @@ javascript:
       }
     }
   }, function(newElements, opts){
-    //console.log(newElements);
-    var res = setInterval(interval(), 4);
+    //var res = setInterval(interval(), 8);
 
     var items = "";
-    //var images = [];
 
     for (var i = 0; i < newElements.length; i++) {
       var newItem = genElement(newElements[i]);
-      //if (newElements[i].thumbnail_url !== null) {
-      //  images[images.length] = newElements[i].thumbnail_url;
-      //}
       items += newItem;
     }
-
-    //console.log(images);
 
     $container.append($(items));
     $('.new-item').css({ opacity: 0 });
@@ -66,7 +59,5 @@ javascript:
       $('.new-item').removeClass('new-item');
     });
 
-     // $('.comment_area').delegate('.comment_area', 'focus',comment_box_handler);
-
-    clearInterval(res);
+    //clearInterval(res);
   });
