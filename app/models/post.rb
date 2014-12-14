@@ -36,7 +36,7 @@ class Post < ActiveRecord::Base
 
       #image_name = image.path.split("/").last
       # uploading to box
-      post.thumbnail_url = FileUploadService.upload_link(image.path);
+      post.thumbnail_url = FileUploadService.upload_link(image.path, image);
 
       #require 'pry'; binding.pry
       #image.write("#{Rails.root}/public/images/#{image_name}")

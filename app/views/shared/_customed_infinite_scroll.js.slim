@@ -42,11 +42,17 @@ javascript:
     var res = setInterval(interval(), 4);
 
     var items = "";
+    //var images = [];
 
     for (var i = 0; i < newElements.length; i++) {
       var newItem = genElement(newElements[i]);
+      //if (newElements[i].thumbnail_url !== null) {
+      //  images[images.length] = newElements[i].thumbnail_url;
+      //}
       items += newItem;
     }
+
+    //console.log(images);
 
     $container.append($(items));
     $('.new-item').css({ opacity: 0 });

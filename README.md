@@ -67,6 +67,10 @@ end
 
 ### Done Work & Notes
 
+12/13/2014
+
+- add `link` and `guid` for rss, looking feasible approach to use data uri for image downloading.
+
 12/12/2014
 
 - Use `delegate` from parent node to register events and handlers for all target children now and future.

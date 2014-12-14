@@ -48,7 +48,7 @@ $(document).ready(function(){/* jQuery toggle layout */
   $('nav.pagination').hide();
   $('.comment-submit').hide();
 
-  $(".isotype").delegate('.comment_area', 'focus', function(){
+  $(".isotype").on('focus', 'textarea.comment_area', function(){
     $('.comment-submit').filter(":visible").hide();
     $(this).next().show();
     $('.isotype').isotope('layout');
@@ -58,4 +58,11 @@ $(document).ready(function(){/* jQuery toggle layout */
     $('.comment-submit').hide();
     $('.isotype').isotope('layout');
   });
+
+  $("img").one("load", function() {
+    console.log(this);
+  }).each(function() {
+    if(this.complete) $(this).load();
+  });
+
 });
