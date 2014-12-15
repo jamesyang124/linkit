@@ -20,6 +20,7 @@ module Linkit
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
     config.i18n.enforce_available_locales = false
+    config.middleware.insert_before ActionDispatch::Static, Rack::Deflater
     config.force_ssl = (ENV["ENABLE_HTTPS"] == "yes")
   end
 end

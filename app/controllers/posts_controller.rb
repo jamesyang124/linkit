@@ -6,7 +6,6 @@ class PostsController < ApplicationController
     # eager loading
     #count = Post.count
     @posts = Post.includes([:comments, :user]).order('created_at DESC').page(params[:page]).per(9)
-
     # for query page number over the max page.
     if request_empty_page
       flash[:notice] = "No more posts, post it or back to first page."

@@ -1,3 +1,5 @@
+- image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAMAAAC7IEhfAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABDlBMVEWgw/+fwv+ewv+hxP+jxv+nyf+cwP2TuPprlu1UguVIeeKlx/91n/BCc+A8bt4/cd91nvCmyP9umO45bN1DdOBFduFEdeCEq/VFdeBEdOCixf9TguWkx/+Os/hAcd99pfM9b96myf94ofF/p/Okxv+QtvlBct9Yhuc+cN6Ksfc9cN47bd1Bc99/p/RIeOE7bt2avvx2n/FciehQgOWewf6lyP+dwf6ixP+ewv6fw/+bvv2Lsfd6o/Jwmu9ok+xkkOpkj+pnk+tume6HrvaXvPydwf1+pvNei+l5ovJMe+NFdeFtmO6ewf1ciuhPfuSUufo6bN1GduFNfeOcv/2CqfQ7bd46bd10nfCnyP/////26PWZAAAAAWJLR0RZmrL0GAAAAW9JREFUOMvt09lWwjAUBdCkISDEpgaTWBBKKQWKdQJFxXkeKg44//+XWF3qarUpvut53uvc5iYF4D9hoAYQAhoc6zIYZbMIZ8ZIiHMT+UIhP5HD6ZJM6tTQdYPqUyStjxWnuZCcS8Gniwyq3Qw1S/w9JZPOqGV51pD8I9KYLasKK1Xry4XSqlagYnLNjkK7ppgN604cOnVVYyMOG6pGt9nikbSaruLY0G175iczvbbKAUg6Hv8YLvlch6Rs3PHnhQwj5n2Hpdw2ZAuLS55leUuLCyz1VUC23O2trPS6y2zMO1sFfRcAtw/WUvvgOsGEMEYI7pfhxiCZaahONre2d3b39g8OnaNjF5e1pLYBPjk9K1iU2mGob4h29xijH18KkXt+QW2dB8HbegIhdY+Ky+H3pQ/Wh1d+K5DRK5SB7l/ffJeZ3u0oxt4zsu/uUXx9D4+CJ2T09IyjJ9JwkQZJUNr7sc2Hvx81fwXxb+HL34Kv8IZDl7Q2360AAAAldEVYdGRhdGU6Y3JlYXRlADIwMTQtMTItMTRUMjI6MjA6MTEtMDg6MDDE8n5DAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE0LTEyLTE0VDIyOjIwOjExLTA4OjAwta/G/wAAAABJRU5ErkJggg=="
+
 .comments
   p.pull-left 
     b id="comment-#{post.id}" = post.comments_count
@@ -11,7 +13,7 @@
     - if post.user && post.user.image
       = image_tag(post.user.image, :alt => "", class: "img-circle")
     - else
-      = image_tag('u100.png', :width => "40px", :height => "40px", :alt => "", class: "img-circle")
+      .img.img-circle style="width: 40px; height: 40px;" src="#{image}"
     b#cname = post.user.name
     br/
     |  via  
@@ -23,7 +25,7 @@
       - if c.user && c.user.image
         = image_tag(c.user.image, :alt => "", class: "img-circle")
       - else
-        = image_tag('u100.png', :width => "40px", :height => "40px", :alt => "", class: "img-circle")
+        .img.img-circle style="width: 40px; height: 40px;" src="#{image}"
       b#cname = c.user.name
       p = c.comment
   - if current_user
@@ -31,7 +33,7 @@
       - if current_user.image
         = image_tag(current_user.image, :alt => "", class: "img-circle")
       - else
-        = image_tag('u100.png', :width => "40px", :height => "40px", :alt => "", class: "img-circle")
+        .img.img-circle style="width: 40px; height: 40px;" src="#{image}"
       = form_for [post, Comment.new], html: {id: "comment-box"}, remote: true do |f|
         = f.text_area :comment, placeholder: "Add a comment..", rows: "3", class: "textarea form-group form-control comment_area"
         = f.submit "Comment", class: "btn btn-sm btn-primary comment-submit"

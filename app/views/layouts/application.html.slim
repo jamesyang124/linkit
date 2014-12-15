@@ -10,22 +10,19 @@ html
     link rel="stylesheet" href="//cdn.embed.ly/jquery.preview-0.3.2.css"
     = javascript_include_tag "application", "data-turbolinks-track" => true
     = favicon_link_tag "favicon.ico"
-    script src="//cdn.embed.ly/jquery.embedly-3.0.5.min.js" type="text/javascript"
-    script src="//cdn.embed.ly/jquery.preview-0.3.2.min.js" type="text/javascript"
-    script src="js/isotope.pkgd.min.js" type="text/javascript" 
-    script src="js/imagesloaded.pkgd.min.js" type="text/javascript"
     / = auto_discovery_link_tag(:rss, posts_url)
     = csrf_meta_tags
   body
     header
       = render "shared/login_modal"
       = render "shared/register_modal"
-      = render "shared/modal"
       = render "shared/navbar"
     = yield
-    / = render "shared/footer"
     // Turbo links will only replace title in header and body.
-    = render "shared/isotype_embedly.js"
-    = render "shared/customed_infinite_scroll.js"
+    script src="//cdn.embed.ly/jquery.embedly-3.0.5.min.js"
+    script src="//cdn.embed.ly/jquery.preview-0.3.2.min.js" 
+javascript:
+    $('#url').preview({key: "#{ENV["embedly_api_key"]}"});
+
 
       

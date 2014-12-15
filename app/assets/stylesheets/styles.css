@@ -294,6 +294,7 @@ body {
   background-color: #4285f4;
 }
 
+
 /*
 #back-top {
   line-height: 20px;
@@ -302,52 +303,5 @@ body {
   padding: 15px 15px;
   color: #428bca;
   text-decoration: none;
-}
-*/
-
-/*
-
-body, html {
-  height: 100%;
-}
-
-.single-page {
-  height: 100%;
-  width: 100%;
-  margin: 0px;
-  padding: 0px;
-}
-
-.single-page .row {
-  margin: 0px;
-  padding: 0px;
-  height: 100%;
-  width: 100%;
-  text-align: center;
-}
-
-.single-page .sp1 {
-  background-color: #b08ced;
-  padding-bottom: 10%;
-  padding-top: 10%;
-}
-
-.single-page .sp2 {
-  background-color: #caed8c;
-}
-
-.single-page .sp3 {
-  background-color: #99ed8c;
-}
-
-#head {
-  height: 100%;
-}
-
-*/
-
-/* 
-#preview{
-  margin-bottom: 210px;
 }
 */

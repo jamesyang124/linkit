@@ -15,9 +15,7 @@ Share links and posts.
 
 ### To-do List
 
-- Rename image name in AWS.
-- put image uploading to background jobs.
-- batch image loading.
+- Compress ja and css file, ready to deploy.
 - Capybara and integration test should on.
 - prepare to deploy.
 - Email links should direct to **production** url.
@@ -67,8 +65,16 @@ end
 
 ### Done Work & Notes
 
+12/15/2014
+
+- Add `Rack::Deflator` before `ActionDispatch::Static` for encoding response as gzip compression.
+- Replace `u100.png` and `u40.png` to data uri.
+- Precompile assets and refine redundant js code, always put embedly preview in last line of the script.
+- Customize Kaminari paginator to always display none.
+
 12/14/2014
 
+- Hash in Sidekiq, use string as key instead of symbols. Sidekiq only use simple JSON types.
 - fix error in scroll top js code, store image that file size less than 32767 bytes by data-uri foramt, o.w. upload to AWS.
 
 12/13/2014
