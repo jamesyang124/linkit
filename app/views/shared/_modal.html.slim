@@ -8,7 +8,7 @@
           - if user_signed_in? and current_user.image
             img.img-circle src="#{current_user.image}"
           - else
-            img.img-circle src="assets/u100.png"
+            img.img-circle src="#{@image}"
           br/
           | About
           br/

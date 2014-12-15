@@ -42,7 +42,7 @@ javascript:
 
     var items = "";
 
-    for (var i = 0; i < newElements.length; i++) {
+    for (var i = 0, len = newElements.length; i < len; i++) {
       var newItem = genElement(newElements[i]);
       items += newItem;
     }
@@ -52,6 +52,7 @@ javascript:
 
     $('.comment_area').blur();
     $('.comment-submit').hide();
+    //$container.isotope("appended", $('.new-item'));
 
     $container.imagesLoaded(function() {
       //$container.isotope('layout');
