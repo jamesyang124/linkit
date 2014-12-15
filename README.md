@@ -15,7 +15,6 @@ Share links and posts.
 
 ### To-do List
 
-- Compress ja and css file, ready to deploy.
 - Capybara and integration test should on.
 - prepare to deploy.
 - Email links should direct to **production** url.
@@ -67,6 +66,7 @@ end
 
 12/15/2014
 
+- Compress ja and css file, ready to deploy.
 - Add `Rack::Deflator` before `ActionDispatch::Static` for encoding response as gzip compression.
 - Replace `u100.png` and `u40.png` to data uri.
 - Precompile assets and refine redundant js code, always put embedly preview in last line of the script.

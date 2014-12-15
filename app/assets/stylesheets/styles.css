@@ -15,10 +15,11 @@ author: bootply.com
 @import url(//fonts.googleapis.com/css?family=PT+Sans);
 
 body {
-  background-color:#e0e0e0;
+  background-color: #8ad8ed;
   -webkit-font-smoothing: antialiased;
-  font: normal 16px Roboto,arial,sans-serif;
+  font: normal 18px 'PT Sans',sans-serif;
 }
+
 .navbar-default {background-color:#f4f4f4;margin-top:50px;border-width:0;z-index:5;}
 .navbar-default .navbar-nav > .active > a,.navbar-default .navbar-nav > li:hover > a {border:0 solid #4285f4;border-bottom-width:2px;font-weight:800;background-color:transparent;}
 .navbar-default .dropdown-menu {background-color:#ffffff;}
@@ -111,24 +112,7 @@ h3,h4,h5 {
   font-size: 30px;
 }
 
-/*
-#loginModal{
-  font-family: 'Bree Serif', serif;
-}
-
-#RegisterModal{
-  font-family: 'Bree Serif', serif; 
-}
-*/
-
 /* Customed */
-
-body {
-  /* background: url("/stardust.png"); */
-  background-color: #8ad8ed;
-  font-family: 'PT Sans', sans-serif;
-  /* font-family: 'Bree Serif', serif; */
-}
 
 .isotype-item {
   box-shadow: 1px 1px 1px #cfcfcf; 

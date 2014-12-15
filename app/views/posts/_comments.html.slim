@@ -13,7 +13,7 @@
     - if post.user && post.user.image
       = image_tag(post.user.image, :alt => "", class: "img-circle")
     - else
-      .img.img-circle style="width: 40px; height: 40px;" src="#{image}"
+      img.img-circle style="width: 40px; height: 40px;" src="#{image}"
     b#cname = post.user.name
     br/
     |  via  
@@ -25,7 +25,7 @@
       - if c.user && c.user.image
         = image_tag(c.user.image, :alt => "", class: "img-circle")
       - else
-        .img.img-circle style="width: 40px; height: 40px;" src="#{image}"
+        img.img-circle style="width: 40px; height: 40px;" src="#{image}"
       b#cname = c.user.name
       p = c.comment
   - if current_user
@@ -33,7 +33,7 @@
       - if current_user.image
         = image_tag(current_user.image, :alt => "", class: "img-circle")
       - else
-        .img.img-circle style="width: 40px; height: 40px;" src="#{image}"
+        img.img-circle style="width: 40px; height: 40px;" src="#{image}"
       = form_for [post, Comment.new], html: {id: "comment-box"}, remote: true do |f|
         = f.text_area :comment, placeholder: "Add a comment..", rows: "3", class: "textarea form-group form-control comment_area"
         = f.submit "Comment", class: "btn btn-sm btn-primary comment-submit"

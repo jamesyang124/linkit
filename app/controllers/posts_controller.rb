@@ -4,7 +4,6 @@ class PostsController < ApplicationController
   # root, publicly render.
   def index
     # eager loading
-    #count = Post.count
     @posts = Post.includes([:comments, :user]).order('created_at DESC').page(params[:page]).per(9)
     # for query page number over the max page.
     if request_empty_page
@@ -17,6 +16,8 @@ class PostsController < ApplicationController
     # add link to index?
     if Post.find_by(link: link_params[:link])
       flash[:notice] = "The post link has been shared."
+    elsif (link_params[:link]).empty?
+      flash[:notice] = "Missing post link."
     else
       @post = Post.new(user_id: current_user.id)
       @post.save_link link_params[:link]
