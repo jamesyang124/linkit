@@ -16,8 +16,11 @@ var $container = $('.isotype').isotope({
     itemSelector: '.isotype-item'
 });
 
+$container.isotope('layout');
+
 $container.imagesLoaded(function() {
   $("#comment-form-<%= @post.id %>").prev().animate({ opacity: 1 }, "slow");
+  $(".comment-submit").hide();
   $container.isotope('layout');
 });
 

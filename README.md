@@ -66,6 +66,7 @@ end
 
 12/15/2014
 
+- after render, the smae class element selector will not be bind again.
 - Compress ja and css file, ready to deploy.
 - Add `Rack::Deflator` before `ActionDispatch::Static` for encoding response as gzip compression.
 - Replace `u100.png` and `u40.png` to data uri.

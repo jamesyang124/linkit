@@ -1,32 +1,6 @@
 javascript:
 
-  var $container = $('.isotype').isotope({
-    // main isotope options
-    itemSelector: '.isotype-item',
-    masonry: {
-      gutter: 30
-    }
-  });
-
-  $("#srch-term").bind("keyup", function() {
-    $container.isotope({
-      filter: function() {
-        var name = $(this).find('#iso-filtering').text().toLowerCase();
-        var search = $('#srch-term').val().toLowerCase();
-        return name.match(search);
-    }});
-  });
-  
-  $container.imagesLoaded(function() {
-    $container.isotope('layout')
-  });
-
   // when link thumbnail content pop up, layout render again.
-  $(".selector-wrapper").bind("DOMSubtreeModified", function(){
-    // render layout again.
-    $container.isotope('layout');
-  });
 
-  $(".iso-shuffle").bind("click", function(){
-    $container.isotope('shuffle');
-  });
+
+  

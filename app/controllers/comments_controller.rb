@@ -3,7 +3,7 @@ class CommentsController < ApplicationController
 
   def create
     @post = Post.find(params[:post_id])
-    if comment_params[:comment]
+    if !comment_params[:comment].empty?
       comment = @post.comments.create
       comment.comment = comment_params[:comment]
       comment.user = current_user
@@ -12,13 +12,15 @@ class CommentsController < ApplicationController
       comment.save
       # send email to all poster and commenters.
       @res = send_emails(@post, comment)
+
+      respond_to do |format|
+        format.html { redirect_to root_path }
+        format.js { render file: "/posts/ajax_comment.js.erb", layout: false }
+      end
     else
       # set error flash
-    end
-
-    respond_to do |format|
-      format.html { redirect_to root_path }
-      format.js { render file: "/posts/ajax_comment.js.erb", layout: false }
+      #flash[:notice] = "Comment cannot be blank."
+      redirect_to :back
     end
   end
 
