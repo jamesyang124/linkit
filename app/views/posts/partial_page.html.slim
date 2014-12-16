@@ -28,7 +28,7 @@ span#load
               .input-group
                 input#srch-term.form-control.input-lg name="srch-term" placeholder="Keyword.." type="text"
                 span.input-group-btn
-                  a.btn.btn-lg.btn-primary href="/" 
+                  = link_to "/?page=1", class: "btn btn-lg btn-primary", remote: true
                     i.fa.fa-refresh.fa-spin 
   .row.isotype.col-md-offset-1.col-md-10#iso-layout
     /* skip first record, offset: 1 */

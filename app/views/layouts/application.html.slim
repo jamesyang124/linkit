@@ -19,10 +19,13 @@ html
       = render "shared/navbar"
     = yield
     // Turbo links will only replace title in header and body.
+    //= render "shared/isotype_embedly.js"
+    = render "shared/customed_infinite_scroll.js"
     script src="//cdn.embed.ly/jquery.embedly-3.0.5.min.js"
     script src="//cdn.embed.ly/jquery.preview-0.3.2.min.js" 
 javascript:
     $('#url').preview({key: "#{ENV["embedly_api_key"]}"});
+    //$(".isotype").infinitescroll('bind');
 
 
       

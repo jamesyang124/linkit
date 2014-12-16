@@ -9,7 +9,11 @@ class PostsController < ApplicationController
     if request_empty_page
       flash[:notice] = "No more posts, post it or back to first page."
       render :index
+    elsif request.env["HTTP_X_REQUESTED_WITH"] != "XMLHttpRequest" && request.env["HTTP_REFERER"]
+      #require 'pry'; binding.pry
+      #render :index
     end
+
   end
 
   def create
