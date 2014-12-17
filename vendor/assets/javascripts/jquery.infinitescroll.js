@@ -65,7 +65,7 @@
         pathParse: undefined,
         dataType: 'html',
         appendCallback: true,
-        bufferPx: 40,
+        bufferPx: 0,
         errorCallback: function () { },
         infid: 0, //Instance ID
         pixelsFromNavToBottom: 2200,

@@ -1,31 +1,19 @@
 javascript:
   
-  $('.isotype').isotope({
+  var $container = $('.isotype').isotope({
     // main isotope options
       itemSelector: '.isotype-item',
       masonry: {
         gutter: 30
       }
   });
-
-  /*
-  $("#srch-term").bind("keyup", function() {
-    $container.isotope({
-      filter: function() {
-        var name = $(this).find('#iso-filtering').text().toLowerCase();
-        var search = $('#srch-term').val().toLowerCase();
-        return name.match(search);
-    }});
-  });
   
+  $container.isotope('layout');
+
   $container.imagesLoaded(function() {
     $container.isotope('layout')
   });
 
-  $container.isotope('layout');
-
-  */
-  /*
   function interval() {
     $( "#load" ).fadeIn(800).fadeOut(800);
   };
@@ -80,9 +68,6 @@ javascript:
     $('.new-item').css({ opacity: 0 });
 
     $('.comment_area').blur();
-    //$('.comment-submit').hide();
-    //$container.isotope('layout');
-    //$container.isotope("appended", $('.new-item'));
 
     $container.imagesLoaded(function() {
       //$container.isotope('layout');
@@ -91,4 +76,3 @@ javascript:
       clearInterval(res);
     });
   });
-  */
