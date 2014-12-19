@@ -22,5 +22,6 @@ module Linkit
     config.i18n.enforce_available_locales = false
     config.middleware.insert_before ActionDispatch::Static, Rack::Deflater
     config.force_ssl = (ENV["ENABLE_HTTPS"] == "yes")
+    config.autoload_paths += %W{#{Rails.root}/lib/}
   end
 end

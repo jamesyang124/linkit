@@ -1,4 +1,6 @@
 class Post < ActiveRecord::Base
+  include OpenImageUrl
+
   belongs_to :user
   validates_presence_of :user_id, :title, :provider_name, :link
   validates_uniqueness_of :link
@@ -16,17 +18,15 @@ class Post < ActiveRecord::Base
     response = obj.first.marshal_dump
 
     # call Embedly image resize api to get resized image.
-
-
     if response[:thumbnail_url]
       
       # file uplaoding, put to lib in later
       #require 'pry'; binding.pry
 
       begin
+        uri = open_uri_with_redirections(response[:thumbnail_url])
 
-        image = MiniMagick::Image.open(response[:thumbnail_url])
-        #      require 'pry'; binding.pry
+        image = MiniMagick::Image.open(uri)
         image.combine_options do |i|
           # if lareger resize to width 319
           i.resize "354x>"

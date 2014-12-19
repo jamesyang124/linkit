@@ -64,6 +64,12 @@ end
 
 ### Done Work & Notes
 
+12/18/2014
+
+- Address image url redirection problem, should send upload to MiniMagick too.
+- Now user image use data-uri instead.
+- Try move image assets to Cloudinary CDN, should remove data-uri.
+
 12/15/2014
 
 - after render, the smae class element selector will not be bind again.

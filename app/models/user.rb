@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  include OpenImageUrl
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable, :validatable
@@ -14,8 +15,9 @@ class User < ActiveRecord::Base
       user.email = request_auth.info.email
       user.name = request_auth.info.name
       user.password = Devise.friendly_token[0,20]
-      # portrait image url.
-      user.image = request_auth.info.image
+      # portrait image url to data uri.
+      image_uri, mime_type = open_uri_with_redirections(request_auth.info.image, :safe)
+      user.image = "data:" << mime_type << ";base64," << Base64.encode64(image_uri.read)
     end
   end
 end

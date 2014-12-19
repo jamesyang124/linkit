@@ -1,0 +1,9 @@
+development:
+  cloud_name: "dokr1yg9l"
+  api_key: "531182923692626"
+  api_secret: "OB1nBK8dRy755DltwY0gJ8sicHA"
+
+production:
+  cloud_name: "dokr1yg9l"
+  api_key: "531182923692626"
+  api_secret: "OB1nBK8dRy755DltwY0gJ8sicHA"
