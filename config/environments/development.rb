@@ -32,4 +32,8 @@ Linkit::Application.configure do
   #config.assets.prefix = "/public/assets"
 
   #config.action_controller.perform_caching = true
+  #config.serve_static_assets = true
+  #config.assets.compress = true
+  #config.assets.digest = true
+  #config.action_controller.asset_host = ENV['assets_host']
 end

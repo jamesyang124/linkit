@@ -1,5 +1,3 @@
-javascript:
-
   var $container = $('.isotype').isotope({
     // main isotope options
       itemSelector: '.isotype-item',
