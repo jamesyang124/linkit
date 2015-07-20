@@ -22,6 +22,7 @@ gem 'acts_as_commentable'
 gem 'rest-client', require: false
 
 gem 'mini_magick'
+gem 'redis'
 gem 'sidekiq'
 # version 1 api
 gem 'aws-sdk', '~> 1.59.1'
@@ -59,4 +60,4 @@ end
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
-#ruby "2.1.6"
+ruby "2.1.6"

@@ -261,6 +261,7 @@ DEPENDENCIES
   pry
   rails (= 4.0.3)
   rails_12factor
+  redis
   rest-client
   rspec-rails
   sass-rails (~> 4.0.0)
