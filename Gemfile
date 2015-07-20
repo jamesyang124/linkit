@@ -27,7 +27,7 @@ gem 'sidekiq'
 # version 1 api
 gem 'aws-sdk', '~> 1.59.1'
 gem 'cloudinary'
-gem 'open_uri_redirections'
+#gem 'open_uri_redirections'
 
 gem 'pg'
 gem 'rails_12factor', group: :production

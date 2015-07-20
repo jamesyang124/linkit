@@ -11,15 +11,15 @@ class User < ActiveRecord::Base
   scope :find_email_names, ->(users) { select(:name).find_emails(users) }
 
   def self.from_omniauth(request_auth)
-    p request_auth
+    #p request_auth.info
     where(provider: request_auth.provider, uid: request_auth.uid).first_or_create do |user|
       user.email = request_auth.info.email
       user.name = request_auth.info.name
       user.password = Devise.friendly_token[0,20]
       # portrait image url to data uri.
-      require 'open_uri_redirections'
-      image_uri, mime_type = open(request_auth.info.image, :allow_redirections => :safe)
+      image_uri, mime_type = open_uri_with_redirections(request_auth.info.image)
       user.image = "data:" << mime_type << ";base64," << Base64.encode64(image_uri.read)
+      user.save
     end
   end
 end

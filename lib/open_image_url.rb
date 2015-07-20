@@ -15,7 +15,7 @@ module OpenImageUrl
     elsif response.code == "302"
       uri = response['location']
     end
-    #uri = OpenURI.open_uri(url, :allow_redirections => sym_param)
-    uri
+    uri = OpenURI.open_uri(uri)
+    return uri, uri.meta["content-type"]
   end
 end

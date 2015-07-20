@@ -1,5 +1,5 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
-  
+
   # it is called fater facebook authentication permitted.
   def facebook
     @user = User.from_omniauth(request.env["omniauth.auth"])
