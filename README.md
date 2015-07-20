@@ -67,6 +67,7 @@ end
 
 07/20/2015
 
+- Change the type of User model's image column from string to text. So Base64 code can be stored.
 - Fix facebook image redirection issue. Try ope that uri, if response coed is 302 then get the redirect location as image url instead.
 - Create `Procfile`
 
