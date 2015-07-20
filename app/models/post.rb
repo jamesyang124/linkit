@@ -24,7 +24,7 @@ class Post < ActiveRecord::Base
       #require 'pry'; binding.pry
 
       begin
-        uri = open_uri_with_redirections(response[:thumbnail_url])
+        uri = open_uri_with_redirections(response[:thumbnail_url], thumbnail_url: true)
 
         image = MiniMagick::Image.open(uri)
         image.combine_options do |i|

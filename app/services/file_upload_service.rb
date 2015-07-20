@@ -14,9 +14,7 @@ class FileUploadService
     #data_uri = Base64.encode64(File.read(image_path))
     #require 'pry'; binding.pry
 
-    cdn_hash = Cloudinary::Uploader.upload(image_path, :use_filename => true, );
-
-
+    cdn_hash = Cloudinary::Uploader.upload(image_path, :use_filename => true);
     # IE 8 support. data uri should less than 32768 bytes
     #if data_uri.size >= 32767
       #s3.buckets['linkit-jy124'].objects[key_path].write(file, acl: :public_read, content_type: image.mime_type, expires: "Fri, 25 Dec 2037 23:59:59 GMT")
