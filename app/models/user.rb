@@ -17,7 +17,8 @@ class User < ActiveRecord::Base
       user.name = request_auth.info.name
       user.password = Devise.friendly_token[0,20]
       # portrait image url to data uri.
-      image_uri, mime_type = open_uri_with_redirections(request_auth.info.image, :safe)
+      require 'open_uri_redirections'
+      image_uri, mime_type = open(request_auth.info.image, :allow_redirections => :safe)
       user.image = "data:" << mime_type << ";base64," << Base64.encode64(image_uri.read)
     end
   end
