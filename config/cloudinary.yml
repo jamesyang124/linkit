@@ -1,9 +1,19 @@
+---
 development:
-  cloud_name: "dokr1yg9l"
-  api_key: "531182923692626"
-  api_secret: "OB1nBK8dRy755DltwY0gJ8sicHA"
-
+  cloud_name: dokr1yg9l
+  api_key: '531182923692626'
+  api_secret: OB1nBK8dRy755DltwY0gJ8sicHA
+  enhance_image_tag: true
+  static_image_support: false
 production:
-  cloud_name: "dokr1yg9l"
-  api_key: "531182923692626"
-  api_secret: "OB1nBK8dRy755DltwY0gJ8sicHA"
+  cloud_name: dokr1yg9l
+  api_key: '531182923692626'
+  api_secret: OB1nBK8dRy755DltwY0gJ8sicHA
+  enhance_image_tag: true
+  static_image_support: true
+test:
+  cloud_name: dokr1yg9l
+  api_key: '531182923692626'
+  api_secret: OB1nBK8dRy755DltwY0gJ8sicHA
+  enhance_image_tag: true
+  static_image_support: false
