@@ -67,6 +67,14 @@ end
 
 07/20/2015
 
+- Fix facebook image redirection issue. Try ope that uri, if response coed is 302 then get the redirect location as image url instead.
+- Create `Procfile`
+
+  ```sh
+  worker: bundle exec sidekiq
+  ```
+
+- Deploy to Heroku, set up Sidekiq and Redis by add worker process
 - [Heroku support Ruby version](https://devcenter.heroku.com/articles/ruby-support#supported-runtimes)
 
 12/18/2014
