@@ -28,6 +28,8 @@ gem 'aws-sdk', '~> 1.59.1'
 gem 'cloudinary'
 #gem 'open_uri_redirections'
 
+gem 'pg'
+gem 'rails_12factor', group: :production
 
 group :doc do
   gem 'sdoc', require: false
@@ -57,3 +59,4 @@ end
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
+ruby "2.1.6"

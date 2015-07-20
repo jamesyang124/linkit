@@ -21,7 +21,8 @@ module Linkit
     # config.i18n.default_locale = :de
     config.i18n.enforce_available_locales = false
     config.middleware.insert_before ActionDispatch::Static, Rack::Deflater
-    config.force_ssl = (ENV["ENABLE_HTTPS"] == "yes")
+    #config.force_ssl = (ENV["ENABLE_HTTPS"] == "yes")
     config.autoload_paths += %W{#{Rails.root}/lib/}
+    #config.action_dispatch.default_headers.merge!("Vary" => "Accept-Encoding")
   end
 end

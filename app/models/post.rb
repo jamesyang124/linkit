@@ -19,7 +19,7 @@ class Post < ActiveRecord::Base
 
     # call Embedly image resize api to get resized image.
     if response[:thumbnail_url]
-      
+
       # file uplaoding, put to lib in later
       #require 'pry'; binding.pry
 
@@ -32,7 +32,7 @@ class Post < ActiveRecord::Base
           i.resize "354x>"
           # if smaller resize to width 319
           i.resize "354x<"
-          i.quality 92
+          i.quality 85
         end
 
         post.thumbnail_url = FileUploadService.upload_link(image.path, image);

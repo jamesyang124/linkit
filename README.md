@@ -15,6 +15,7 @@ Share links and posts.
 
 ### To-do List
 
+- Production with http version.
 - Capybara and integration test should on.
 - prepare to deploy.
 - Email links should direct to **production** url.
@@ -63,6 +64,10 @@ end
 - Cookie store user data, Session store the identity for the user.
 
 ### Done Work & Notes
+
+07/20/2015
+
+- [Heroku support Ruby version](https://devcenter.heroku.com/articles/ruby-support#supported-runtimes)
 
 12/18/2014
 
@@ -122,7 +127,7 @@ end
 12/07/2014
 
 - Redesign the layout.
-- use `nettop`, `ps aux` to find process and port, `top` only top list processes that have most resource usage. 
+- use `nettop`, `ps aux` to find process and port, `top` only top list processes that have most resource usage.
 - `to delete self-signed SSL certificate` go `/usr/local/etc/nginx` and delete `server.crt, server.csr, server.key` files.
 - Use pow. after creating project, set `.ruby-version, .ruby-gemset` and export rvm env to `.powenv` by `rvm env . > .powenv`. And don't forget `touch tmp/restart.txt` in your Rails app.
 - Because we now go through https, call beack from Omni auth server will now go https(443) to back to our app, set nginx reverse proxy port to `443`, and set facebook site url to `https:app_name.dev`
@@ -192,23 +197,23 @@ server {
 
 12/03/2014
 
-- Popular email clients like Gmail strip out `<style>` tag. so we alter email's css style tags to inline style. 
-- Slim `=>` after `|` left a line for convertion, or next tag may treated as text. 
-- Refactor mail params building in Comment controller and Comment Mail Service for mail sending services.  
-- Add recipient variables to mailgun message. interpolation by `%recipient.name%`.  
-- Email notification now support html template. Designed email html template.  
-  * [http://documentation.mailgun.com/user_manual.html#sending-via-api](http://documentation.mailgun.com/user_manual.html#sending-via-api)  
-  * [https://ruby-china.org/topics/8155](https://ruby-china.org/topics/8155)  
-  
+- Popular email clients like Gmail strip out `<style>` tag. so we alter email's css style tags to inline style.
+- Slim `=>` after `|` left a line for convertion, or next tag may treated as text.
+- Refactor mail params building in Comment controller and Comment Mail Service for mail sending services.
+- Add recipient variables to mailgun message. interpolation by `%recipient.name%`.
+- Email notification now support html template. Designed email html template.
+  * [http://documentation.mailgun.com/user_manual.html#sending-via-api](http://documentation.mailgun.com/user_manual.html#sending-via-api)
+  * [https://ruby-china.org/topics/8155](https://ruby-china.org/topics/8155)
+
 12/02/2014
 
 - done mailgun email notification service.
-- put richest content type in last type, text `text/plain` then html `text/html` in last part. So mailgun payload should set `payload[:text]` prior than `payload[:html]`.  
-  * [http://www.w3.org/Protocols/rfc1341/7_2_Multipart.html](http://www.w3.org/Protocols/rfc1341/7_2_Multipart.html)  
+- put richest content type in last type, text `text/plain` then html `text/html` in last part. So mailgun payload should set `payload[:text]` prior than `payload[:html]`.
+  * [http://www.w3.org/Protocols/rfc1341/7_2_Multipart.html](http://www.w3.org/Protocols/rfc1341/7_2_Multipart.html)
 
     > In general, user agents that compose multipart/alternative entities should place the body parts in increasing order of preference, that is, with the preferred format last. For fancy text, the sending user agent should put the plainest format first and the richest format last.
 
-- `Linkit::Application._all_autoload_paths` to get autoload paths, it loads all directories under `./app` folder by default. 
+- `Linkit::Application._all_autoload_paths` to get autoload paths, it loads all directories under `./app` folder by default.
 
 12/01/2014
 
@@ -256,7 +261,7 @@ server {
 
 - Done `Registration#create`, may rewrite it with `ajax` so don't need to redirect if registration failed.
   - [http://edgeguides.rubyonrails.org/working_with_javascript_in_rails.html](http://edgeguides.rubyonrails.org/working_with_javascript_in_rails.html)
-  - send ajax call to server, respond back and modified placeholder message for invalid input. 
+  - send ajax call to server, respond back and modified placeholder message for invalid input.
 
 - `User` model refine, unused routes removed.
 
