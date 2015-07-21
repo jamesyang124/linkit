@@ -70,6 +70,7 @@ end
 
 07/20/2015
 
+- Tweak Sign-up failed message's position, no more `margin-left` css.
 - Restrict the scheme to 'HTTPS', use `rack-rewrite` to set scheme to `Https` only.
 - Fix redirection issue on Cloudinary uploading. Remove api secret and set them to ENV vars.
 - Change the type of User model's image column from string to text. So Base64 code can be stored.
