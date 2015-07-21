@@ -1,6 +1,9 @@
 linkit
 ======
 
+- Production URL:
+[https://linkit-dev.herokuapp.com/](https://linkit-dev.herokuapp.com/)
+
 Share links and posts.
 
 ![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-12-07.png)
