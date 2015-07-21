@@ -67,6 +67,8 @@ end
 
 07/20/2015
 
+- Restrict the scheme to 'HTTPS', use `rack-rewrite` to set scheme to `Https` only.
+- Fix redirection issue on Cloudinary uploading. Remove api secret and set them to ENV vars.
 - Change the type of User model's image column from string to text. So Base64 code can be stored.
 - Fix facebook image redirection issue. Try ope that uri, if response coed is 302 then get the redirect location as image url instead.
 - Create `Procfile`

@@ -28,6 +28,7 @@ gem 'sidekiq'
 gem 'aws-sdk', '~> 1.59.1'
 gem 'cloudinary'
 #gem 'open_uri_redirections'
+gem 'rack-rewrite', '~> 1.5.0'
 
 gem 'pg'
 gem 'rails_12factor', group: :production
@@ -60,4 +61,4 @@ end
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
-ruby "2.1.6"
+#ruby "2.1.6"
