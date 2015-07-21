@@ -1,14 +1,14 @@
 nav.navbar.navbar-fixed-top.header
   .col-md-12#nav-bar
     .navbar-header
-      a.navbar-brand href="/" linkit
-      button.navbar-toggle data-target="#navbar-collapse1" data-toggle="collapse" type="button" 
+      a.navbar-brand href="#" linkit
+      button.navbar-toggle data-target="#navbar-collapse1" data-toggle="collapse" type="button"
         i.glyphicon.glyphicon-search
     #navbar-collapse1.collapse.navbar-collapse
       ul.nav.navbar-nav.navbar-right style="font-size: large;"
-        li 
+        li
           - if user_signed_in?
-            = link_to "Logout", destroy_user_session_path, method: "delete", 
+            = link_to "Logout", destroy_user_session_path, method: "delete",
             :"data-toggle" => "modal", :role => "button"
           - else
             a data-toggle="modal" href="#loginModal" role="button" Login
@@ -18,13 +18,12 @@ nav.navbar.navbar-fixed-top.header
         li
           a#nav-search href="#search" area-controls="navp-search" data-toggle="tab" role="tab"
             i.fa.fa-search.fa-lg
-        li
-          a#btnToggle.iso-shuffle 
-            i.fa.fa-th.fa-lg
+        //li
+        //  a#btnToggle.iso-shuffle
+        //    i.fa.fa-th.fa-lg
         li
           = link_to posts_path(format: "rss")
             i.fa.fa-rss.fa-lg
         li
-          a.back-top 
+          a.back-top
             i.fa.fa-arrow-up.fa-lg
-            
