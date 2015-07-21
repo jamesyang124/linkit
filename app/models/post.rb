@@ -18,6 +18,7 @@ class Post < ActiveRecord::Base
     response = obj.first.marshal_dump
 
     # call Embedly image resize api to get resized image.
+
     if response[:thumbnail_url]
 
       # file uplaoding, put to lib in later

@@ -23,6 +23,9 @@ class PostsController < ApplicationController
     else
       @post = Post.new(user_id: current_user.id)
       @post.save_link link_params[:link]
+      if @post.id.nil?
+        flash[:notice] = "The post link may broken or cannot be shared."
+      end
     end
     redirect_to root_path
   end
@@ -33,11 +36,11 @@ class PostsController < ApplicationController
 
     if redirect_url.nil?
       flash[:error] = "Wrong redirection link."
-      
+
       redirect_to root_path
     else
       post.increment(:click_count, 1).save
-      redirect_to redirect_url 
+      redirect_to redirect_url
     end
   end
 
