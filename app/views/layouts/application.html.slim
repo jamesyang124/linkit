@@ -5,23 +5,23 @@ html
     meta[content="text/html; charset=US-ASCII" http-equiv="content-type"]
     meta[charset="utf-8"]
     meta[content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport"]
+    = csrf_meta_tags
     = stylesheet_link_tag "application", media: "all", "data-turbolinks-track" => true
     = stylesheet_link_tag "//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"
     link rel="stylesheet" href="//cdn.embed.ly/jquery.preview-0.3.2.css"
     = favicon_link_tag "favicon.ico"
-    = javascript_include_tag "//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js", defer: true
-    script src="//cdn.embed.ly/jquery.embedly-3.0.5.min.js" defer="defer"
-    script src="//cdn.embed.ly/jquery.preview-0.3.2.min.js" defer="defer"
-    = javascript_include_tag "//cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.0.0/isotope.pkgd.min.js", defer: true
-    = javascript_include_tag "application", "data-turbolinks-track" => true, defer: true
-    = csrf_meta_tags
   body
     header
       = render "shared/login_modal"
       = render "shared/register_modal"
       = render "shared/navbar"
     = yield
-    // Turbo links will only replace title in header and body.
+    = javascript_include_tag "//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js", defer: true
+    script src="//cdn.embed.ly/jquery.embedly-3.0.5.min.js" defer="defer"
+    script src="//cdn.embed.ly/jquery.preview-0.3.2.min.js" defer="defer"
+    = javascript_include_tag "//cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.0.0/isotope.pkgd.min.js", defer: true
+    = javascript_include_tag "application", "data-turbolinks-track" => true, defer: true
+// Turbo links will only replace title in header and body.
     //= render "shared/customed_infinite_scroll.js.slim"
     //script src="//cdn.embed.ly/jquery.embedly-3.0.5.min.js"
     //script src="//cdn.embed.ly/jquery.preview-0.3.2.min.js"
