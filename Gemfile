@@ -40,7 +40,7 @@ end
 group :development, :test do
   gem "fabrication"
   gem "better_errors"
-  gem "thin"
+  #gem "thin"
   gem 'pry'
   gem 'sqlite3'
   gem 'rspec-rails'
