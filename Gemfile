@@ -30,7 +30,7 @@ gem 'cloudinary'
 #gem 'open_uri_redirections'
 gem 'rack-rewrite', '~> 1.5.0'
 
-gem 'pg'
+gem 'pg', '~> 0.15.0'
 gem 'rails_12factor', group: :production
 
 group :doc do
