@@ -32,7 +32,7 @@ class CommentsController < ApplicationController
 
   def send_emails(post, comment)
     mail_params = build_mail_params(post, comment)
-    CommentMailService.delay.perform_async(mail_params)
+    CommentMailService.perform_async(mail_params)
   end
 
   # sidekiq allows simple JSON type hash, string, array, integer

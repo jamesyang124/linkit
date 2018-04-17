@@ -20,7 +20,7 @@
             = f.password_field :password, placeholder: "Password", class: "form-control input-lg", hide_label: true
           .form-group
             = f.submit "Login", class: "btn btn-success btn-lg btn-block"
-        = bootstrap_form_tag url: user_omniauth_authorize_path(:facebook), html: {class: "form col-md-12 center-block"} do |f|
+        = bootstrap_form_tag url: user_facebook_omniauth_authorize_path, html: {class: "form col-md-12 center-block"} do |f|
           .form-group
             = f.submit "via Facebook", class: "btn btn-primary btn-lg btn-block"
           .form-group
