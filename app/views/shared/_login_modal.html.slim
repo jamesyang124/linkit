@@ -15,9 +15,9 @@
         .col-md-12.center-block#session_message
         = bootstrap_form_for :user, url: user_session_path, html: {class: "form col-md-12 center-block"}, remote: true do |f|
           .form-group
-            = f.text_field :email, placeholder: "Email", class: "form-control input-lg", hide_label: true
+            = f.text_field :email, placeholder: "Email", class: "form-control input-lg", id: "login_email", hide_label: true
           .form-group
-            = f.password_field :password, placeholder: "Password", class: "form-control input-lg", hide_label: true
+            = f.password_field :password, placeholder: "Password", class: "form-control input-lg", id: "login_password", hide_label: true
           .form-group
             = f.submit "Login", class: "btn btn-success btn-lg btn-block"
         = bootstrap_form_tag url: user_facebook_omniauth_authorize_path, html: {class: "form col-md-12 center-block"} do |f|

@@ -34,6 +34,6 @@
         = image_tag(current_user.image, :alt => "", class: "img-circle")
       - else
         img.img-circle style="width: 40px; height: 40px;" src="#{image}"
-      = form_for [post, Comment.new], html: {id: "comment-box"}, remote: true do |f|
-        = f.text_area :comment, placeholder: "Add a comment..", rows: "3", class: "textarea form-group form-control comment_area"
+      = form_for [post, Comment.new], remote: true, html: {id: nil} do |f|
+        = f.text_area :comment, placeholder: "Add a comment..", id: nil, rows: "3", class: "textarea form-group form-control comment_area"
         = f.submit "Comment", class: "btn btn-sm btn-primary comment-submit"
