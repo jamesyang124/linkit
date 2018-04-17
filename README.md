@@ -68,6 +68,10 @@ end
 
 ### Done Work & Notes
 
+04/18/2018
+
+- `heroku rake db:migrate` after reset database.
+
 07/20/2015
 
 - Tweak Sign-up failed message's position, no more `margin-left` css.
@@ -279,4 +283,3 @@ server {
   - send ajax call to server, respond back and modified placeholder message for invalid input.
 
 - `User` model refine, unused routes removed.
-
