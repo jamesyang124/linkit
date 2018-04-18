@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '4.2.10'
+gem 'rails', '>= 4.2.10'
 gem 'sass-rails', '~> 4.0.0'
 gem 'uglifier', '>= 1.3.0', "< 4.0.0", require: false
 gem 'coffee-rails', '~> 4.1.0'
@@ -25,7 +25,7 @@ gem 'mini_magick'
 gem 'redis'
 gem 'sidekiq'
 # version 1 api
-gem 'aws-sdk', '~> 1.59.1'
+#gem 'aws-sdk'
 gem 'cloudinary'
 #gem 'open_uri_redirections'
 gem 'rack-rewrite', '~> 1.5.0'
