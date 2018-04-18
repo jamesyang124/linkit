@@ -1,12 +1,13 @@
 source 'https://rubygems.org'
 
-gem 'rails', '>= 4.2.10'
-gem 'sass-rails', '~> 4.0.0'
-gem 'uglifier', '>= 1.3.0', "< 4.0.0", require: false
-gem 'coffee-rails', '~> 4.1.0'
+gem 'rails', '~> 5.2'
+gem 'sass-rails'
+gem 'uglifier', '>= 1.3.0', require: false
+gem 'coffee-rails'
 gem 'jquery-rails'
 gem 'turbolinks'
 gem 'jbuilder', '~> 2.7'
+gem 'puma'
 
 gem 'slim'
 gem 'bootstrap_form'
@@ -61,4 +62,4 @@ end
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
-ruby '2.3.7'
+ruby '2.4.4'

@@ -68,6 +68,16 @@ end
 
 ### Done Work & Notes
 
+04/19/2018
+
+- flush heroku redis:
+
+```sh
+redis-cli -h mummichog.redistogo.com -p 9160 -a ${redis_basic_auth_credential} flushall
+```
+
+https://stackoverflow.com/questions/9137500/how-to-wipe-heroku-redis
+
 04/18/2018
 
 - `heroku rake db:migrate` after reset database.
