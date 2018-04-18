@@ -78,6 +78,12 @@ redis-cli -h mummichog.redistogo.com -p 9160 -a ${redis_basic_auth_credential} f
 
 https://stackoverflow.com/questions/9137500/how-to-wipe-heroku-redis
 
+- `Web process failed to bind to $PORT`
+
+https://stackoverflow.com/questions/15693192/heroku-node-js-error-web-process-failed-to-bind-to-port-within-60-seconds-of
+
+> Heroku dynamically assigns your app a port, so you can't set the port to a fixed number. Heroku adds the port to the env, so you can pull it from there.
+
 04/18/2018
 
 - `heroku rake db:migrate` after reset database.
