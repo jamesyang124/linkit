@@ -4,10 +4,6 @@ class DepCommentMailService < ApplicationController
     require 'rest-client'
     # send email to comment group for the post.
 
-    require 'pry'; binding.pry
-
-    p "https://api:#{ENV["mailgun_key"]}@api.mailgun.net/v2/#{ENV["mailgun_domain"]}/messages"
-
     RestClient.post "https://api:#{ENV["mailgun_key"]}@api.mailgun.net/v2/#{ENV["mailgun_domain"]}/messages", post_params(mail_params)
   end
 
