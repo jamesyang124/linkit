@@ -1,4 +1,4 @@
-class RemoveColumnsToUsers < ActiveRecord::Migration
+class RemoveColumnsToUsers < ActiveRecord::Migration[5.2]
   def change
     remove_column :users, :sign_in_count
     remove_column :users, :current_sign_in_at
