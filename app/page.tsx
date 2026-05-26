@@ -1,17 +1,11 @@
-import {
-  getPublicFeedItems,
-  getPublicGalleryFeedPage
-} from "@/src/feed/load-feed";
+import { getPublicGalleryFeedPage } from "@/src/feed/load-feed";
 import { GalleryFeed } from "@/components/gallery-feed";
 import { SubmitForm } from "@/components/submit-form";
 
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [galleryPage, catalogueItems] = await Promise.all([
-    getPublicGalleryFeedPage(),
-    getPublicFeedItems()
-  ]);
+  const galleryPage = await getPublicGalleryFeedPage();
 
   return (
     <main className="infinite-page site-shell min-h-screen px-5 md:px-8">
@@ -29,7 +23,6 @@ export default async function HomePage() {
       >
         <GalleryFeed
           initialItems={galleryPage.items}
-          initialCatalogueItems={catalogueItems}
           initialCursor={galleryPage.nextCursor}
         />
       </section>

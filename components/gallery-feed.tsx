@@ -16,11 +16,6 @@ type ExpandedState = {
   cardRect: DOMRect;
 };
 
-type CatalogueGroup = {
-  providerName: string;
-  count: number;
-};
-
 function slugify(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 }
@@ -44,12 +39,10 @@ function distributeColumns(items: FeedItem[]): FeedItem[][] {
 const GallerySection = memo(function GallerySection({
   provider,
   items,
-  totalCount,
   onExpand
 }: {
   provider: string;
   items: FeedItem[];
-  totalCount: number;
   onExpand: (id: string, cardEl: HTMLElement) => void;
 }) {
   const columns = useMemo(() => distributeColumns(items), [items]);
@@ -59,7 +52,7 @@ const GallerySection = memo(function GallerySection({
       <div className="gallery-section-header">
         <span className="gallery-section-name">{provider}</span>
         <span className="gallery-section-spec">
-          {totalCount} {totalCount === 1 ? "link" : "links"}
+          {items.length} {items.length === 1 ? "link" : "links"}
         </span>
       </div>
       <div className="gallery-section-grid">
@@ -86,11 +79,9 @@ const GallerySection = memo(function GallerySection({
 
 export function GalleryFeed({
   initialItems,
-  initialCatalogueItems,
   initialCursor
 }: {
   initialItems: FeedItem[];
-  initialCatalogueItems: FeedItem[];
   initialCursor: string | null;
 }) {
   // Items loaded via infinite scroll beyond the initial server page.
@@ -157,28 +148,16 @@ export function GalleryFeed({
     return () => observer.disconnect();
   }, [sectionIdToProvider]);
 
+  // Derived from loaded items — guarantees every catalogue entry has a matching
+  // DOM section, so scrollIntoView always works.
   const catalogueGroups = useMemo(() => {
-    const groupMap = new Map<string, CatalogueGroup>();
-    for (const item of initialCatalogueItems) {
-      const group = groupMap.get(item.providerName) ?? {
-        providerName: item.providerName,
-        count: 0
-      };
-      group.count += 1;
-      groupMap.set(item.providerName, group);
-    }
-    return [...groupMap.values()].sort((a, b) =>
-      a.providerName.localeCompare(b.providerName)
-    );
-  }, [initialCatalogueItems]);
-
-  const catalogueTotalsMap = useMemo(() => {
-    const map = new Map<string, number>();
-    for (const group of catalogueGroups) {
-      map.set(group.providerName, group.count);
-    }
-    return map;
-  }, [catalogueGroups]);
+    return stageGroups
+      .map(([provider, groupItems]) => ({
+        providerName: provider,
+        count: groupItems.length
+      }))
+      .sort((a, b) => a.providerName.localeCompare(b.providerName));
+  }, [stageGroups]);
 
   const handleExpand = useCallback(
     (id: string, cardEl: HTMLElement) => {
@@ -233,7 +212,6 @@ export function GalleryFeed({
   }, [cursor, loadMore]);
 
   const isEmpty = items.length === 0;
-  const isCatalogueEmpty = catalogueGroups.length === 0;
 
   return (
     <>
@@ -244,7 +222,7 @@ export function GalleryFeed({
       >
         <h1 id="catalogue-heading">Catalogue</h1>
         <ol>
-          {isCatalogueEmpty ? (
+          {isEmpty ? (
             <li>
               <a
                 href="#section-linkit"
@@ -301,7 +279,6 @@ export function GalleryFeed({
               key={provider}
               provider={provider}
               items={groupItems}
-              totalCount={catalogueTotalsMap.get(provider) ?? groupItems.length}
               onExpand={handleExpand}
             />
           ))
