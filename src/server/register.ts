@@ -15,7 +15,7 @@ export interface RegisterPort {
 
 export type RegisterResult =
   | { ok: true; userId: string }
-  | { ok: false; message: string };
+  | { ok: false; message: string; field?: string };
 
 export async function registerUser(
   port: RegisterPort,
@@ -30,16 +30,16 @@ export async function registerUser(
   }
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return { ok: false, message: "Enter a valid email address." };
+    return { ok: false, message: "Enter a valid email address.", field: "email" };
   }
 
   if (password.length < 8) {
-    return { ok: false, message: "Password must be at least 8 characters." };
+    return { ok: false, message: "Password must be at least 8 characters.", field: "password" };
   }
 
   const existing = await port.findByEmail(email);
   if (existing) {
-    return { ok: false, message: "An account with that email already exists." };
+    return { ok: false, message: "An account with that email already exists.", field: "email" };
   }
 
   const passwordHash = await bcrypt.hash(password, 12);

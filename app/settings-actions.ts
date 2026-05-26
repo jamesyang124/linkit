@@ -7,7 +7,7 @@ import { auth } from "@/auth";
 import { createDb } from "@/src/db/client";
 import { createPostgresLinkitStore } from "@/src/db/linkit-store";
 
-type SettingsState = { error?: string; success?: string } | null;
+type SettingsState = { error?: string; success?: string; field?: string } | null;
 
 const USERNAME_RE = /^[a-zA-Z0-9_]{3,30}$/;
 
@@ -54,7 +54,7 @@ export async function changePasswordAction(
   const newPassword = String(formData.get("newPassword") ?? "");
 
   if (newPassword.length < 8) {
-    return { error: "New password must be at least 8 characters." };
+    return { error: "New password must be at least 8 characters.", field: "newPassword" };
   }
 
   const db = createDb(
@@ -69,7 +69,7 @@ export async function changePasswordAction(
 
   const matches = await bcrypt.compare(currentPassword, currentHash);
   if (!matches) {
-    return { error: "Current password is incorrect." };
+    return { error: "Current password is incorrect.", field: "currentPassword" };
   }
 
   const newHash = await bcrypt.hash(newPassword, 12);

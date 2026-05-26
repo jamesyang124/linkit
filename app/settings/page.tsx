@@ -23,8 +23,10 @@ export default async function ProfilePage() {
 
   return (
     <main className="site-shell min-h-screen px-5 py-10 md:px-8">
-      <h1 className="mb-10 font-display text-2xl font-light tracking-wide">Profile</h1>
-      <ProfileForms currentUsername={currentUsername} />
+      <div className="mx-auto max-w-md">
+        <h1 className="mb-10 font-display text-2xl font-light tracking-wide">Profile</h1>
+        <ProfileForms currentUsername={currentUsername} />
+      </div>
     </main>
   );
 }

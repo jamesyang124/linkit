@@ -7,7 +7,7 @@ import { signIn, signOut } from "@/auth";
 import { createDb } from "@/src/db/client";
 import { createRegisterPort, registerUser } from "@/src/server/register";
 
-type AuthState = { error?: string } | null;
+type AuthState = { error?: string; field?: string } | null;
 
 export async function signInAction(
   _prev: AuthState,
@@ -21,7 +21,7 @@ export async function signInAction(
     });
   } catch (error) {
     if (error instanceof AuthError) {
-      return { error: "Invalid email or password." };
+      return { error: "Invalid email or password.", field: "password" };
     }
     throw error;
   }
@@ -44,6 +44,6 @@ export async function registerAction(
     email: String(formData.get("email") ?? ""),
     password: String(formData.get("password") ?? "")
   });
-  if (!result.ok) return { error: result.message };
+  if (!result.ok) return { error: result.message, field: result.field };
   redirect("/signin?registered=1");
 }
