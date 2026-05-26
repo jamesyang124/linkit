@@ -107,6 +107,7 @@ export function GalleryFeed({
   const [loadingProviders, setLoadingProviders] = useState<Set<string>>(new Set());
   // Ref-based guard: prevents re-fetching a provider already loaded via provider API.
   const loadedProvidersRef = useRef<Set<string>>(new Set());
+  const inFlightRef = useRef<Map<string, Promise<void>>>(new Map());
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   // Sync cursor when server sends a fresh initialCursor (new post added).
@@ -174,56 +175,67 @@ export function GalleryFeed({
 
   const handleClose = useCallback(() => setExpanded(null), []);
 
-  // Fetch all items for a provider on demand (rail click for unloaded providers).
-  const loadProvider = useCallback(async (providerName: string) => {
-    if (loadedProvidersRef.current.has(providerName)) return;
+  // Fetch all items for a provider on demand. Returns a Promise so callers can await.
+  // Inflight dedup: concurrent calls for the same provider share one fetch.
+  const loadProvider = useCallback((providerName: string): Promise<void> => {
+    if (loadedProvidersRef.current.has(providerName)) return Promise.resolve();
 
-    let alreadyLoading = false;
-    setLoadingProviders((prev) => {
-      if (prev.has(providerName)) {
-        alreadyLoading = true;
-        return prev;
+    const existing = inFlightRef.current.get(providerName);
+    if (existing) return existing;
+
+    const promise = (async () => {
+      setLoadingProviders((prev) => new Set([...prev, providerName]));
+      try {
+        const response = await fetch(
+          `/api/gallery?provider=${encodeURIComponent(providerName)}`,
+          { headers: { accept: "application/json" } }
+        );
+        if (!response.ok) return;
+        const page = (await response.json()) as GalleryPageResponse;
+        setExtraItems((current) => {
+          const existingIds = new Set([...initialItems, ...current].map((i) => i.id));
+          return [...current, ...page.items.filter((i) => !existingIds.has(i.id))];
+        });
+        loadedProvidersRef.current = new Set([...loadedProvidersRef.current, providerName]);
+      } finally {
+        setLoadingProviders((prev) => {
+          const next = new Set(prev);
+          next.delete(providerName);
+          return next;
+        });
+        inFlightRef.current.delete(providerName);
       }
-      return new Set([...prev, providerName]);
-    });
-    if (alreadyLoading) return;
+    })();
 
-    try {
-      const response = await fetch(
-        `/api/gallery?provider=${encodeURIComponent(providerName)}`,
-        { headers: { accept: "application/json" } }
-      );
-      if (!response.ok) return;
-      const page = (await response.json()) as GalleryPageResponse;
-      setExtraItems((current) => {
-        const existingIds = new Set([...initialItems, ...current].map((i) => i.id));
-        return [...current, ...page.items.filter((i) => !existingIds.has(i.id))];
-      });
-      loadedProvidersRef.current = new Set([...loadedProvidersRef.current, providerName]);
-    } finally {
-      setLoadingProviders((prev) => {
-        const next = new Set(prev);
-        next.delete(providerName);
-        return next;
-      });
-    }
+    inFlightRef.current.set(providerName, promise);
+    return promise;
   }, [initialItems]);
 
-  // On click: scroll to target section immediately (always in DOM), then load items
-  // for every unloaded provider from index 0 up to and including the target.
-  // This ensures sections the user scrolls past are populated, not just the target.
+  // On click: load all preceding unloaded sections first, then scroll to target.
+  // Preceding loads run in parallel; scroll fires only after they resolve so the
+  // user lands on a fully-rendered target rather than skipping past empty sections.
   const handleProviderClick = useCallback(
-    (providerName: string) => {
+    async (providerName: string) => {
+      const targetIdx = allProviders.findIndex((p) => p.providerName === providerName);
+
+      const precedingLoads: Promise<void>[] = [];
+      for (let i = 0; i < targetIdx; i++) {
+        const p = allProviders[i].providerName;
+        if (!stageGroups.has(p)) {
+          precedingLoads.push(loadProvider(p));
+        }
+      }
+
+      if (precedingLoads.length > 0) {
+        await Promise.all(precedingLoads);
+      }
+
       document
         .getElementById(`section-${slugify(providerName)}`)
         ?.scrollIntoView({ behavior: "smooth", block: "start" });
 
-      const targetIdx = allProviders.findIndex((p) => p.providerName === providerName);
-      for (let i = 0; i <= targetIdx; i++) {
-        const p = allProviders[i].providerName;
-        if (!stageGroups.has(p)) {
-          void loadProvider(p);
-        }
+      if (!stageGroups.has(providerName)) {
+        void loadProvider(providerName);
       }
     },
     [allProviders, stageGroups, loadProvider]
