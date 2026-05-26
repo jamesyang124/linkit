@@ -131,28 +131,14 @@ export function GalleryFeed({
     return groupMap;
   }, [items]);
 
-  // Providers in display order: allProviders (server, alphabetical) + any extras
-  // from loaded items not yet in allProviders (safety fallback).
-  const displayProviders = useMemo(() => {
-    const known = new Set(allProviders.map((p) => p.providerName));
-    const extra = [...stageGroups.keys()]
-      .filter((p) => !known.has(p))
-      .sort((a, b) => a.localeCompare(b));
-    return [
-      ...allProviders,
-      ...extra.map((p) => ({ providerName: p, count: stageGroups.get(p)!.length }))
-    ];
-  }, [allProviders, stageGroups]);
-
   // Map section DOM id → provider name for fast lookup in the observer callback.
-  // All sections are always in the DOM so we can use displayProviders.
   const sectionIdToProvider = useMemo(() => {
     const map = new Map<string, string>();
-    for (const { providerName } of displayProviders) {
+    for (const { providerName } of allProviders) {
       map.set(`section-${slugify(providerName)}`, providerName);
     }
     return map;
-  }, [displayProviders]);
+  }, [allProviders]);
 
   // Track which gallery section is currently visible and highlight it in the rail.
   useEffect(() => {
@@ -279,7 +265,7 @@ export function GalleryFeed({
     return () => observer.disconnect();
   }, [cursor, loadMore]);
 
-  const isEmpty = displayProviders.length === 0;
+  const isEmpty = allProviders.length === 0;
 
   return (
     <>
@@ -306,7 +292,7 @@ export function GalleryFeed({
               </a>
             </li>
           ) : (
-            displayProviders.map((group) => (
+            allProviders.map((group) => (
               <li
                 key={group.providerName}
                 data-active={activeProvider === group.providerName ? "" : undefined}
@@ -340,7 +326,7 @@ export function GalleryFeed({
             </div>
           </section>
         ) : (
-          displayProviders.map(({ providerName, count }) => (
+          allProviders.map(({ providerName, count }) => (
             <GallerySection
               key={providerName}
               provider={providerName}
