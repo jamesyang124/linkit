@@ -97,7 +97,7 @@ export function GalleryFeed({
   initialCursor: string | null;
   allProviders: ProviderGroup[];
 }) {
-  // Items loaded via infinite scroll or provider-jump beyond the initial server page.
+  // Items loaded via infinite scroll beyond the initial server page.
   const [extraItems, setExtraItems] = useState<FeedItem[]>([]);
   const [cursor, setCursor] = useState(initialCursor);
   const [loading, setLoading] = useState(false);
@@ -114,7 +114,7 @@ export function GalleryFeed({
     setCursor(initialCursor);
   }, [initialCursor]);
 
-  // Merge server items + extras, deduplicated.
+  // Merge server items + scroll extras, deduplicated.
   const items = useMemo(() => {
     const baseIds = new Set(initialItems.map((i) => i.id));
     return [...initialItems, ...extraItems.filter((i) => !baseIds.has(i.id))];
@@ -131,15 +131,28 @@ export function GalleryFeed({
     return groupMap;
   }, [items]);
 
+  // Providers in display order: allProviders (server, alphabetical) + any extras
+  // from loaded items not yet in allProviders (safety fallback).
+  const displayProviders = useMemo(() => {
+    const known = new Set(allProviders.map((p) => p.providerName));
+    const extra = [...stageGroups.keys()]
+      .filter((p) => !known.has(p))
+      .sort((a, b) => a.localeCompare(b));
+    return [
+      ...allProviders,
+      ...extra.map((p) => ({ providerName: p, count: stageGroups.get(p)!.length }))
+    ];
+  }, [allProviders, stageGroups]);
+
   // Map section DOM id → provider name for fast lookup in the observer callback.
-  // Uses allProviders so all sections are always tracked, even before items load.
+  // All sections are always in the DOM so we can use displayProviders.
   const sectionIdToProvider = useMemo(() => {
     const map = new Map<string, string>();
-    for (const { providerName } of allProviders) {
+    for (const { providerName } of displayProviders) {
       map.set(`section-${slugify(providerName)}`, providerName);
     }
     return map;
-  }, [allProviders]);
+  }, [displayProviders]);
 
   // Track which gallery section is currently visible and highlight it in the rail.
   useEffect(() => {
@@ -175,7 +188,7 @@ export function GalleryFeed({
 
   const handleClose = useCallback(() => setExpanded(null), []);
 
-  // Fetch all items for a provider on demand (click from rail).
+  // Fetch all items for a provider on demand (rail click for unloaded providers).
   const loadProvider = useCallback(async (providerName: string) => {
     if (loadedProvidersRef.current.has(providerName)) return;
 
@@ -210,7 +223,7 @@ export function GalleryFeed({
     }
   }, [initialItems]);
 
-  // Scroll to provider section immediately (always in DOM) and fetch items if not yet loaded.
+  // Scroll to section immediately (always in DOM) and fetch items if not yet loaded.
   const handleProviderClick = useCallback(
     (providerName: string) => {
       document
@@ -224,6 +237,7 @@ export function GalleryFeed({
     [stageGroups, loadProvider]
   );
 
+  // Keyset-paginated infinite scroll: load next page when sentinel enters viewport.
   const loadMore = useCallback(async () => {
     if (!cursor || loading) return;
 
@@ -265,7 +279,7 @@ export function GalleryFeed({
     return () => observer.disconnect();
   }, [cursor, loadMore]);
 
-  const isEmpty = allProviders.length === 0;
+  const isEmpty = displayProviders.length === 0;
 
   return (
     <>
@@ -292,7 +306,7 @@ export function GalleryFeed({
               </a>
             </li>
           ) : (
-            allProviders.map((group) => (
+            displayProviders.map((group) => (
               <li
                 key={group.providerName}
                 data-active={activeProvider === group.providerName ? "" : undefined}
@@ -326,7 +340,7 @@ export function GalleryFeed({
             </div>
           </section>
         ) : (
-          allProviders.map(({ providerName, count }) => (
+          displayProviders.map(({ providerName, count }) => (
             <GallerySection
               key={providerName}
               provider={providerName}
