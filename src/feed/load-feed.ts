@@ -131,6 +131,37 @@ export const getPublicGalleryFeedPage = unstable_cache(
   }
 );
 
+export const getPublicProviderGroups = unstable_cache(
+  async () => {
+    const databaseUrl = process.env.DATABASE_URL;
+    if (!databaseUrl) {
+      return [];
+    }
+
+    const store = createPostgresLinkitStore(createDb(databaseUrl));
+    try {
+      return await store.listProviderGroups();
+    } catch (error) {
+      console.error("Failed to load provider groups", error);
+      return [];
+    }
+  },
+  ["public-provider-groups"],
+  {
+    revalidate: 60,
+    tags: ["public-feed"]
+  }
+);
+
+export async function getProviderFeedItemsFromStore(
+  store: Pick<LinkitStore, "listPostsByProvider" | "listCommentsForPosts">,
+  providerName: string
+): Promise<FeedItem[]> {
+  const postList = await store.listPostsByProvider(providerName);
+  const commentList = await store.listCommentsForPosts(postList.map((p) => p.id));
+  return toFeedItems(postList, commentList);
+}
+
 export function normalizePageLimit(limit: number | undefined): number {
   if (!limit || !Number.isFinite(limit)) {
     return defaultGalleryPageSize;

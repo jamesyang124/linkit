@@ -39,6 +39,117 @@ function mapComment(c: LinkitComment): CommentCard {
 
 const BATCH = 10;
 
+// Inline reply form reused by both top-level comments and nested replies.
+function ReplyForm({
+  postId,
+  parentId,
+  replyToUserName,
+  onPosted,
+  onCancel
+}: {
+  postId: string;
+  parentId: string;
+  replyToUserName: string;
+  onPosted: () => void;
+  onCancel: () => void;
+}) {
+  const [isPending, startTransition] = useTransition();
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    startTransition(async () => {
+      const result = await submitComment(null, formData);
+      if (result.ok) {
+        showToast("Reply posted.", "success");
+        form.reset();
+        onPosted();
+      } else {
+        showToast(result.message, "error");
+      }
+    });
+  }
+
+  return (
+    <form className="reply-form" onSubmit={handleSubmit}>
+      <input type="hidden" name="postId" value={postId} />
+      <input type="hidden" name="parentId" value={parentId} />
+      <input type="hidden" name="replyToUserName" value={replyToUserName} />
+      <textarea
+        name="comment"
+        placeholder={`Reply to ${replyToUserName}…`}
+        className="reply-input"
+        rows={2}
+        disabled={isPending}
+        autoFocus
+      />
+      <div className="comment-actions">
+        <button
+          type="button"
+          className="comment-reply-btn"
+          onClick={onCancel}
+          disabled={isPending}
+        >
+          Cancel
+        </button>
+        <button className="reply-button" disabled={isPending}>
+          {isPending ? "…" : "↩ Reply"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+// Renders one nested reply with its own inline Reply button.
+function ReplyItem({
+  reply,
+  postId,
+  parentCommentId,
+  onReplyPosted
+}: {
+  reply: CommentCard;
+  postId: string;
+  parentCommentId: string;
+  onReplyPosted: () => void;
+}) {
+  const [showForm, setShowForm] = useState(false);
+
+  return (
+    <div className="comment-item comment-item-reply" data-testid="comment-item">
+      <div className="comment-meta">
+        <span className="comment-author">{reply.authorName}</span>
+      </div>
+      <p className="comment-body">
+        {reply.replyToUserName && (
+          <span className="comment-mention">@{reply.replyToUserName} </span>
+        )}
+        {reply.body}
+      </p>
+      <div className="comment-actions">
+        <button
+          className="comment-reply-btn"
+          onClick={() => setShowForm((v) => !v)}
+        >
+          {showForm ? "Cancel" : "Reply"}
+        </button>
+      </div>
+      {showForm && (
+        <ReplyForm
+          postId={postId}
+          parentId={parentCommentId}
+          replyToUserName={reply.authorName}
+          onPosted={() => {
+            setShowForm(false);
+            onReplyPosted();
+          }}
+          onCancel={() => setShowForm(false)}
+        />
+      )}
+    </div>
+  );
+}
+
 function CommentItem({
   comment,
   postId
@@ -51,37 +162,21 @@ function CommentItem({
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  function toggleReplies() {
-    if (expanded) {
-      setExpanded(false);
-      return;
-    }
+  const fetchReplies = useCallback(() => {
     startTransition(async () => {
       const res = await fetch(`/api/comments/${comment.id}/replies`);
       const data = (await res.json()) as LinkitComment[];
       setReplies(data.map(mapComment));
       setExpanded(true);
     });
-  }
+  }, [comment.id]);
 
-  function handleReplySubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    startTransition(async () => {
-      const result = await submitComment(null, formData);
-      if (result.ok) {
-        showToast("Reply posted.", "success");
-        form.reset();
-        setShowReplyForm(false);
-        const res = await fetch(`/api/comments/${comment.id}/replies`);
-        const data = (await res.json()) as LinkitComment[];
-        setReplies(data.map(mapComment));
-        setExpanded(true);
-      } else {
-        showToast(result.message, "error");
-      }
-    });
+  function toggleReplies() {
+    if (expanded) {
+      setExpanded(false);
+      return;
+    }
+    fetchReplies();
   }
 
   return (
@@ -120,37 +215,28 @@ function CommentItem({
       {expanded && (
         <div className="comment-replies">
           {replies.map((r) => (
-            <div key={r.id} className="comment-item comment-item-reply" data-testid="comment-item">
-              <div className="comment-meta">
-                <span className="comment-author">{r.authorName}</span>
-              </div>
-              <p className="comment-body">
-                {r.replyToUserName && (
-                  <span className="comment-mention">@{r.replyToUserName} </span>
-                )}
-                {r.body}
-              </p>
-            </div>
+            <ReplyItem
+              key={r.id}
+              reply={r}
+              postId={postId}
+              parentCommentId={comment.id}
+              onReplyPosted={fetchReplies}
+            />
           ))}
         </div>
       )}
 
       {showReplyForm && (
-        <form className="reply-form" onSubmit={handleReplySubmit}>
-          <input type="hidden" name="postId" value={postId} />
-          <input type="hidden" name="parentId" value={comment.id} />
-          <input type="hidden" name="replyToUserName" value={comment.authorName} />
-          <textarea
-            name="comment"
-            placeholder={`Reply to ${comment.authorName}…`}
-            className="reply-input"
-            rows={2}
-            disabled={isPending}
-          />
-          <button className="reply-button" disabled={isPending}>
-            {isPending ? "…" : "↩ Reply"}
-          </button>
-        </form>
+        <ReplyForm
+          postId={postId}
+          parentId={comment.id}
+          replyToUserName={comment.authorName}
+          onPosted={() => {
+            setShowReplyForm(false);
+            fetchReplies();
+          }}
+          onCancel={() => setShowReplyForm(false)}
+        />
       )}
     </div>
   );

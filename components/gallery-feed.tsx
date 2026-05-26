@@ -6,6 +6,8 @@ import { GalleryTile } from "@/components/gallery-tile";
 import { ExpandedCard } from "@/components/expanded-card";
 import type { FeedItem } from "@/src/feed/view-model";
 
+type ProviderGroup = { providerName: string; count: number };
+
 type GalleryPageResponse = {
   items: FeedItem[];
   nextCursor: string | null;
@@ -79,20 +81,22 @@ const GallerySection = memo(function GallerySection({
 
 export function GalleryFeed({
   initialItems,
-  initialCursor
+  initialCursor,
+  allProviders
 }: {
   initialItems: FeedItem[];
   initialCursor: string | null;
+  allProviders: ProviderGroup[];
 }) {
-  // Items loaded via infinite scroll beyond the initial server page.
-  // Kept separate so when the server re-renders (after a new post + revalidatePath),
-  // the fresh initialItems prop is reflected immediately without resetting scroll state.
+  // Items loaded via infinite scroll or provider-jump beyond the initial server page.
   const [extraItems, setExtraItems] = useState<FeedItem[]>([]);
   const [cursor, setCursor] = useState(initialCursor);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
   const [expanded, setExpanded] = useState<ExpandedState | null>(null);
   const [activeProvider, setActiveProvider] = useState<string | null>(null);
+  // Provider name to scroll to after its section appears in the DOM.
+  const pendingScrollRef = useRef<string | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   // Sync cursor when server sends a fresh initialCursor (new post added).
@@ -100,7 +104,7 @@ export function GalleryFeed({
     setCursor(initialCursor);
   }, [initialCursor]);
 
-  // Merge server items + scroll extras, deduplicated.
+  // Merge server items + extras, deduplicated.
   const items = useMemo(() => {
     const baseIds = new Set(initialItems.map((i) => i.id));
     return [...initialItems, ...extraItems.filter((i) => !baseIds.has(i.id))];
@@ -115,6 +119,12 @@ export function GalleryFeed({
     }
     return [...groupMap.entries()];
   }, [items]);
+
+  // Set of providers that have DOM sections (items loaded).
+  const loadedProviderSet = useMemo(
+    () => new Set(stageGroups.map(([p]) => p)),
+    [stageGroups]
+  );
 
   // Map section DOM id → provider name for fast lookup in the observer callback.
   const sectionIdToProvider = useMemo(() => {
@@ -148,16 +158,19 @@ export function GalleryFeed({
     return () => observer.disconnect();
   }, [sectionIdToProvider]);
 
-  // Derived from loaded items — guarantees every catalogue entry has a matching
-  // DOM section, so scrollIntoView always works.
-  const catalogueGroups = useMemo(() => {
-    return stageGroups
-      .map(([provider, groupItems]) => ({
-        providerName: provider,
-        count: groupItems.length
-      }))
-      .sort((a, b) => a.providerName.localeCompare(b.providerName));
-  }, [stageGroups]);
+  // Execute pending scroll once the target section appears in the DOM.
+  useEffect(() => {
+    const target = pendingScrollRef.current;
+    if (!target) return;
+    if (!loadedProviderSet.has(target)) return;
+
+    pendingScrollRef.current = null;
+    requestAnimationFrame(() => {
+      document
+        .getElementById(`section-${slugify(target)}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, [loadedProviderSet]);
 
   const handleExpand = useCallback(
     (id: string, cardEl: HTMLElement) => {
@@ -193,7 +206,43 @@ export function GalleryFeed({
     } finally {
       setLoading(false);
     }
-  }, [cursor, loading]);
+  }, [cursor, loading, items]);
+
+  const loadProvider = useCallback(
+    async (providerName: string) => {
+      try {
+        const response = await fetch(
+          `/api/gallery?provider=${encodeURIComponent(providerName)}`,
+          { headers: { accept: "application/json" } }
+        );
+        if (!response.ok) return;
+        const page = (await response.json()) as GalleryPageResponse;
+        setExtraItems((current) => {
+          const ids = new Set(items.map((i) => i.id));
+          return [...current, ...page.items.filter((i) => !ids.has(i.id))];
+        });
+      } catch {
+        // silently ignore — user can retry by clicking again
+      }
+    },
+    [items]
+  );
+
+  const handleProviderClick = useCallback(
+    (providerName: string) => {
+      const sectionId = `section-${slugify(providerName)}`;
+
+      if (loadedProviderSet.has(providerName)) {
+        document
+          .getElementById(sectionId)
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        pendingScrollRef.current = providerName;
+        void loadProvider(providerName);
+      }
+    },
+    [loadedProviderSet, loadProvider]
+  );
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -211,7 +260,19 @@ export function GalleryFeed({
     return () => observer.disconnect();
   }, [cursor, loadMore]);
 
-  const isEmpty = items.length === 0;
+  const isEmpty = items.length === 0 && allProviders.length === 0;
+
+  // Sidebar uses allProviders (server-fetched full list) enriched with loaded counts.
+  const sidebarProviders = useMemo(() => {
+    if (allProviders.length === 0) {
+      // Fall back to derived groups when prop is empty (e.g. tests)
+      return stageGroups.map(([p, groupItems]) => ({
+        providerName: p,
+        count: groupItems.length
+      }));
+    }
+    return allProviders;
+  }, [allProviders, stageGroups]);
 
   return (
     <>
@@ -238,7 +299,7 @@ export function GalleryFeed({
               </a>
             </li>
           ) : (
-            catalogueGroups.map((group) => (
+            sidebarProviders.map((group) => (
               <li
                 key={group.providerName}
                 data-active={activeProvider === group.providerName ? "" : undefined}
@@ -247,9 +308,7 @@ export function GalleryFeed({
                   href={`#section-${slugify(group.providerName)}`}
                   onClick={(e) => {
                     e.preventDefault();
-                    document
-                      .getElementById(`section-${slugify(group.providerName)}`)
-                      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    handleProviderClick(group.providerName);
                   }}
                 >
                   <span className="rail-name">{group.providerName}</span>

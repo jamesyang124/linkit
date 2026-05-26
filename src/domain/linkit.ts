@@ -79,6 +79,8 @@ export type LinkitStore = {
   createComment(input: CreateStoredCommentInput): Promise<LinkitComment>;
   listPosts(): Promise<LinkitPost[]>;
   listPostsPage(input: ListPostsPageInput): Promise<LinkitPostPage>;
+  listPostsByProvider(providerName: string): Promise<LinkitPost[]>;
+  listProviderGroups(): Promise<{ providerName: string; count: number }[]>;
   listCommentsForPosts(postIds: string[]): Promise<LinkitComment[]>;
   listTopLevelComments(postId: string): Promise<LinkitComment[]>;
   listRepliesForComment(commentId: string): Promise<LinkitComment[]>;
@@ -399,6 +401,22 @@ export function createMemoryLinkitStore(): LinkitStore {
       return [...posts.values()].sort(
         comparePostsForKeyset
       );
+    },
+
+    async listPostsByProvider(providerName) {
+      return [...posts.values()]
+        .filter((p) => p.providerName === providerName)
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    },
+
+    async listProviderGroups() {
+      const map = new Map<string, number>();
+      for (const post of posts.values()) {
+        map.set(post.providerName, (map.get(post.providerName) ?? 0) + 1);
+      }
+      return [...map.entries()]
+        .map(([providerName, count]) => ({ providerName, count }))
+        .sort((a, b) => a.providerName.localeCompare(b.providerName));
     },
 
     async listPostsPage(input) {
