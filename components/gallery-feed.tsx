@@ -39,11 +39,15 @@ function distributeColumns(items: FeedItem[]): FeedItem[][] {
 const GallerySection = memo(function GallerySection({
   provider,
   items,
-  onExpand
+  savedIds,
+  onExpand,
+  onSaveToggle
 }: {
   provider: string;
   items: FeedItem[];
+  savedIds: Set<string>;
   onExpand: (id: string, cardEl: HTMLElement) => void;
+  onSaveToggle: (id: string) => void;
 }) {
   const columns = useMemo(() => distributeColumns(items), [items]);
 
@@ -67,7 +71,9 @@ const GallerySection = memo(function GallerySection({
                 thumbnailUrl={item.thumbnailUrl}
                 clickCount={item.clickCount}
                 commentsCount={item.commentsCount}
+                isSaved={savedIds.has(item.id)}
                 onExpand={onExpand}
+                onSaveToggle={onSaveToggle}
               />
             ))}
           </div>
@@ -93,7 +99,20 @@ export function GalleryFeed({
   const [failed, setFailed] = useState(false);
   const [expanded, setExpanded] = useState<ExpandedState | null>(null);
   const [activeProvider, setActiveProvider] = useState<string | null>(null);
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  // Load saved post IDs for the current user on mount.
+  useEffect(() => {
+    fetch("/api/saves")
+      .then((r) => r.json())
+      .then((data: { savedIds: string[] }) => {
+        if (Array.isArray(data.savedIds)) {
+          setSavedIds(new Set(data.savedIds));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Sync cursor when server sends a fresh initialCursor (new post added).
   useEffect(() => {
@@ -169,6 +188,24 @@ export function GalleryFeed({
   );
 
   const handleClose = useCallback(() => setExpanded(null), []);
+
+  const handleSaveToggle = useCallback(async (id: string) => {
+    const wasSaved = savedIds.has(id);
+    setSavedIds((prev) => {
+      const next = new Set(prev);
+      wasSaved ? next.delete(id) : next.add(id);
+      return next;
+    });
+    try {
+      await fetch(`/api/saves/${id}`, { method: wasSaved ? "DELETE" : "POST" });
+    } catch {
+      setSavedIds((prev) => {
+        const next = new Set(prev);
+        wasSaved ? next.add(id) : next.delete(id);
+        return next;
+      });
+    }
+  }, [savedIds]);
 
   const loadMore = useCallback(async () => {
     if (!cursor || loading) return;
@@ -279,7 +316,9 @@ export function GalleryFeed({
               key={provider}
               provider={provider}
               items={groupItems}
+              savedIds={savedIds}
               onExpand={handleExpand}
+              onSaveToggle={handleSaveToggle}
             />
           ))
         )}
