@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { signOutAction } from "@/app/auth-actions";
+import { NavShareLink } from "@/components/nav-share-link";
 
 export async function SiteNav() {
   const session = await auth();
@@ -16,9 +17,7 @@ export async function SiteNav() {
       <div className="flex max-w-[15rem] flex-wrap items-center justify-end gap-x-5 gap-y-2 text-right text-muted sm:max-w-none">
         {user ? (
           <>
-            <a href="/#submit" className="leading-6">
-              Share
-            </a>
+            <NavShareLink className="leading-6" />
             <a href="/settings" className="leading-6">
               Profile
             </a>
@@ -36,9 +35,7 @@ export async function SiteNav() {
             <a href="/signin" className="leading-6">
               Sign in
             </a>
-            <a href="/#submit" className="leading-6">
-              Share
-            </a>
+            <NavShareLink className="leading-6" />
           </>
         )}
       </div>
