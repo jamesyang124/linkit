@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { createDb } from "@/src/db/client";
 import { createPostgresLinkitStore } from "@/src/db/linkit-store";
 import {
+  getFeedItemsByProviderFromStore,
   getGalleryFeedPageFromStore,
   normalizePageLimit
 } from "@/src/feed/load-feed";
@@ -17,9 +18,16 @@ export async function GET(request: Request) {
   }
 
   const url = new URL(request.url);
+  const provider = url.searchParams.get("provider");
+  const store = createPostgresLinkitStore(createDb(databaseUrl));
+
+  if (provider) {
+    const items = await getFeedItemsByProviderFromStore(store, provider);
+    return NextResponse.json({ items, nextCursor: null });
+  }
+
   const cursor = url.searchParams.get("cursor");
   const limit = normalizePageLimit(Number(url.searchParams.get("limit")));
-  const store = createPostgresLinkitStore(createDb(databaseUrl));
 
   try {
     return NextResponse.json(

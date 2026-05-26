@@ -10,6 +10,7 @@ import {
   type LinkitPost,
   type LinkitStore,
   type LinkitUser,
+  type ProviderSummary,
   type UpdateUsernameInput,
   type UpdatePasswordInput
 } from "@/src/domain/linkit";
@@ -220,6 +221,28 @@ export function createPostgresLinkitStore(db: LinkitDb): LinkitStore {
             }
           : null
       } satisfies LinkitPostPage;
+    },
+
+    async listProviders(): Promise<ProviderSummary[]> {
+      const rows = await db
+        .select({
+          providerName: posts.providerName,
+          count: sql<number>`count(*)::int`
+        })
+        .from(posts)
+        .groupBy(posts.providerName)
+        .orderBy(asc(posts.providerName));
+      return rows;
+    },
+
+    async listPostsByProvider(providerName: string): Promise<LinkitPost[]> {
+      const rows = await db
+        .select({ post: posts, user: users })
+        .from(posts)
+        .innerJoin(users, eq(posts.userId, users.id))
+        .where(eq(posts.providerName, providerName))
+        .orderBy(desc(posts.createdAt), desc(posts.id));
+      return rows.map(mapPostWithUser);
     },
 
     async listCommentsForPosts(postIds) {

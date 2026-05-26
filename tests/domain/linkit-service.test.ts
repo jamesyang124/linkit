@@ -163,6 +163,7 @@ describe("Linkit service", () => {
     });
     expect(firstPage.posts.map((post) => post.id)).toEqual([newerPost.id]);
     expect(firstPage.nextCursor).toEqual({
+      providerName: newerPost.providerName,
       createdAt: newerPost.createdAt,
       id: newerPost.id
     });
