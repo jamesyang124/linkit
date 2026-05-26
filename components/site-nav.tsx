@@ -20,7 +20,7 @@ export async function SiteNav() {
               Share
             </a>
             <a href="/settings" className="leading-6">
-              Settings
+              Profile
             </a>
             <form action={signOutAction} className="contents">
               <button

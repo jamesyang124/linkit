@@ -29,9 +29,7 @@ function mapComment(c: LinkitComment): CommentCard {
     postId: c.postId,
     body: c.body,
     authorName:
-      (c.user as { username?: string | null; name: string }).username ??
-      c.user.name ??
-      "Anonymous",
+      (c.user as { username?: string | null }).username ?? "Anonymous",
     replyToUserName: c.replyToUserName,
     replyCount: c.replyCount,
     parentId: c.parentId,
