@@ -567,9 +567,16 @@ button { cursor: pointer; }
 }
 
 .profile-image .gallery-thumb {
+  position: absolute;
+  inset: 0;
   aspect-ratio: unset;
-  height: 100%;
   border-radius: 0;
+}
+
+.profile-image .gallery-thumb-placeholder {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: unset;
 }
 
 .profile-image .gallery-thumb-img {
