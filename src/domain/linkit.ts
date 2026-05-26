@@ -2,7 +2,6 @@ export type LinkitUser = {
   id: string;
   email: string;
   name: string;
-  username?: string | null;
   imageUrl: string | null;
 };
 
@@ -58,9 +57,9 @@ export type LinkitJob =
       };
     };
 
-export type UpdateUsernameInput = {
+export type UpdateNameInput = {
   userId: string;
-  username: string;
+  name: string;
 };
 
 export type UpdatePasswordInput = {
@@ -84,7 +83,7 @@ export type LinkitStore = {
   listCommentsForPosts(postIds: string[]): Promise<LinkitComment[]>;
   listTopLevelComments(postId: string): Promise<LinkitComment[]>;
   listRepliesForComment(commentId: string): Promise<LinkitComment[]>;
-  updateUsername(input: UpdateUsernameInput): Promise<void>;
+  updateName(input: UpdateNameInput): Promise<void>;
   findUserPasswordHash(userId: string): Promise<string | null>;
   updatePasswordHash(input: UpdatePasswordInput): Promise<void>;
 };
@@ -459,7 +458,7 @@ export function createMemoryLinkitStore(): LinkitStore {
         .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
     },
 
-    async updateUsername() {},
+    async updateName() {},
     async findUserPasswordHash() { return null; },
     async updatePasswordHash() {}
   };

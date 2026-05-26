@@ -16,7 +16,7 @@ const dbUser = {
   emailVerified: null,
   image: "https://example.com/ada.png",
   passwordHash: null,
-  username: null,
+
   createdAt,
   updatedAt
 };
@@ -57,7 +57,7 @@ describe("Postgres Linkit store mapping", () => {
         id: dbUser.id,
         email: "ada@example.com",
         name: "Ada Lovelace",
-        username: null,
+      
         imageUrl: "https://example.com/ada.png"
       },
       createdAt,
@@ -93,7 +93,7 @@ describe("Postgres Linkit store mapping", () => {
       id: dbUser.id,
       email: "ada@example.com",
       name: "ada@example.com",
-      username: null,
+    
       imageUrl: null
     });
   });
@@ -127,7 +127,7 @@ describe("Postgres Linkit store mapping", () => {
         id: dbUser.id,
         email: "ada@example.com",
         name: "Ada Lovelace",
-        username: null,
+      
         imageUrl: "https://example.com/ada.png"
       },
       createdAt,

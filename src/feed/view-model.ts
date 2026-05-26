@@ -42,7 +42,7 @@ export function toFeedItems(
       id: comment.id,
       postId: comment.postId,
       body: comment.body,
-      authorName: comment.user.username ?? comment.user.name ?? "Anonymous"
+      authorName: comment.user.name ?? "Anonymous"
     };
     const existing = commentsByPostId.get(comment.postId) ?? [];
     commentsByPostId.set(comment.postId, [...existing, feedComment]);
@@ -66,7 +66,7 @@ export function toCommentCard(comment: LinkitComment): CommentCard {
     id: comment.id,
     postId: comment.postId,
     body: comment.body,
-    authorName: comment.user.username ?? comment.user.name ?? "Anonymous",
+    authorName: comment.user.name ?? "Anonymous",
     authorId: comment.user.id,
     replyToUserName: comment.replyToUserName,
     replyCount: comment.replyCount,

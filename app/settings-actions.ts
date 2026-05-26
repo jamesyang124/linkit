@@ -9,21 +9,17 @@ import { createPostgresLinkitStore } from "@/src/db/linkit-store";
 
 type SettingsState = { error?: string; success?: string; field?: string } | null;
 
-const USERNAME_RE = /^[a-zA-Z0-9_]{3,30}$/;
-
-export async function updateUsernameAction(
+export async function updateNameAction(
   _prev: SettingsState,
   formData: FormData
 ): Promise<SettingsState> {
   const session = await auth();
   if (!session?.user?.id) redirect("/signin");
 
-  const username = String(formData.get("username") ?? "").trim();
+  const name = String(formData.get("name") ?? "").trim();
 
-  if (!USERNAME_RE.test(username)) {
-    return {
-      error: "Username must be 3–30 characters: letters, numbers, underscores only."
-    };
+  if (name.length < 1 || name.length > 60) {
+    return { error: "Name must be between 1 and 60 characters." };
   }
 
   const db = createDb(
@@ -32,14 +28,10 @@ export async function updateUsernameAction(
   const store = createPostgresLinkitStore(db);
 
   try {
-    await store.updateUsername({ userId: session.user.id, username });
-    return { success: "Username updated." };
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "";
-    if (msg.includes("unique") || msg.includes("duplicate")) {
-      return { error: "That username is already taken." };
-    }
-    return { error: "Could not update username. Try again." };
+    await store.updateName({ userId: session.user.id, name });
+    return { success: "Name updated." };
+  } catch {
+    return { error: "Could not update name. Try again." };
   }
 }
 

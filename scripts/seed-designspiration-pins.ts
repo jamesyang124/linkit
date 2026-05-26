@@ -8,8 +8,7 @@ const { posts, users } = schema;
 
 const seedUser = {
   email: "designspiration-seed@linkit.app",
-  name: "Designspiration Seed",
-  username: "designspiration-seed"
+  name: "Designspiration Seed"
 };
 
 const PINS = [
@@ -192,7 +191,6 @@ async function main() {
         target: users.email,
         set: {
           name: seedUser.name,
-          username: seedUser.username,
           updatedAt: new Date()
         }
       })

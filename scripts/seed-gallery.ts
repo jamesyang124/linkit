@@ -372,7 +372,7 @@ const REPLY_POOL = [
 
 async function main() {
   const devUsers = await db
-    .select({ id: users.id, name: users.name, username: users.username })
+    .select({ id: users.id, name: users.name })
     .from(users)
     .where(inArray(users.email, DEV_EMAILS));
 
@@ -479,7 +479,7 @@ async function main() {
           userId: replier.id,
           body: replyText,
           parentId,
-          replyToUserName: parentUser.name ?? parentUser.username ?? "user"
+          replyToUserName: parentUser.name ?? "user"
         });
 
         await db.execute(
