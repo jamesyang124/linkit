@@ -209,18 +209,24 @@ export function GalleryFeed({
     }
   }, [initialItems]);
 
-  // Scroll to section immediately (always in DOM) and fetch items if not yet loaded.
+  // On click: scroll to target section immediately (always in DOM), then load items
+  // for every unloaded provider from index 0 up to and including the target.
+  // This ensures sections the user scrolls past are populated, not just the target.
   const handleProviderClick = useCallback(
     (providerName: string) => {
       document
         .getElementById(`section-${slugify(providerName)}`)
         ?.scrollIntoView({ behavior: "smooth", block: "start" });
 
-      if (!stageGroups.has(providerName)) {
-        void loadProvider(providerName);
+      const targetIdx = allProviders.findIndex((p) => p.providerName === providerName);
+      for (let i = 0; i <= targetIdx; i++) {
+        const p = allProviders[i].providerName;
+        if (!stageGroups.has(p)) {
+          void loadProvider(p);
+        }
       }
     },
-    [stageGroups, loadProvider]
+    [allProviders, stageGroups, loadProvider]
   );
 
   // Keyset-paginated infinite scroll: load next page when sentinel enters viewport.
