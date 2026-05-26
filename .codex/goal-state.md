@@ -393,19 +393,65 @@ Replaced all inline element-adjacent feedback `<p>` messages with a centered aut
 - **`docker-compose.yml`**: Redis 7-alpine service added with healthcheck; `REDIS_URL` env for web service.
 - Seeded 20 Pinterest pins (brutalist design, wabi-sabi ceramics, Swiss grid, scandinavian interior, film photography, industrial loft, fashion editorial). 15/20 enriched immediately; 5 hit Pinterest rate limits. `image.process` jobs queued for thumbnail generation.
 
+## Completed Slice 33 — Gallery ExpandedCard + FLIP Modal
+
+Pinterest-style modal that FLIP-animates from the gallery card to a centered viewport panel.
+
+### What changed
+
+- **`components/expanded-card.tsx`** (new): portal-rendered via `createPortal(modal, document.body)`. Captures `cardRect: DOMRect` at click. On mount: sets panel at card origin (`translate + scale`), then double-`rAF` fires transition to final position — `cubic-bezier(0.16,1,0.3,1)` 340 ms transform + 180 ms opacity. Panel size derived from image aspect ratio (background `Image` load → `imageColumnWidth / aspectRatio`), clamped to `[MIN_PANEL_HEIGHT=520, maxPanelHeight]`. Backdrop: `backdrop-filter: blur(18px) saturate(1.35)`. ESC closes; body `overflow: hidden` while open.
+- **`components/gallery-tile.tsx`**: outermost element `<a>` → `<button class="gallery-tile-btn">` with `onExpand(id, articleRef.current)` — passes `HTMLElement` for `getBoundingClientRect()`.
+- **`components/gallery-feed.tsx`** — `GallerySection`: CSS `columns: 3` masonry → JS `distributeColumns` shortest-column round-robin into 3 `FeedItem[][]`, rendered as `<div class="gallery-column">`. Prevents infinite-scroll appends from reordering existing tiles. Mobile: 2 columns.
+- **`ExpandedState`** shape: `{ item: FeedItem; cardRect: DOMRect }` — no `gridRect` needed.
+
+### Verified
+
+- `npx tsc --noEmit` → clean.
+- `npx vitest run` → 88 passed, 1 skipped.
+
+## Completed Slice 34 — Comment Section Virtual Scroll
+
+### What changed
+
+- **`components/comment-section.tsx`**: compose form at **top** of detail panel; list below. Virtual scroll: first `BATCH=10` root comments shown; `IntersectionObserver` sentinel at list-bottom triggers next batch. Reply expand: per-comment button lazy-fetches `/api/comments/{id}/replies` on demand. Inline reply form shown below expanded root comment; uses hidden `parentId` / `replyToUserName` fields. Anonymous display: `(c.user as {username?}).username ?? "Anonymous"`.
+- **`app/globals.css`**: all comment/reply classes (`comment-item`, `comment-meta`, `comment-author`, `comment-body`, `comment-mention`, `comment-actions`, `reply-list`, `reply-item`, `reply-form`) defined.
+
+## Completed Slice 35 — Profile Page + Catalogue Counts + Auth UX
+
+### What changed
+
+- **Settings → Profile**: nav label `Settings` → `Profile`; page title updated.
+- **`app/settings/page.tsx`**: converted to Server Component; fetches session, displays username. Client forms extracted to `app/settings/forms.tsx`.
+- **`components/gallery-feed.tsx`** — section header count: `items.length` from `stageGroups` (total loaded per provider) so section header matches catalogue rail count.
+- **Catalogue derive**: `catalogueGroups` computed from `stageGroups`. Removed separate `getPublicFeedItems` call on every render. Every catalogue entry now has a matching `#section-*` DOM node, guaranteeing `scrollIntoView` lands correctly.
+- **`components/password-input.tsx`** (new): controlled `<input type="password|text">` with SVG eye-toggle (`EyeOpen`/`EyeClosed`). Inline `flex border-b` Tailwind container; `aria-label` on toggle button.
+- **Auth forms** (`app/signin/form.tsx`, `app/register/form.tsx`): all password fields use `<PasswordInput>`. Controlled `email`/`password` state. On `state.error`: toast shown; `state.field === "password"` clears password only; `state.field === "email"` clears email only.
+- **`app/auth-actions.ts`** + **`app/settings-actions.ts`**: `AuthState`/`SettingsState` gain `field?: "email" | "password"` tag.
+- **`app/signin/page.tsx`** / **`app/register/page.tsx`**: 2-column layout → centered `max-w-sm` column.
+- **`app/settings/page.tsx`**: outer container `mx-auto max-w-md`.
+
+### Verified
+
+- `npx tsc --noEmit` → clean.
+- `npx vitest run` → 88 passed, 1 skipped.
+- `npm run build` → clean.
+
 ## Current Status
 
+- Branch: `feat/rewrite-fe`.
 - App running on `https://localhost:8443` via Docker Compose + Caddy.
 - Dev mode: `docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d`.
-- 22 posts in DB (20 Pinterest seeds + 2 manual).
-- Toast system active across all feedback surfaces.
-- Profile images sticky with scroll-driven pan; `profileThumbnailUrl` generates on new uploads.
+- 88 unit/integration tests + 35 E2E tests pass.
+- ExpandedCard FLIP modal live on gallery tiles.
+- Comment section: compose-top, virtual scroll (10/batch), lazy reply expand.
+- Profile page server component; auth forms use PasswordInput + field-selective clear.
+- Catalogue counts derived from loaded items — no extra DB fetch.
 - `npx tsc --noEmit` → clean.
 
 ## Next Steps
 
-- E2E tests for lazy-load comment expand flow (Playwright).
-- Re-enrich existing posts to generate `profileThumbnailUrl` (backfill script).
+- E2E tests for ExpandedCard modal (open, close, ESC).
+- E2E tests for comment virtual scroll + lazy reply expand.
 - Add `REDIS_URL` to `.env.production.example` + production env validation.
 - Production deployment hardening.
 
