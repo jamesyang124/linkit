@@ -1,0 +1,119 @@
+
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/200.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/300.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Outfit','Helvetica Neue',sans-serif;
+  background:var(--color-background-primary);
+  color:var(--color-text-primary);
+  height:600px;display:flex;flex-direction:column;overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+.navbar{
+  flex-shrink:0;
+  border-bottom:0.5px solid var(--color-border-tertiary);
+  padding:13px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--color-background-primary);
+}
+.nav-logo{font-size:12px;font-weight:300;letter-spacing:.2em;text-transform:uppercase}
+.nav-links{display:flex;gap:24px}
+.nav-link{font-size:10px;font-weight:200;letter-spacing:.16em;text-transform:uppercase;color:var(--color-text-secondary);cursor:pointer;transition:color .15s}
+.nav-link:hover,.nav-link.active{color:var(--color-text-primary)}
+.shell{display:flex;flex:1;overflow:hidden}
+.sidebar{width:200px;flex-shrink:0;border-right:0.5px solid var(--color-border-tertiary);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-label{padding:14px 16px 10px;font-size:9px;font-weight:200;letter-spacing:.22em;text-transform:uppercase;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);flex-shrink:0}
+.talent-list{overflow-y:auto;flex:1;scrollbar-width:none}
+.talent-list::-webkit-scrollbar{display:none}
+.talent-item{padding:9px 16px;cursor:pointer;border-left:1px solid transparent;transition:all .12s}
+.talent-item:hover{background:var(--color-background-secondary)}
+.talent-item.active{border-left-color:var(--color-text-primary);background:var(--color-background-secondary)}
+.talent-name{font-size:12px;font-weight:300;letter-spacing:.06em;text-transform:uppercase;color:var(--color-text-primary);line-height:1.4}
+.talent-type{font-size:9px;font-weight:200;letter-spacing:.12em;color:var(--color-text-secondary);margin-top:2px;text-transform:uppercase}
+.main{flex:1;overflow-y:auto;scrollbar-width:none}
+.main::-webkit-scrollbar{display:none}
+.section{padding:20px 16px 16px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.section-header{margin-bottom:10px;display:flex;align-items:baseline;gap:10px}
+.section-name{font-size:10px;font-weight:200;letter-spacing:.2em;text-transform:uppercase}
+.section-spec{font-size:9px;font-weight:200;letter-spacing:.12em;text-transform:uppercase;color:var(--color-text-secondary)}
+.grid{columns:3;column-gap:5px}
+.card{break-inside:avoid;margin-bottom:5px;border-radius:3px;overflow:hidden;cursor:pointer}
+.card-img{display:block;width:100%;border-radius:3px;transition:opacity .2s}
+.card:hover .card-img{opacity:.8}
+</style>
+
+<nav class="navbar">
+  <div class="nav-logo">Detroit</div>
+  <div class="nav-links">
+    <span class="nav-link">Projects</span>
+    <span class="nav-link active">Talents</span>
+    <span class="nav-link">Services</span>
+    <span class="nav-link">Insights</span>
+    <span class="nav-link">Contact</span>
+  </div>
+</nav>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sidebar-label">Talents</div>
+    <div class="talent-list" id="talentList"></div>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
+
+<script>
+const talents=[
+  {id:"alex",name:"Alex",type:"Image",cards:[{h:140,bg:"#c8c4be"},{h:100,bg:"#b0aba4"},{h:160,bg:"#d4cfc8"},{h:120,bg:"#a8a49e"},{h:90,bg:"#bfbab4"}]},
+  {id:"alys",name:"Alys Thomas",type:"Image & Film",cards:[{h:110,bg:"#b8c4c0"},{h:150,bg:"#a4b8b0"},{h:90,bg:"#c8d4ce"},{h:130,bg:"#98aaa4"},{h:160,bg:"#d0dcda"}]},
+  {id:"arnaud",name:"Arnaud",type:"Image & Film",cards:[{h:160,bg:"#c4bab0"},{h:90,bg:"#d4ccc0"},{h:130,bg:"#b8b0a4"},{h:110,bg:"#e0d8cc"},{h:150,bg:"#a8a09a"}]},
+  {id:"charlie",name:"Charlie Faye Mather",type:"Image & Film",cards:[{h:100,bg:"#c0c8c4"},{h:140,bg:"#a8b4b0"},{h:120,bg:"#d0d8d4"},{h:160,bg:"#98a8a4"},{h:90,bg:"#b8c4c0"}]},
+  {id:"chelios",name:"Chelios",type:"Image & Film",cards:[{h:130,bg:"#d0c8b8"},{h:100,bg:"#c0b8a8"},{h:150,bg:"#e0d8c8"},{h:90,bg:"#b0a898"},{h:120,bg:"#c8c0b0"}]},
+  {id:"floow",name:"Floow",type:"Image & Film",cards:[{h:90,bg:"#b4bcc0"},{h:150,bg:"#9ca8b0"},{h:110,bg:"#ccd4d8"},{h:140,bg:"#8898a4"},{h:120,bg:"#c0c8cc"}]},
+  {id:"laura",name:"Laura Baiardini",type:"Image & GIF",cards:[{h:140,bg:"#c4c0c8"},{h:100,bg:"#b0acb8"},{h:160,bg:"#d8d4dc"},{h:90,bg:"#a0a0aa"},{h:130,bg:"#c8c4d0"}]},
+  {id:"leo",name:"Leo Cannone",type:"Film & Image",cards:[{h:120,bg:"#b8c0b4"},{h:160,bg:"#a4b0a0"},{h:90,bg:"#ccd4c8"},{h:150,bg:"#98a89a"},{h:110,bg:"#c0c8bc"}]},
+  {id:"noah",name:"Noah Pharrel",type:"Image",cards:[{h:150,bg:"#c8c4b4"},{h:90,bg:"#d8d4c4"},{h:140,bg:"#b8b4a4"},{h:110,bg:"#e4e0d0"},{h:120,bg:"#a8a498"}]},
+  {id:"ojai",name:"Ojaï",type:"Image & Film",cards:[{h:100,bg:"#b0bcb8"},{h:150,bg:"#9cb0a8"},{h:130,bg:"#c8d4d0"},{h:90,bg:"#90a8a0"},{h:160,bg:"#c0ccca"}]},
+  {id:"pierrick",name:"Pierrick Jegou",type:"Image & Film",cards:[{h:160,bg:"#c0bab4"},{h:110,bg:"#d0cac4"},{h:90,bg:"#b0aaa4"},{h:140,bg:"#e0dad4"},{h:120,bg:"#a4a09c"}]},
+  {id:"sard",name:"Sard",type:"Image & Film",cards:[{h:90,bg:"#b8c4bc"},{h:140,bg:"#a4b0aa"},{h:120,bg:"#ccd8d0"},{h:160,bg:"#98a89e"},{h:100,bg:"#c4d0c8"}]},
+  {id:"squad",name:"Squad",type:"Image",cards:[{h:130,bg:"#c4c0ba"},{h:90,bg:"#d4d0ca"},{h:150,bg:"#b4b0aa"},{h:110,bg:"#e0dcd6"},{h:140,bg:"#a8a4a0"}]},
+  {id:"ulises",name:"Ulises",type:"Film & Image",cards:[{h:110,bg:"#b8bcc0"},{h:150,bg:"#a0a8b0"},{h:90,bg:"#ccd0d8"},{h:130,bg:"#8c98a4"},{h:160,bg:"#bcc0c8"}]},
+];
+
+let activeId=null;
+
+function buildSidebar(){
+  const list=document.getElementById("talentList");
+  list.innerHTML="";
+  talents.forEach(t=>{
+    const el=document.createElement("div");
+    el.className="talent-item"+(activeId===t.id?" active":"");
+    el.dataset.id=t.id;
+    el.innerHTML=`<div class="talent-name">${t.name}</div><div class="talent-type">${t.type}</div>`;
+    el.onclick=()=>selectTalent(t.id);
+    list.appendChild(el);
+  });
+}
+
+function buildMain(){
+  const main=document.getElementById("main");
+  main.innerHTML="";
+  talents.forEach(t=>{
+    const sec=document.createElement("div");
+    sec.className="section";
+    sec.id="sec-"+t.id;
+    const cards=t.cards.map(c=>`<div class="card"><div class="card-img" style="height:${c.h}px;background:${c.bg}"></div></div>`).join("");
+    sec.innerHTML=`<div class="section-header"><span class="section-name">${t.name}</span><span class="section-spec">${t.type}</span></div><div class="grid">${cards}</div>`;
+    main.appendChild(sec);
+  });
+}
+
+function selectTalent(id){
+  activeId=(activeId===id)?null:id;
+  document.querySelectorAll(".talent-item").forEach(el=>el.classList.toggle("active",el.dataset.id===activeId));
+  if(activeId) document.getElementById("sec-"+activeId)?.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+buildSidebar();
+buildMain();
+</script>

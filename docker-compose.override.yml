@@ -1,0 +1,38 @@
+services:
+  web:
+    build:
+      context: .
+      target: dev-web
+    environment:
+      NODE_ENV: development
+      NEXT_TELEMETRY_DISABLED: "1"
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - node_modules/
+            - .next/
+            - .git/
+            - .claude/
+            - .codex/
+            - docs/
+            - rewrite/
+            - test-results/
+        - action: rebuild
+          path: package.json
+        - action: rebuild
+          path: package-lock.json
+
+  worker:
+    build:
+      context: .
+      target: deps
+    command: npm run worker
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+      NEXT_TELEMETRY_DISABLED: "1"

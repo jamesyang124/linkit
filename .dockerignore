@@ -1,0 +1,11 @@
+.git
+.claude
+.codex
+.next
+node_modules
+test-results
+tsconfig.tsbuildinfo
+npm-debug.log*
+Dockerfile
+docker-compose.yml
+README.md

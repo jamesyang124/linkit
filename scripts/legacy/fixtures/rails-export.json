@@ -1,0 +1,24 @@
+{
+  "users": [
+    { "id": 1, "email": "alice@example.com" },
+    { "id": 2, "email": "bob@example.com" }
+  ],
+  "posts": [
+    {
+      "id": 10,
+      "link": "https://example.com/the-future-of-the-web",
+      "comments_count": 2,
+      "click_count": 3
+    },
+    {
+      "id": 11,
+      "link": "https://example.com/second-post",
+      "comments_count": 0,
+      "click_count": 7
+    }
+  ],
+  "comments": [
+    { "id": 100, "commentable_id": 10, "user_id": 1 },
+    { "id": 101, "commentable_id": 10, "user_id": 2 }
+  ]
+}

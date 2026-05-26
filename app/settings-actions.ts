@@ -1,0 +1,83 @@
+"use server";
+
+import bcrypt from "bcryptjs";
+import { redirect } from "next/navigation";
+
+import { auth } from "@/auth";
+import { createDb } from "@/src/db/client";
+import { createPostgresLinkitStore } from "@/src/db/linkit-store";
+
+type SettingsState = { error?: string; success?: string } | null;
+
+const USERNAME_RE = /^[a-zA-Z0-9_]{3,30}$/;
+
+export async function updateUsernameAction(
+  _prev: SettingsState,
+  formData: FormData
+): Promise<SettingsState> {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+
+  const username = String(formData.get("username") ?? "").trim();
+
+  if (!USERNAME_RE.test(username)) {
+    return {
+      error: "Username must be 3–30 characters: letters, numbers, underscores only."
+    };
+  }
+
+  const db = createDb(
+    process.env.DATABASE_URL ?? "postgres://linkit:linkit@localhost:55432/linkit"
+  );
+  const store = createPostgresLinkitStore(db);
+
+  try {
+    await store.updateUsername({ userId: session.user.id, username });
+    return { success: "Username updated." };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "";
+    if (msg.includes("unique") || msg.includes("duplicate")) {
+      return { error: "That username is already taken." };
+    }
+    return { error: "Could not update username. Try again." };
+  }
+}
+
+export async function changePasswordAction(
+  _prev: SettingsState,
+  formData: FormData
+): Promise<SettingsState> {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+
+  const currentPassword = String(formData.get("currentPassword") ?? "");
+  const newPassword = String(formData.get("newPassword") ?? "");
+
+  if (newPassword.length < 8) {
+    return { error: "New password must be at least 8 characters." };
+  }
+
+  const db = createDb(
+    process.env.DATABASE_URL ?? "postgres://linkit:linkit@localhost:55432/linkit"
+  );
+  const store = createPostgresLinkitStore(db);
+  const currentHash = await store.findUserPasswordHash(session.user.id);
+
+  if (!currentHash) {
+    return { error: "Password change not available for this account." };
+  }
+
+  const matches = await bcrypt.compare(currentPassword, currentHash);
+  if (!matches) {
+    return { error: "Current password is incorrect." };
+  }
+
+  const newHash = await bcrypt.hash(newPassword, 12);
+  await store.updatePasswordHash({
+    userId: session.user.id,
+    currentPasswordHash: currentHash,
+    newPasswordHash: newHash
+  });
+
+  return { success: "Password changed." };
+}
