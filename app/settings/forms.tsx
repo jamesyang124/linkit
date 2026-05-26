@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 
-import { changePasswordAction, updateUsernameAction } from "@/app/settings-actions";
+import { changePasswordAction, updateNameAction } from "@/app/settings-actions";
 import { PasswordInput } from "@/components/password-input";
 import { showToast } from "@/components/toast";
 
@@ -19,16 +19,16 @@ function SubmitButton({ label }: { label: string }) {
   );
 }
 
-export function ProfileForms({ currentUsername }: { currentUsername: string | null }) {
-  const [usernameState, usernameAction] = useActionState(updateUsernameAction, null);
+export function ProfileForms({ currentName }: { currentName: string | null }) {
+  const [nameState, nameAction] = useActionState(updateNameAction, null);
   const [passwordState, passwordAction] = useActionState(changePasswordAction, null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
   useEffect(() => {
-    if (usernameState?.error) showToast(usernameState.error, "error");
-    else if (usernameState?.success) showToast(usernameState.success, "success");
-  }, [usernameState]);
+    if (nameState?.error) showToast(nameState.error, "error");
+    else if (nameState?.success) showToast(nameState.success, "success");
+  }, [nameState]);
 
   useEffect(() => {
     if (passwordState?.error) {
@@ -46,27 +46,27 @@ export function ProfileForms({ currentUsername }: { currentUsername: string | nu
     <div className="grid gap-12 max-w-md">
       <section>
         <h2 className="mb-4 text-xs uppercase tracking-[0.24em] text-muted">
-          Username
+          Name
         </h2>
-        {currentUsername && (
+        {currentName && (
           <p className="mb-3 text-sm text-ink">
-            Current: <span className="font-medium">{currentUsername}</span>
+            Current: <span className="font-medium">{currentName}</span>
           </p>
         )}
         <p className="mb-4 text-sm text-muted">
           Your public display name in comments. Leave unset to appear as Anonymous.
         </p>
-        <form action={usernameAction} className="grid gap-4 border-l border-ink pl-5">
+        <form action={nameAction} className="grid gap-4 border-l border-ink pl-5">
           <label className="grid gap-2 text-xs uppercase tracking-[0.24em] text-muted">
-            New username
+            New name
             <input
               className="border-b border-ink bg-transparent py-3 text-base normal-case tracking-normal text-ink outline-none"
-              name="username"
-              autoComplete="username"
-              placeholder="e.g. ada_lovelace"
+              name="name"
+              autoComplete="name"
+              placeholder="e.g. Ada Lovelace"
             />
           </label>
-          <SubmitButton label="Save username" />
+          <SubmitButton label="Save name" />
         </form>
       </section>
 

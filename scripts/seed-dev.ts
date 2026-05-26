@@ -26,16 +26,16 @@ const PASSWORD_HASH = await bcrypt.hash("p@ssw0rd2004", 12);
 // ─── Users ────────────────────────────────────────────────────────────────────
 
 const USERS = [
-  { name: "Mia Chen",       username: "mia_chen",      email: "mia@dev.local" },
-  { name: "Ravi Patel",     username: "ravi_p",        email: "ravi@dev.local" },
-  { name: "Sofía Ruiz",     username: "sofia_r",       email: "sofia@dev.local" },
-  { name: "James Park",     username: "jpark",         email: "james@dev.local" },
-  { name: "Lena Müller",    username: "lena_m",        email: "lena@dev.local" },
-  { name: "Kofi Asante",    username: "kofi_a",        email: "kofi@dev.local" },
-  { name: "Yuki Tanaka",    username: "yuki_t",        email: "yuki@dev.local" },
-  { name: "Omar Hassan",    username: "omar_h",        email: "omar@dev.local" },
-  { name: "Priya Sharma",   username: "priya_s",       email: "priya@dev.local" },
-  { name: "Lukas Braun",    username: "lukas_b",       email: "lukas@dev.local" },
+  { name: "Mia Chen",     email: "mia@dev.local" },
+  { name: "Ravi Patel",   email: "ravi@dev.local" },
+  { name: "Sofía Ruiz",   email: "sofia@dev.local" },
+  { name: "James Park",   email: "james@dev.local" },
+  { name: "Lena Müller",  email: "lena@dev.local" },
+  { name: "Kofi Asante",  email: "kofi@dev.local" },
+  { name: "Yuki Tanaka",  email: "yuki@dev.local" },
+  { name: "Omar Hassan",  email: "omar@dev.local" },
+  { name: "Priya Sharma", email: "priya@dev.local" },
+  { name: "Lukas Braun",  email: "lukas@dev.local" },
 ];
 
 // ─── Posts ────────────────────────────────────────────────────────────────────
@@ -266,7 +266,6 @@ async function seed() {
       USERS.map((u) => ({
         email: u.email,
         name: u.name,
-        username: u.username,
         passwordHash: PASSWORD_HASH,
       }))
     )
@@ -323,7 +322,7 @@ async function seed() {
       totalComments++;
 
       if (thread.replies && thread.replies.length > 0) {
-        const replyAuthors: string[] = [commentAuthor.name ?? commentAuthor.username ?? "user"];
+        const replyAuthors: string[] = [commentAuthor.name ?? "user"];
         for (let replyIdx = 0; replyIdx < thread.replies.length; replyIdx++) {
           const reply = thread.replies[replyIdx];
           const replyAuthor = createdUsers[(postIdx * 7 + threadIdx * 3 + replyIdx + 5) % createdUsers.length];
@@ -337,7 +336,7 @@ async function seed() {
             replyToUserName: replyToName,
           });
 
-          replyAuthors.push(replyAuthor.name ?? replyAuthor.username ?? "user");
+          replyAuthors.push(replyAuthor.name ?? "user");
 
           // Increment replyCount on root comment
           await db

@@ -10,7 +10,7 @@ import {
   type LinkitPost,
   type LinkitStore,
   type LinkitUser,
-  type UpdateUsernameInput,
+  type UpdateNameInput,
   type UpdatePasswordInput
 } from "@/src/domain/linkit";
 import type { LinkitDb } from "@/src/db/client";
@@ -283,10 +283,10 @@ export function createPostgresLinkitStore(db: LinkitDb): LinkitStore {
       return rows.map(mapCommentWithUser);
     },
 
-    async updateUsername({ userId, username }: UpdateUsernameInput) {
+    async updateName({ userId, name }: UpdateNameInput) {
       await db
         .update(users)
-        .set({ username, updatedAt: new Date() })
+        .set({ name, updatedAt: new Date() })
         .where(eq(users.id, userId));
     },
 
@@ -346,7 +346,6 @@ function mapDbUser(user: typeof users.$inferSelect): LinkitUser {
     id: user.id,
     email: user.email,
     name: user.name ?? user.email,
-    username: user.username ?? null,
     imageUrl: user.image
   };
 }
@@ -362,7 +361,6 @@ function mapDomainUserToDbUser(user: LinkitUser): typeof users.$inferSelect {
     emailVerified: null,
     image: user.imageUrl,
     passwordHash: null,
-    username: user.username ?? null,
     createdAt: now,
     updatedAt: now
   };

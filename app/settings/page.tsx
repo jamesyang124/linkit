@@ -14,18 +14,18 @@ export default async function ProfilePage() {
     process.env.DATABASE_URL ?? "postgres://linkit:linkit@localhost:55432/linkit"
   );
   const [row] = await db
-    .select({ username: users.username })
+    .select({ name: users.name })
     .from(users)
     .where(eq(users.id, session.user.id))
     .limit(1);
 
-  const currentUsername = row?.username ?? null;
+  const currentName = row?.name ?? null;
 
   return (
     <main className="site-shell min-h-screen px-5 py-10 md:px-8">
       <div className="mx-auto max-w-md">
         <h1 className="mb-10 font-display text-2xl font-light tracking-wide">Profile</h1>
-        <ProfileForms currentUsername={currentUsername} />
+        <ProfileForms currentName={currentName} />
       </div>
     </main>
   );
