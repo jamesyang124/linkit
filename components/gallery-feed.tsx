@@ -44,10 +44,12 @@ function distributeColumns(items: FeedItem[]): FeedItem[][] {
 const GallerySection = memo(function GallerySection({
   provider,
   items,
+  totalCount,
   onExpand
 }: {
   provider: string;
   items: FeedItem[];
+  totalCount: number;
   onExpand: (id: string, cardEl: HTMLElement) => void;
 }) {
   const columns = useMemo(() => distributeColumns(items), [items]);
@@ -57,7 +59,7 @@ const GallerySection = memo(function GallerySection({
       <div className="gallery-section-header">
         <span className="gallery-section-name">{provider}</span>
         <span className="gallery-section-spec">
-          {items.length} {items.length === 1 ? "link" : "links"}
+          {totalCount} {totalCount === 1 ? "link" : "links"}
         </span>
       </div>
       <div className="gallery-section-grid">
@@ -169,6 +171,14 @@ export function GalleryFeed({
       a.providerName.localeCompare(b.providerName)
     );
   }, [initialCatalogueItems]);
+
+  const catalogueTotalsMap = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const group of catalogueGroups) {
+      map.set(group.providerName, group.count);
+    }
+    return map;
+  }, [catalogueGroups]);
 
   const handleExpand = useCallback(
     (id: string, cardEl: HTMLElement) => {
@@ -291,6 +301,7 @@ export function GalleryFeed({
               key={provider}
               provider={provider}
               items={groupItems}
+              totalCount={catalogueTotalsMap.get(provider) ?? groupItems.length}
               onExpand={handleExpand}
             />
           ))
