@@ -2,7 +2,7 @@ import { unstable_cache } from "next/cache";
 
 import { createDb } from "@/src/db/client";
 import { createPostgresLinkitStore } from "@/src/db/linkit-store";
-import type { LinkitStore } from "@/src/domain/linkit";
+import type { LinkitStore, ProviderSummary } from "@/src/domain/linkit";
 import { toFeedItems, type FeedItem } from "@/src/feed/view-model";
 import {
   decodePostCursor,
@@ -131,36 +131,32 @@ export const getPublicGalleryFeedPage = unstable_cache(
   }
 );
 
-export const getPublicProviderGroups = unstable_cache(
-  async () => {
-    const databaseUrl = process.env.DATABASE_URL;
-    if (!databaseUrl) {
-      return [];
-    }
-
-    const store = createPostgresLinkitStore(createDb(databaseUrl));
-    try {
-      return await store.listProviderGroups();
-    } catch (error) {
-      console.error("Failed to load provider groups", error);
-      return [];
-    }
-  },
-  ["public-provider-groups"],
-  {
-    revalidate: 60,
-    tags: ["public-feed"]
-  }
-);
-
-export async function getProviderFeedItemsFromStore(
+export async function getFeedItemsByProviderFromStore(
   store: Pick<LinkitStore, "listPostsByProvider" | "listCommentsForPosts">,
   providerName: string
 ): Promise<FeedItem[]> {
-  const postList = await store.listPostsByProvider(providerName);
-  const commentList = await store.listCommentsForPosts(postList.map((p) => p.id));
-  return toFeedItems(postList, commentList);
+  const providerPosts = await store.listPostsByProvider(providerName);
+  const comments = await store.listCommentsForPosts(providerPosts.map((p) => p.id));
+  return toFeedItems(providerPosts, comments);
 }
+
+export const getPublicProviderSummaries = unstable_cache(
+  async (): Promise<ProviderSummary[]> => {
+    const databaseUrl = process.env.DATABASE_URL;
+    if (!databaseUrl) return [];
+
+    const store = createPostgresLinkitStore(createDb(databaseUrl));
+    try {
+      return await store.listProviders();
+    } catch (error) {
+      console.error("Failed to load provider summaries", error);
+      return [];
+    }
+  },
+  ["public-provider-summaries"],
+  { revalidate: 60, tags: ["public-feed"] }
+);
+
 
 export function normalizePageLimit(limit: number | undefined): number {
   if (!limit || !Number.isFinite(limit)) {

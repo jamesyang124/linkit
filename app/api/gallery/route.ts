@@ -3,8 +3,8 @@ import { NextResponse } from "next/server";
 import { createDb } from "@/src/db/client";
 import { createPostgresLinkitStore } from "@/src/db/linkit-store";
 import {
+  getFeedItemsByProviderFromStore,
   getGalleryFeedPageFromStore,
-  getProviderFeedItemsFromStore,
   normalizePageLimit
 } from "@/src/feed/load-feed";
 import { InvalidPostCursorError } from "@/src/feed/keyset";
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
 
   if (provider) {
     try {
-      const items = await getProviderFeedItemsFromStore(store, provider);
+      const items = await getFeedItemsByProviderFromStore(store, provider);
       return NextResponse.json({ items, nextCursor: null });
     } catch {
       return NextResponse.json({ items: [], nextCursor: null });

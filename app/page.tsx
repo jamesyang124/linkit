@@ -1,13 +1,13 @@
-import { getPublicGalleryFeedPage, getPublicProviderGroups } from "@/src/feed/load-feed";
+import { getPublicGalleryFeedPage, getPublicProviderSummaries } from "@/src/feed/load-feed";
 import { GalleryFeed } from "@/components/gallery-feed";
 import { SubmitForm } from "@/components/submit-form";
 
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [galleryPage, allProviders] = await Promise.all([
+  const [galleryPage, providers] = await Promise.all([
     getPublicGalleryFeedPage(),
-    getPublicProviderGroups()
+    getPublicProviderSummaries()
   ]);
 
   return (
@@ -27,7 +27,7 @@ export default async function HomePage() {
         <GalleryFeed
           initialItems={galleryPage.items}
           initialCursor={galleryPage.nextCursor}
-          allProviders={allProviders}
+          providers={providers}
         />
       </section>
 

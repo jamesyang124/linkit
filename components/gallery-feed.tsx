@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, memo } from "react";
 import { GalleryTile } from "@/components/gallery-tile";
 import { ExpandedCard } from "@/components/expanded-card";
 import type { FeedItem } from "@/src/feed/view-model";
+import type { ProviderSummary } from "@/src/domain/linkit";
 
 type ProviderGroup = { providerName: string; count: number };
 
@@ -91,11 +92,11 @@ const GallerySection = memo(function GallerySection({
 export function GalleryFeed({
   initialItems,
   initialCursor,
-  allProviders
+  providers
 }: {
   initialItems: FeedItem[];
   initialCursor: string | null;
-  allProviders: ProviderGroup[];
+  providers: ProviderSummary[];
 }) {
   // Items loaded via infinite scroll beyond the initial server page.
   const [extraItems, setExtraItems] = useState<FeedItem[]>([]);
@@ -105,7 +106,6 @@ export function GalleryFeed({
   const [expanded, setExpanded] = useState<ExpandedState | null>(null);
   const [activeProvider, setActiveProvider] = useState<string | null>(null);
   const [loadingProviders, setLoadingProviders] = useState<Set<string>>(new Set());
-  // Ref-based guard: prevents re-fetching a provider already loaded via provider API.
   const loadedProvidersRef = useRef<Set<string>>(new Set());
   const inFlightRef = useRef<Map<string, Promise<void>>>(new Map());
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -135,11 +135,11 @@ export function GalleryFeed({
   // Map section DOM id → provider name for fast lookup in the observer callback.
   const sectionIdToProvider = useMemo(() => {
     const map = new Map<string, string>();
-    for (const { providerName } of allProviders) {
+    for (const { providerName } of providers) {
       map.set(`section-${slugify(providerName)}`, providerName);
     }
     return map;
-  }, [allProviders]);
+  }, [providers]);
 
   // Track which gallery section is currently visible and highlight it in the rail.
   useEffect(() => {
@@ -175,8 +175,6 @@ export function GalleryFeed({
 
   const handleClose = useCallback(() => setExpanded(null), []);
 
-  // Fetch all items for a provider on demand. Returns a Promise so callers can await.
-  // Inflight dedup: concurrent calls for the same provider share one fetch.
   const loadProvider = useCallback((providerName: string): Promise<void> => {
     if (loadedProvidersRef.current.has(providerName)) return Promise.resolve();
 
@@ -211,16 +209,13 @@ export function GalleryFeed({
     return promise;
   }, [initialItems]);
 
-  // On click: load all preceding unloaded sections first, then scroll to target.
-  // Preceding loads run in parallel; scroll fires only after they resolve so the
-  // user lands on a fully-rendered target rather than skipping past empty sections.
   const handleProviderClick = useCallback(
     async (providerName: string) => {
-      const targetIdx = allProviders.findIndex((p) => p.providerName === providerName);
+      const targetIdx = providers.findIndex((p) => p.providerName === providerName);
 
       const precedingLoads: Promise<void>[] = [];
       for (let i = 0; i < targetIdx; i++) {
-        const p = allProviders[i].providerName;
+        const p = providers[i].providerName;
         if (!stageGroups.has(p)) {
           precedingLoads.push(loadProvider(p));
         }
@@ -238,10 +233,9 @@ export function GalleryFeed({
         void loadProvider(providerName);
       }
     },
-    [allProviders, stageGroups, loadProvider]
+    [providers, stageGroups, loadProvider]
   );
 
-  // Keyset-paginated infinite scroll: load next page when sentinel enters viewport.
   const loadMore = useCallback(async () => {
     if (!cursor || loading) return;
 
@@ -283,7 +277,7 @@ export function GalleryFeed({
     return () => observer.disconnect();
   }, [cursor, loadMore]);
 
-  const isEmpty = allProviders.length === 0;
+  const isEmpty = providers.length === 0;
 
   return (
     <>
@@ -310,7 +304,7 @@ export function GalleryFeed({
               </a>
             </li>
           ) : (
-            allProviders.map((group) => (
+            providers.map((group) => (
               <li
                 key={group.providerName}
                 data-active={activeProvider === group.providerName ? "" : undefined}
@@ -344,7 +338,7 @@ export function GalleryFeed({
             </div>
           </section>
         ) : (
-          allProviders.map(({ providerName, count }) => (
+          providers.map(({ providerName, count }) => (
             <GallerySection
               key={providerName}
               provider={providerName}

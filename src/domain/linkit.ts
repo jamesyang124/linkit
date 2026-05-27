@@ -1,3 +1,8 @@
+export type ProviderSummary = {
+  providerName: string;
+  count: number;
+};
+
 export type LinkitUser = {
   id: string;
   email: string;
@@ -78,8 +83,8 @@ export type LinkitStore = {
   createComment(input: CreateStoredCommentInput): Promise<LinkitComment>;
   listPosts(): Promise<LinkitPost[]>;
   listPostsPage(input: ListPostsPageInput): Promise<LinkitPostPage>;
+  listProviders(): Promise<ProviderSummary[]>;
   listPostsByProvider(providerName: string): Promise<LinkitPost[]>;
-  listProviderGroups(): Promise<{ providerName: string; count: number }[]>;
   listCommentsForPosts(postIds: string[]): Promise<LinkitComment[]>;
   listTopLevelComments(postId: string): Promise<LinkitComment[]>;
   listRepliesForComment(commentId: string): Promise<LinkitComment[]>;
@@ -402,22 +407,6 @@ export function createMemoryLinkitStore(): LinkitStore {
       );
     },
 
-    async listPostsByProvider(providerName) {
-      return [...posts.values()]
-        .filter((p) => p.providerName === providerName)
-        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-    },
-
-    async listProviderGroups() {
-      const map = new Map<string, number>();
-      for (const post of posts.values()) {
-        map.set(post.providerName, (map.get(post.providerName) ?? 0) + 1);
-      }
-      return [...map.entries()]
-        .map(([providerName, count]) => ({ providerName, count }))
-        .sort((a, b) => a.providerName.localeCompare(b.providerName));
-    },
-
     async listPostsPage(input) {
       const sortedPosts = [...posts.values()]
         .filter((post) => !input.thumbnailsOnly || post.thumbnailUrl !== null)
@@ -437,6 +426,22 @@ export function createMemoryLinkitStore(): LinkitStore {
             }
           : null
       };
+    },
+
+    async listProviders() {
+      const counts = new Map<string, number>();
+      for (const post of posts.values()) {
+        counts.set(post.providerName, (counts.get(post.providerName) ?? 0) + 1);
+      }
+      return [...counts.entries()]
+        .map(([providerName, count]) => ({ providerName, count }))
+        .sort((a, b) => a.providerName.localeCompare(b.providerName));
+    },
+
+    async listPostsByProvider(providerName) {
+      return [...posts.values()]
+        .filter((post) => post.providerName === providerName)
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime() || b.id.localeCompare(a.id));
     },
 
     async listCommentsForPosts(postIds) {
