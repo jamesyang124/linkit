@@ -519,7 +519,7 @@ button { cursor: pointer; }
 .profile-layout {
   flex: 1;
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 40% 60%;
   min-height: 0; /* allow grid children to overflow-y:auto */
 }
 
@@ -563,7 +563,7 @@ button { cursor: pointer; }
 
 .saved-gallery-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 }
 
