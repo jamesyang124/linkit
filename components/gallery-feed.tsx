@@ -17,6 +17,29 @@ type ExpandedState = {
   cardRect: DOMRect;
 };
 
+function slugify(s: string) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+}
+
+/**
+ * Instant scroll to section — direct scrollTop assignment bypasses
+ * CSS scroll-behavior: smooth so there's no fighting with ResizeObserver
+ * corrections. No animation: user lands at the section immediately.
+ */
+function jumpToSection(sectionId: string) {
+  const el = document.getElementById(sectionId);
+  if (!el) return;
+  const scrollContainer = document.getElementById("page-main");
+  if (scrollContainer) {
+    const containerTop = scrollContainer.getBoundingClientRect().top;
+    const elTop = el.getBoundingClientRect().top;
+    const marginTop = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+    scrollContainer.scrollTop += elTop - containerTop - marginTop;
+  } else {
+    el.scrollIntoView({ behavior: "instant", block: "start" });
+  }
+}
+
 const COLUMN_COUNT = 3;
 
 function distributeColumns(items: FeedItem[]): FeedItem[][] {
@@ -51,7 +74,11 @@ const GallerySection = memo(function GallerySection({
   const hasItems = items.length > 0;
 
   return (
-    <section className="gallery-section">
+    <section
+      className="gallery-section"
+      id={`section-${slugify(provider)}`}
+      data-provider={provider}
+    >
       <div className="gallery-section-header">
         <span className="gallery-section-name">{provider}</span>
         <span className="gallery-section-spec">
@@ -95,20 +122,15 @@ export function GalleryFeed({
 }) {
   const [extraItems, setExtraItems] = useState<FeedItem[]>([]);
   const [expanded, setExpanded] = useState<ExpandedState | null>(null);
-  const [selectedIdx, setSelectedIdx] = useState(0);
-  const [transitionKey, setTransitionKey] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [activeProvider, setActiveProvider] = useState<string | null>(null);
   const [loadingProviders, setLoadingProviders] = useState<Set<string>>(new Set());
   const loadedProvidersRef = useRef<Set<string>>(new Set());
   const inFlightRef = useRef<Map<string, Promise<void>>>(new Map());
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const railListRef = useRef<HTMLOListElement>(null);
   const initialItemsRef = useRef(initialItems);
-
-  const selectedProvider = providers[selectedIdx]?.providerName ?? null;
-  const prevEntry = selectedIdx > 0 ? providers[selectedIdx - 1] : null;
-  const nextEntry =
-    selectedIdx < providers.length - 1 ? providers[selectedIdx + 1] : null;
+  // Pending section to jump to after preceding providers load
+  const scrollTargetRef = useRef<string | null>(null);
 
   // Open card from saved list (?open=<id>)
   useEffect(() => {
@@ -209,53 +231,101 @@ export function GalleryFeed({
     [initialItems]
   );
 
-  // Load selected + adjacent providers whenever selection changes
+  // After items update, jump to pending scroll target (fired after preceding providers load)
   useEffect(() => {
-    const sel = providers[selectedIdx]?.providerName;
-    const prev = providers[selectedIdx - 1]?.providerName;
-    const next = providers[selectedIdx + 1]?.providerName;
-    if (sel) void loadProvider(sel);
-    if (prev) void loadProvider(prev);
-    if (next) void loadProvider(next);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedIdx]);
+    const target = scrollTargetRef.current;
+    if (!target) return;
+    scrollTargetRef.current = null;
+    jumpToSection(target);
+  }, [items]);
 
-  // Scroll sidebar rail to keep active item visible
+  // Map section id → provider name for IntersectionObserver
+  const sectionIdToProvider = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const { providerName } of providers) {
+      map.set(`section-${slugify(providerName)}`, providerName);
+    }
+    return map;
+  }, [providers]);
+
+  // Track visible section → highlight in sidebar
   useEffect(() => {
-    if (!railListRef.current) return;
-    const li = railListRef.current.querySelectorAll("li")[selectedIdx];
+    const sections = document.querySelectorAll<HTMLElement>(".gallery-section");
+    if (sections.length === 0) return;
+    const scrollRoot = document.getElementById("page-main");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const provider = sectionIdToProvider.get(entry.target.id);
+            if (provider) setActiveProvider(provider);
+          }
+        }
+      },
+      { root: scrollRoot, rootMargin: "-60px 0px -65% 0px", threshold: 0 }
+    );
+    sections.forEach((s) => observer.observe(s));
+    return () => observer.disconnect();
+  }, [sectionIdToProvider]);
+
+  // Lazy-load provider content as sections scroll into view
+  useEffect(() => {
+    const scrollRoot = document.getElementById("page-main");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const provider = entry.target.getAttribute("data-provider");
+            if (provider) void loadProvider(provider);
+          }
+        }
+      },
+      { root: scrollRoot, rootMargin: "60% 0px" }
+    );
+    const sections = document.querySelectorAll<HTMLElement>(
+      ".gallery-section[data-provider]"
+    );
+    sections.forEach((s) => observer.observe(s));
+    return () => observer.disconnect();
+  }, [providers, loadProvider]);
+
+  // Sidebar auto-scrolls to keep active item visible
+  useEffect(() => {
+    if (!activeProvider || !railListRef.current) return;
+    const idx = providers.findIndex((p) => p.providerName === activeProvider);
+    if (idx < 0) return;
+    const li = railListRef.current.querySelectorAll("li")[idx];
     if (li) li.scrollIntoView({ block: "nearest" });
-  }, [selectedIdx]);
-
-  const switchProvider = useCallback(
-    (newIdx: number) => {
-      if (
-        newIdx === selectedIdx ||
-        newIdx < 0 ||
-        newIdx >= providers.length
-      )
-        return;
-      const name = providers[newIdx]?.providerName;
-      if (name) void loadProvider(name);
-
-      setIsTransitioning(true);
-      setTimeout(() => {
-        setSelectedIdx(newIdx);
-        setTransitionKey((k) => k + 1);
-        setIsTransitioning(false);
-        const pageMain = document.getElementById("page-main");
-        if (pageMain) pageMain.scrollTop = 0;
-      }, 180);
-    },
-    [selectedIdx, providers, loadProvider]
-  );
+  }, [activeProvider, providers]);
 
   const handleProviderClick = useCallback(
-    (providerName: string) => {
-      const idx = providers.findIndex((p) => p.providerName === providerName);
-      if (idx !== -1) switchProvider(idx);
+    async (providerName: string) => {
+      const targetIdx = providers.findIndex((p) => p.providerName === providerName);
+      const sectionId = `section-${slugify(providerName)}`;
+
+      // Load preceding sections first if they haven't been loaded
+      const precedingLoads: Promise<void>[] = [];
+      for (let i = 0; i < targetIdx; i++) {
+        const p = providers[i].providerName;
+        if (!stageGroups.has(p)) {
+          precedingLoads.push(loadProvider(p));
+        }
+      }
+
+      if (precedingLoads.length > 0) {
+        // Store jump target; the items-change effect will fire it after commit
+        scrollTargetRef.current = sectionId;
+        await Promise.all(precedingLoads);
+        // Effect fires after React commits the new items
+      } else {
+        jumpToSection(sectionId);
+      }
+
+      if (!stageGroups.has(providerName)) {
+        void loadProvider(providerName);
+      }
     },
-    [providers, switchProvider]
+    [providers, stageGroups, loadProvider]
   );
 
   const handleExpand = useCallback(
@@ -312,15 +382,17 @@ export function GalleryFeed({
               </button>
             </li>
           ) : (
-            providers.map((group, idx) => (
+            providers.map((group) => (
               <li
                 key={group.providerName}
-                data-active={selectedIdx === idx ? "" : undefined}
+                data-active={
+                  activeProvider === group.providerName ? "" : undefined
+                }
               >
                 <button
                   type="button"
                   className="rail-item-btn"
-                  onClick={() => handleProviderClick(group.providerName)}
+                  onClick={() => void handleProviderClick(group.providerName)}
                 >
                   <span className="rail-name">{group.providerName}</span>
                   <span className="rail-type">
@@ -336,63 +408,29 @@ export function GalleryFeed({
       <div className="infinite-stage">
         <p className="catalogue-version">MM26.1</p>
 
-        {!isEmpty && selectedProvider && (
-          <nav className="section-breadcrumb" aria-label="Provider navigation">
-            {prevEntry ? (
-              <button
-                type="button"
-                className="section-nav-btn section-nav-btn--prev"
-                onClick={() => switchProvider(selectedIdx - 1)}
-                aria-label={`Go to ${prevEntry.providerName}`}
-              >
-                ← {prevEntry.providerName}
-              </button>
-            ) : (
-              <span className="section-nav-placeholder" />
-            )}
-            <span className="section-nav-current">{selectedProvider}</span>
-            {nextEntry ? (
-              <button
-                type="button"
-                className="section-nav-btn section-nav-btn--next"
-                onClick={() => switchProvider(selectedIdx + 1)}
-                aria-label={`Go to ${nextEntry.providerName}`}
-              >
-                {nextEntry.providerName} →
-              </button>
-            ) : (
-              <span className="section-nav-placeholder" />
-            )}
-          </nav>
-        )}
-
         {isEmpty ? (
-          <section className="gallery-section">
+          <section
+            className="gallery-section"
+            id="section-linkit"
+          >
             <div className="gallery-section-header">
               <span className="gallery-section-name">Linkit</span>
               <span className="gallery-section-spec">No links yet</span>
             </div>
           </section>
         ) : (
-          <div
-            key={transitionKey}
-            className={`gallery-stage-content${isTransitioning ? " gallery-stage-content--out" : ""}`}
-          >
-            {selectedProvider && (
-              <GallerySection
-                provider={selectedProvider}
-                items={stageGroups.get(selectedProvider) ?? []}
-                totalCount={
-                  providers.find((p) => p.providerName === selectedProvider)
-                    ?.count ?? 0
-                }
-                loading={loadingProviders.has(selectedProvider)}
-                savedIds={savedIds}
-                onExpand={handleExpand}
-                onSaveToggle={handleSaveToggle}
-              />
-            )}
-          </div>
+          providers.map(({ providerName, count }) => (
+            <GallerySection
+              key={providerName}
+              provider={providerName}
+              items={stageGroups.get(providerName) ?? []}
+              totalCount={count}
+              loading={loadingProviders.has(providerName)}
+              savedIds={savedIds}
+              onExpand={handleExpand}
+              onSaveToggle={handleSaveToggle}
+            />
+          ))
         )}
       </div>
 

@@ -502,6 +502,7 @@ button { cursor: pointer; }
 .infinite-stage {
   /* Force column 2 — .catalogue-rail is position:fixed (out of grid flow) */
   grid-column: 2;
+  min-height: 100dvh;
   padding: 1.5rem 1rem 4rem;
   border-left: 0.5px solid var(--c-border-mid);
 }
@@ -520,7 +521,11 @@ button { cursor: pointer; }
 /* ─── Gallery sections (grouped by provider) ── */
 
 .gallery-section {
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
+  /* Bottom clearance so the last section can always be scrolled to the
+     same top position as all other sections (nav height + buffer). */
+  padding-bottom: calc(var(--site-nav-height) + 10px);
+  scroll-margin-top: var(--site-nav-height);
 }
 
 .gallery-section-header {
