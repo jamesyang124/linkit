@@ -156,6 +156,11 @@ button { cursor: pointer; }
 
 .infinite-page {
   position: relative;
+  /* Creates stacking context above .selection-word (z-index:0 fixed).
+     Also serves as the sticky-containing block for .catalogue-rail —
+     sidebar stays sticky for the full page (gallery + submit-dock),
+     not just until the end of .infinite-shell. */
+  z-index: 1;
 }
 
 .selection-word {
@@ -173,8 +178,9 @@ button { cursor: pointer; }
 }
 
 .infinite-shell {
-  position: relative;
-  z-index: 1;
+  /* position:relative / z-index:1 removed — stacking context now lives on
+     .infinite-page so .catalogue-rail's sticky containing block spans the
+     full page height instead of stopping at the grid's bottom edge. */
   display: grid;
   grid-template-columns: 200px minmax(0, 1fr);
   gap: 0;
