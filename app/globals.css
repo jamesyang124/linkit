@@ -313,7 +313,9 @@ button { cursor: pointer; }
 
 .gallery-section {
   margin-bottom: 3rem;
-  scroll-margin-top: 1.5rem;
+  /* Match catalogue-rail sticky top (2rem) so every provider section
+     lands at the same fixed distance from the top of the viewport. */
+  scroll-margin-top: 2rem;
 }
 
 .gallery-section-header {
