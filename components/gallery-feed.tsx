@@ -34,9 +34,8 @@ function slugify(s: string) {
  * section shifts down.  A ResizeObserver on `.infinite-stage` catches every
  * height change and instantly re-aligns the target within the watch window.
  *
- * `smooth` — pass false when preceding sections were just fetched; skips the
- * smooth animation so the ResizeObserver's instant corrections don't interrupt
- * an in-progress scroll and cause a visible flicker.
+ * `smooth` — when true the ResizeObserver is delayed ~500 ms so the smooth
+ * animation finishes before any instant corrections fire (avoids flicker).
  */
 function scrollToSection(sectionId: string, watchMs = 4000, smooth = true) {
   const el = document.getElementById(sectionId);
@@ -47,11 +46,9 @@ function scrollToSection(sectionId: string, watchMs = 4000, smooth = true) {
   const stage = document.querySelector<HTMLElement>(".infinite-stage");
   if (!stage) return;
 
-  const deadline = Date.now() + watchMs;
   let debounce: ReturnType<typeof setTimeout> | null = null;
 
   const obs = new ResizeObserver(() => {
-    if (Date.now() > deadline) { obs.disconnect(); return; }
     if (debounce) clearTimeout(debounce);
     // 60 ms debounce: batches simultaneous image-load height changes, then
     // snaps instantly so the section header stays pinned at the top.
@@ -60,8 +57,13 @@ function scrollToSection(sectionId: string, watchMs = 4000, smooth = true) {
     }, 60);
   });
 
-  obs.observe(stage);
-  setTimeout(() => obs.disconnect(), watchMs);
+  // When smooth-scrolling, delay ResizeObserver until after the animation
+  // (~500 ms) so instant corrections don't interrupt the in-progress scroll.
+  const obsDelay = smooth ? 500 : 0;
+  setTimeout(() => {
+    obs.observe(stage);
+    setTimeout(() => obs.disconnect(), watchMs);
+  }, obsDelay);
 }
 
 const COLUMN_COUNT = 3;
@@ -245,10 +247,9 @@ export function GalleryFeed({
     const target = scrollTargetRef.current;
     if (!target) return;
     scrollTargetRef.current = null;
-    // Use instant scroll: preceding sections were just fetched, so their images
-    // will trigger ResizeObserver corrections — instant avoids the correction
-    // interrupting a smooth animation (the flicker source).
-    scrollToSection(target, 4000, false);
+    // Smooth scroll; ResizeObserver is delayed 500 ms inside scrollToSection
+    // so it won't interrupt the animation even if preceding images load late.
+    scrollToSection(target, 4000);
   }, [items]);
 
   // Map section DOM id → provider name for fast lookup in the observer callback.
