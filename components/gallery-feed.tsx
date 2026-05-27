@@ -23,6 +23,44 @@ function slugify(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 }
 
+/**
+ * Scroll so that `sectionId` is at the top of the viewport, then keep
+ * correcting for up to `watchMs` ms as lazy images above the section load
+ * and change the page height.
+ *
+ * Root cause: `scrollIntoView` fires once after React commits new items,
+ * but lazy images in preceding sections haven't loaded yet (height = 0).
+ * After the scroll those images load → preceding sections grow → the target
+ * section shifts down.  A ResizeObserver on `.infinite-stage` catches every
+ * height change and instantly re-aligns the target within the watch window.
+ */
+function scrollToSection(sectionId: string, watchMs = 4000) {
+  const el = document.getElementById(sectionId);
+  if (!el) return;
+
+  // Initial smooth scroll — nice visual landing.
+  el.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  const stage = document.querySelector<HTMLElement>(".infinite-stage");
+  if (!stage) return;
+
+  const deadline = Date.now() + watchMs;
+  let debounce: ReturnType<typeof setTimeout> | null = null;
+
+  const obs = new ResizeObserver(() => {
+    if (Date.now() > deadline) { obs.disconnect(); return; }
+    if (debounce) clearTimeout(debounce);
+    // 60 ms debounce: batches simultaneous image-load height changes, then
+    // snaps instantly so the section header stays pinned at the top.
+    debounce = setTimeout(() => {
+      el.scrollIntoView({ behavior: "instant", block: "start" });
+    }, 60);
+  });
+
+  obs.observe(stage);
+  setTimeout(() => obs.disconnect(), watchMs);
+}
+
 const COLUMN_COUNT = 3;
 
 // Distribute items into N columns using shortest-column (count as height proxy).
@@ -204,7 +242,7 @@ export function GalleryFeed({
     const target = scrollTargetRef.current;
     if (!target) return;
     scrollTargetRef.current = null;
-    document.getElementById(target)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    scrollToSection(target);
   }, [items]);
 
   // Map section DOM id → provider name for fast lookup in the observer callback.
@@ -306,9 +344,7 @@ export function GalleryFeed({
         scrollTargetRef.current = sectionId;
         // Scroll fires via useEffect([items]) after React commits the new items.
       } else {
-        document
-          .getElementById(sectionId)
-          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        scrollToSection(sectionId);
       }
 
       if (!stageGroups.has(providerName)) {
@@ -395,9 +431,7 @@ export function GalleryFeed({
                 href="#section-linkit"
                 onClick={(e) => {
                   e.preventDefault();
-                  document
-                    .getElementById("section-linkit")
-                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  scrollToSection("section-linkit");
                 }}
               >
                 <span className="rail-name">Linkit</span>
