@@ -120,23 +120,27 @@ test.describe("share button scroll", () => {
     });
 
     expect(offsetFromTop).not.toBeNull();
-    // submit-dock has scroll-margin-top: 3.5rem ≈ 56px. Allow generous tolerance
-    // since the submit dock is at the bottom; its top should be ≤ viewport height.
-    const viewportHeight = await page.evaluate(() => window.innerHeight);
-    expect(offsetFromTop!).toBeLessThanOrEqual(viewportHeight * 0.15);
+    // #submit is the last element — browser scrolls to max-scroll, putting the
+    // section top at (clientHeight − submitDockHeight).  Verify it's inside the
+    // viewport AND page-main is at its maximum scroll position (± 5 px rounding).
+    const clientHeight = await page.evaluate(() => document.getElementById("page-main")!.clientHeight);
+    expect(offsetFromTop!).toBeLessThan(clientHeight);
+    const atBottom = await page.evaluate(() => {
+      const pm = document.getElementById("page-main")!;
+      return pm.scrollTop >= pm.scrollHeight - pm.clientHeight - 5;
+    });
+    expect(atBottom).toBe(true);
   });
 
-  test("clicking Share from a non-home page navigates and scrolls to submit-dock", async ({ page }) => {
-    // Start on a profile page or any non-home route.
+  test("clicking Share from top of home page scrolls to bottom (submit-dock visible)", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByTestId("gallery-tile").first()).toBeVisible();
 
-    // Scroll down first so we're not already near #submit.
+    // Ensure we start from the very top.
     await page.evaluate(() => {
       document.getElementById("page-main")?.scrollTo({ top: 0, behavior: "instant" });
     });
 
-    // Click the share link (we're on home, so it scrolls directly).
     const shareLink = page.locator('a[href="/#submit"]');
     await shareLink.click();
 
@@ -145,17 +149,19 @@ test.describe("share button scroll", () => {
     const submitDock = page.getByTestId("submit-dock");
     await expect(submitDock).toBeVisible();
 
-    const offsetFromTop = await page.evaluate(() => {
+    const clientHeight2 = await page.evaluate(() => document.getElementById("page-main")!.clientHeight);
+    const offsetFromTop2 = await page.evaluate(() => {
       const container = document.getElementById("page-main");
       const el = document.querySelector("[data-testid='submit-dock']");
       if (!container || !el) return null;
-      const containerRect = container.getBoundingClientRect();
-      const elRect = el.getBoundingClientRect();
-      return elRect.top - containerRect.top;
+      return el.getBoundingClientRect().top - container.getBoundingClientRect().top;
     });
-
-    expect(offsetFromTop).not.toBeNull();
-    const viewportHeight = await page.evaluate(() => window.innerHeight);
-    expect(offsetFromTop!).toBeLessThanOrEqual(viewportHeight * 0.15);
+    expect(offsetFromTop2).not.toBeNull();
+    expect(offsetFromTop2!).toBeLessThan(clientHeight2);
+    const atBottom2 = await page.evaluate(() => {
+      const pm = document.getElementById("page-main")!;
+      return pm.scrollTop >= pm.scrollHeight - pm.clientHeight - 5;
+    });
+    expect(atBottom2).toBe(true);
   });
 });
