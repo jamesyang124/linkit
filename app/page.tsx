@@ -12,21 +12,13 @@ export default async function HomePage() {
 
   return (
     <main className="infinite-page site-shell min-h-screen px-5 md:px-8">
-      <div
-        className="selection-word"
-        data-testid="selection-word"
-        aria-hidden="true"
-      >
-        Catalogue
-      </div>
       <section
         className="infinite-shell"
         data-testid="infinite-gallery"
-        aria-labelledby="catalogue-heading"
+        aria-labelledby="sources-heading"
       >
         <GalleryFeed
           initialItems={galleryPage.items}
-          initialCursor={galleryPage.nextCursor}
           providers={providers}
         />
       </section>
