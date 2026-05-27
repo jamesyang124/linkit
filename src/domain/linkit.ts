@@ -91,6 +91,10 @@ export type LinkitStore = {
   updateName(input: UpdateNameInput): Promise<void>;
   findUserPasswordHash(userId: string): Promise<string | null>;
   updatePasswordHash(input: UpdatePasswordInput): Promise<void>;
+  savePost(userId: string, postId: string): Promise<void>;
+  unsavePost(userId: string, postId: string): Promise<void>;
+  listSavedPosts(userId: string): Promise<LinkitPost[]>;
+  listSavedPostIds(userId: string): Promise<string[]>;
 };
 
 export type PostPageCursor = {
@@ -465,7 +469,11 @@ export function createMemoryLinkitStore(): LinkitStore {
 
     async updateName() {},
     async findUserPasswordHash() { return null; },
-    async updatePasswordHash() {}
+    async updatePasswordHash() {},
+    async savePost() {},
+    async unsavePost() {},
+    async listSavedPosts() { return []; },
+    async listSavedPostIds() { return []; }
   };
 }
 

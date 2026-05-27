@@ -1,6 +1,6 @@
 import { and, asc, desc, eq, inArray, isNotNull, isNull, lt, or, sql } from "drizzle-orm";
 
-import { comments, posts, users } from "@/src/db/schema";
+import { comments, posts, savedPosts, users } from "@/src/db/schema";
 import {
   PostNotFoundError,
   type CreateStoredCommentInput,
@@ -303,6 +303,40 @@ export function createPostgresLinkitStore(db: LinkitDb): LinkitStore {
         .update(users)
         .set({ passwordHash: newPasswordHash, updatedAt: new Date() })
         .where(eq(users.id, userId));
+    },
+
+    async savePost(userId, postId) {
+      await db
+        .insert(savedPosts)
+        .values({ userId, postId })
+        .onConflictDoNothing();
+    },
+
+    async unsavePost(userId, postId) {
+      await db
+        .delete(savedPosts)
+        .where(and(eq(savedPosts.userId, userId), eq(savedPosts.postId, postId)));
+    },
+
+    async listSavedPosts(userId) {
+      const rows = await db
+        .select({ post: posts, user: users })
+        .from(savedPosts)
+        .innerJoin(posts, eq(savedPosts.postId, posts.id))
+        .innerJoin(users, eq(posts.userId, users.id))
+        .where(eq(savedPosts.userId, userId))
+        .orderBy(desc(savedPosts.createdAt));
+
+      return rows.map(mapPostWithUser);
+    },
+
+    async listSavedPostIds(userId) {
+      const rows = await db
+        .select({ postId: savedPosts.postId })
+        .from(savedPosts)
+        .where(eq(savedPosts.userId, userId));
+
+      return rows.map((r) => r.postId);
     }
   };
 }
