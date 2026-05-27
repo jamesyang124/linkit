@@ -43,14 +43,12 @@ function ReplyForm({
   postId,
   parentId,
   replyToUserName,
-  onPosted,
-  onCancel
+  onPosted
 }: {
   postId: string;
   parentId: string;
   replyToUserName: string;
   onPosted: () => void;
-  onCancel: () => void;
 }) {
   const [isPending, startTransition] = useTransition();
 
@@ -84,14 +82,6 @@ function ReplyForm({
         autoFocus
       />
       <div className="comment-actions">
-        <button
-          type="button"
-          className="comment-reply-btn"
-          onClick={onCancel}
-          disabled={isPending}
-        >
-          Cancel
-        </button>
         <button className="reply-button" disabled={isPending}>
           {isPending ? "…" : "↩ Reply"}
         </button>
@@ -105,14 +95,22 @@ function ReplyItem({
   reply,
   postId,
   parentCommentId,
-  onReplyPosted
+  onReplyPosted,
+  onReplyToggle
 }: {
   reply: CommentCard;
   postId: string;
   parentCommentId: string;
   onReplyPosted: () => void;
+  onReplyToggle: (active: boolean) => void;
 }) {
   const [showForm, setShowForm] = useState(false);
+
+  function toggleForm() {
+    const next = !showForm;
+    setShowForm(next);
+    onReplyToggle(next);
+  }
 
   return (
     <div className="comment-item comment-item-reply" data-testid="comment-item">
@@ -128,7 +126,7 @@ function ReplyItem({
       <div className="comment-actions">
         <button
           className="comment-reply-btn"
-          onClick={() => setShowForm((v) => !v)}
+          onClick={toggleForm}
         >
           {showForm ? "Cancel" : "Reply"}
         </button>
@@ -140,9 +138,9 @@ function ReplyItem({
           replyToUserName={reply.authorName}
           onPosted={() => {
             setShowForm(false);
+            onReplyToggle(false);
             onReplyPosted();
           }}
-          onCancel={() => setShowForm(false)}
         />
       )}
     </div>
@@ -151,10 +149,12 @@ function ReplyItem({
 
 function CommentItem({
   comment,
-  postId
+  postId,
+  onReplyToggle
 }: {
   comment: CommentCard;
   postId: string;
+  onReplyToggle: (active: boolean) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [replies, setReplies] = useState<CommentCard[]>([]);
@@ -176,6 +176,12 @@ function CommentItem({
       return;
     }
     fetchReplies();
+  }
+
+  function toggleReplyForm() {
+    const next = !showReplyForm;
+    setShowReplyForm(next);
+    onReplyToggle(next);
   }
 
   return (
@@ -205,7 +211,7 @@ function CommentItem({
         )}
         <button
           className="comment-reply-btn"
-          onClick={() => setShowReplyForm((v) => !v)}
+          onClick={toggleReplyForm}
         >
           {showReplyForm ? "Cancel" : "Reply"}
         </button>
@@ -220,6 +226,7 @@ function CommentItem({
               postId={postId}
               parentCommentId={comment.id}
               onReplyPosted={fetchReplies}
+              onReplyToggle={onReplyToggle}
             />
           ))}
         </div>
@@ -232,9 +239,9 @@ function CommentItem({
           replyToUserName={comment.authorName}
           onPosted={() => {
             setShowReplyForm(false);
+            onReplyToggle(false);
             fetchReplies();
           }}
-          onCancel={() => setShowReplyForm(false)}
         />
       )}
     </div>
@@ -247,6 +254,7 @@ export function CommentSection({ postId }: { postId: string }) {
   const [visibleCount, setVisibleCount] = useState(BATCH);
   const [canScroll, setCanScroll] = useState(false);
   const [isAtEnd, setIsAtEnd] = useState(false);
+  const [replyActive, setReplyActive] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -328,37 +336,39 @@ export function CommentSection({ postId }: { postId: string }) {
 
   return (
     <div className="comment-section">
-      <form onSubmit={handleCommentSubmit} className="comment-form">
-        <input type="hidden" name="postId" value={postId} />
-        <textarea
-          ref={textareaRef}
-          data-testid="comment-input"
-          name="comment"
-          placeholder="Add a comment…"
-          rows={2}
-          disabled={isPending}
-        />
-        <div className="comment-form-row">
-          {showScrollHint && (
-            <button
-              type="button"
-              className="comment-scroll-hint"
-              onClick={scrollComments}
-              aria-label="Scroll for more"
-            >
-              <span aria-hidden="true">↓</span>
-              <span>Scroll for more</span>
-            </button>
-          )}
-          <button
-            type="submit"
-            data-testid="comment-button"
+      {!replyActive && (
+        <form onSubmit={handleCommentSubmit} className="comment-form">
+          <input type="hidden" name="postId" value={postId} />
+          <textarea
+            ref={textareaRef}
+            data-testid="comment-input"
+            name="comment"
+            placeholder="Add a comment…"
+            rows={2}
             disabled={isPending}
-          >
-            {isPending ? "Posting…" : "Comment"}
-          </button>
-        </div>
-      </form>
+          />
+          <div className="comment-form-row">
+            {showScrollHint && (
+              <button
+                type="button"
+                className="comment-scroll-hint"
+                onClick={scrollComments}
+                aria-label="Scroll for more"
+              >
+                <span aria-hidden="true">↓</span>
+                <span>Scroll for more</span>
+              </button>
+            )}
+            <button
+              type="submit"
+              data-testid="comment-button"
+              disabled={isPending}
+            >
+              {isPending ? "Posting…" : "Comment"}
+            </button>
+          </div>
+        </form>
+      )}
 
       <div
         ref={listRef}
@@ -370,7 +380,12 @@ export function CommentSection({ postId }: { postId: string }) {
           <p className="comment-empty">No comments yet.</p>
         )}
         {visibleComments.map((c) => (
-          <CommentItem key={c.id} comment={c} postId={postId} />
+          <CommentItem
+            key={c.id}
+            comment={c}
+            postId={postId}
+            onReplyToggle={setReplyActive}
+          />
         ))}
         {hasMore && (
           <div ref={sentinelRef} className="comment-sentinel" aria-hidden="true" />
