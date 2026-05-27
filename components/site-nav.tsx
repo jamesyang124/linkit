@@ -24,7 +24,7 @@ export async function SiteNav() {
             <form action={signOutAction} className="contents">
               <button
                 type="submit"
-                className="leading-6 text-muted transition hover:text-ink focus-visible:text-ink"
+                className="uppercase leading-6 text-muted transition hover:text-ink focus-visible:text-ink"
               >
                 Sign out
               </button>

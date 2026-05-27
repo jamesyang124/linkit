@@ -13,16 +13,33 @@ import { usePathname, useRouter } from "next/navigation";
  * new items added) and immediately re-aligns to `#submit`, stopping once
  * the page is stable or the watch window expires.
  *
- * Instant (not smooth) for the initial scroll: the ResizeObserver's instant
- * corrections would interrupt a smooth animation mid-flight and cause a
- * visible flicker.  Instant lands directly at the form with no jank.
+ * All scrolls are instant (no smooth animation) so rapid ResizeObserver
+ * corrections don't chain into a smooth-scroll jank loop.  Direct scrollTop
+ * assignment is used instead of scrollIntoView({ behavior: "instant" })
+ * because CSS `scroll-behavior: smooth` on `#page-main` can override the JS
+ * hint in some browsers, making "instant" scroll smooth and causing jank.
  */
 function scrollToSubmit(watchMs = 6000) {
   const el = document.getElementById("submit");
   if (!el) return;
 
-  // Land directly at the form — no smooth animation to interrupt.
-  el.scrollIntoView({ behavior: "instant", block: "start" });
+  const scrollContainer = document.getElementById("page-main");
+
+  /** Compute scrollTop that places `el` at the top of `#page-main`, honoring scroll-margin-top. */
+  function getTargetScrollTop(): number {
+    if (!scrollContainer) return 0;
+    const containerTop = scrollContainer.getBoundingClientRect().top;
+    const elTop = el!.getBoundingClientRect().top;
+    const marginTop = parseFloat(getComputedStyle(el!).scrollMarginTop) || 0;
+    return scrollContainer.scrollTop + (elTop - containerTop) - marginTop;
+  }
+
+  // Direct scrollTop bypasses CSS scroll-behavior: smooth.
+  if (scrollContainer) {
+    scrollContainer.scrollTop = getTargetScrollTop();
+  } else {
+    el.scrollIntoView({ behavior: "instant", block: "start" });
+  }
 
   const stage = document.querySelector<HTMLElement>(".infinite-stage");
   if (!stage) return;
@@ -34,7 +51,11 @@ function scrollToSubmit(watchMs = 6000) {
     if (Date.now() > deadline) { obs.disconnect(); return; }
     if (debounce) clearTimeout(debounce);
     debounce = setTimeout(() => {
-      el.scrollIntoView({ behavior: "instant", block: "start" });
+      if (scrollContainer) {
+        scrollContainer.scrollTop = getTargetScrollTop();
+      } else {
+        el.scrollIntoView({ behavior: "instant", block: "start" });
+      }
     }, 60);
   });
 
