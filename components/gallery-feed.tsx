@@ -300,6 +300,7 @@ export function GalleryFeed({
 
   const handleProviderClick = useCallback(
     async (providerName: string) => {
+      window.dispatchEvent(new Event("provider-switch"));
       const targetIdx = providers.findIndex((p) => p.providerName === providerName);
       const sectionId = `section-${slugify(providerName)}`;
 

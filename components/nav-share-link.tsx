@@ -60,7 +60,12 @@ function scrollToSubmit(watchMs = 6000) {
   });
 
   obs.observe(stage);
-  setTimeout(() => obs.disconnect(), watchMs);
+  const timer = setTimeout(() => obs.disconnect(), watchMs);
+  window.addEventListener("provider-switch", () => {
+    clearTimeout(timer);
+    if (debounce) clearTimeout(debounce);
+    obs.disconnect();
+  }, { once: true });
 }
 
 export function NavShareLink({ className }: { className?: string }) {
