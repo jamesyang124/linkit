@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { GalleryTile } from "@/components/gallery-tile";
 import type { FeedItem } from "@/src/feed/view-model";
 
-const COLUMN_COUNT = 2;
+const COLUMN_COUNT = 3;
 const PAGE_SIZE = 12;
 
 function distributeColumns(items: FeedItem[]): FeedItem[][] {
