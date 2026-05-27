@@ -12,9 +12,19 @@ export function NavShareLink({ className }: { className?: string }) {
   useEffect(() => {
     if (pathname === "/" && shouldScrollRef.current) {
       shouldScrollRef.current = false;
-      document
-        .getElementById("submit")
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      const scroll = () =>
+        document
+          .getElementById("submit")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      // Initial scroll — may land short if gallery lazy-loads tiles that push
+      // #submit down.  Retry twice to chase the final position after content loads.
+      scroll();
+      const t1 = setTimeout(scroll, 1200);
+      const t2 = setTimeout(scroll, 3000);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
     }
   }, [pathname]);
 
