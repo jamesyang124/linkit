@@ -116,6 +116,8 @@ export function GalleryFeed({
   const inFlightRef = useRef<Map<string, Promise<void>>>(new Map());
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+  // Pending section id to scroll to after preceding-section items are rendered.
+  const scrollTargetRef = useRef<string | null>(null);
 
   // Load saved post IDs for the current user on mount.
   useEffect(() => {
@@ -149,6 +151,16 @@ export function GalleryFeed({
       groupMap.set(item.providerName, bucket);
     }
     return groupMap;
+  }, [items]);
+
+  // After preceding sections finish loading, scroll to the pending target.
+  // Using an effect ensures React has committed the updated item heights to DOM
+  // before we scroll (avoids wrong-position scroll with empty preceding sections).
+  useEffect(() => {
+    const target = scrollTargetRef.current;
+    if (!target) return;
+    scrollTargetRef.current = null;
+    document.getElementById(target)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [items]);
 
   // Map section DOM id → provider name for fast lookup in the observer callback.
@@ -231,6 +243,7 @@ export function GalleryFeed({
   const handleProviderClick = useCallback(
     async (providerName: string) => {
       const targetIdx = providers.findIndex((p) => p.providerName === providerName);
+      const sectionId = `section-${slugify(providerName)}`;
 
       const precedingLoads: Promise<void>[] = [];
       for (let i = 0; i < targetIdx; i++) {
@@ -241,12 +254,18 @@ export function GalleryFeed({
       }
 
       if (precedingLoads.length > 0) {
+        // Load preceding sections first, then scroll.
         await Promise.all(precedingLoads);
+        // setExtraItems was called inside loadProvider; React will re-render next.
+        // Setting scrollTargetRef here ensures the effect (which runs after commit)
+        // picks it up once the preceding-section heights are stable in the DOM.
+        scrollTargetRef.current = sectionId;
+        // Scroll fires via useEffect([items]) after React commits the new items.
+      } else {
+        document
+          .getElementById(sectionId)
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
-
-      document
-        .getElementById(`section-${slugify(providerName)}`)
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
 
       if (!stageGroups.has(providerName)) {
         void loadProvider(providerName);
@@ -263,7 +282,8 @@ export function GalleryFeed({
       return next;
     });
     try {
-      await fetch(`/api/saves/${id}`, { method: wasSaved ? "DELETE" : "POST" });
+      const res = await fetch(`/api/saves/${id}`, { method: wasSaved ? "DELETE" : "POST" });
+      if (!res.ok) throw new Error(`save ${res.status}`);
     } catch {
       setSavedIds((prev) => {
         const next = new Set(prev);
