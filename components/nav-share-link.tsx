@@ -12,13 +12,17 @@ import { usePathname, useRouter } from "next/navigation";
  * `.infinite-stage` fires whenever tile heights change (images loading,
  * new items added) and immediately re-aligns to `#submit`, stopping once
  * the page is stable or the watch window expires.
+ *
+ * Instant (not smooth) for the initial scroll: the ResizeObserver's instant
+ * corrections would interrupt a smooth animation mid-flight and cause a
+ * visible flicker.  Instant lands directly at the form with no jank.
  */
 function scrollToSubmit(watchMs = 6000) {
   const el = document.getElementById("submit");
   if (!el) return;
 
-  // Initial smooth scroll for a nice visual landing.
-  el.scrollIntoView({ behavior: "smooth", block: "start" });
+  // Land directly at the form — no smooth animation to interrupt.
+  el.scrollIntoView({ behavior: "instant", block: "start" });
 
   const stage = document.querySelector<HTMLElement>(".infinite-stage");
   if (!stage) return;

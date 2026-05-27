@@ -33,13 +33,16 @@ function slugify(s: string) {
  * After the scroll those images load → preceding sections grow → the target
  * section shifts down.  A ResizeObserver on `.infinite-stage` catches every
  * height change and instantly re-aligns the target within the watch window.
+ *
+ * `smooth` — pass false when preceding sections were just fetched; skips the
+ * smooth animation so the ResizeObserver's instant corrections don't interrupt
+ * an in-progress scroll and cause a visible flicker.
  */
-function scrollToSection(sectionId: string, watchMs = 4000) {
+function scrollToSection(sectionId: string, watchMs = 4000, smooth = true) {
   const el = document.getElementById(sectionId);
   if (!el) return;
 
-  // Initial smooth scroll — nice visual landing.
-  el.scrollIntoView({ behavior: "smooth", block: "start" });
+  el.scrollIntoView({ behavior: smooth ? "smooth" : "instant", block: "start" });
 
   const stage = document.querySelector<HTMLElement>(".infinite-stage");
   if (!stage) return;
@@ -242,7 +245,10 @@ export function GalleryFeed({
     const target = scrollTargetRef.current;
     if (!target) return;
     scrollTargetRef.current = null;
-    scrollToSection(target);
+    // Use instant scroll: preceding sections were just fetched, so their images
+    // will trigger ResizeObserver corrections — instant avoids the correction
+    // interrupting a smooth animation (the flicker source).
+    scrollToSection(target, 4000, false);
   }, [items]);
 
   // Map section DOM id → provider name for fast lookup in the observer callback.
