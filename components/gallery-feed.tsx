@@ -24,7 +24,7 @@ function slugify(s: string) {
 }
 
 /**
- * Scroll so that `sectionId` is at the top of the viewport, then keep
+ * Scroll so that `sectionId` is at the top of the scroll container, then keep
  * correcting for up to `watchMs` ms as lazy images above the section load
  * and change the page height.
  *
@@ -32,37 +32,80 @@ function slugify(s: string) {
  * but lazy images in preceding sections haven't loaded yet (height = 0).
  * After the scroll those images load → preceding sections grow → the target
  * section shifts down.  A ResizeObserver on `.infinite-stage` catches every
- * height change and instantly re-aligns the target within the watch window.
+ * height change and re-aligns the target within the watch window.
+ *
+ * Key fix: corrections use direct `scrollTop` assignment on `#page-main`
+ * rather than `scrollIntoView({ behavior: "instant" })`.  The CSS rule
+ * `scroll-behavior: smooth` on `#page-main` overrides the JS `"instant"`
+ * hint in some browsers, causing the "instant" correction to animate — which
+ * fights the in-progress smooth scroll and creates a jank loop.  Direct
+ * `scrollTop` assignment always bypasses CSS scroll-behavior.
  *
  * `smooth` — when true the ResizeObserver is delayed ~500 ms so the smooth
- * animation finishes before any instant corrections fire (avoids flicker).
+ * animation finishes before any corrections fire.
  */
 function scrollToSection(sectionId: string, watchMs = 4000, smooth = true) {
   const el = document.getElementById(sectionId);
   if (!el) return;
 
-  el.scrollIntoView({ behavior: smooth ? "smooth" : "instant", block: "start" });
+  const scrollContainer = document.getElementById("page-main");
+
+  /**
+   * Compute the scrollTop value that places `el` at the top of the scroll
+   * container, honoring its `scroll-margin-top`.  Used for instant corrections
+   * so we bypass CSS `scroll-behavior: smooth` via direct scrollTop assignment.
+   */
+  function getTargetScrollTop(): number {
+    if (!scrollContainer) return 0;
+    const containerTop = scrollContainer.getBoundingClientRect().top;
+    const elTop = el!.getBoundingClientRect().top;
+    const marginTop = parseFloat(getComputedStyle(el!).scrollMarginTop) || 0;
+    return scrollContainer.scrollTop + (elTop - containerTop) - marginTop;
+  }
+
+  if (smooth) {
+    // Initial smooth animation via scrollIntoView (respects scroll-margin-top).
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  } else {
+    // Instant: set scrollTop directly to bypass CSS scroll-behavior.
+    if (scrollContainer) {
+      scrollContainer.scrollTop = getTargetScrollTop();
+    } else {
+      el.scrollIntoView({ behavior: "instant", block: "start" });
+    }
+  }
 
   const stage = document.querySelector<HTMLElement>(".infinite-stage");
   if (!stage) return;
 
   let debounce: ReturnType<typeof setTimeout> | null = null;
+  let disconnected = false;
 
   const obs = new ResizeObserver(() => {
+    if (disconnected) return;
     if (debounce) clearTimeout(debounce);
-    // 60 ms debounce: batches simultaneous image-load height changes, then
-    // snaps instantly so the section header stays pinned at the top.
+    // 60 ms debounce: batches simultaneous image-load height changes.
+    // Direct scrollTop assignment keeps the section pinned without animation.
     debounce = setTimeout(() => {
-      el.scrollIntoView({ behavior: "instant", block: "start" });
+      if (disconnected) return;
+      if (scrollContainer) {
+        scrollContainer.scrollTop = getTargetScrollTop();
+      } else {
+        el.scrollIntoView({ behavior: "instant", block: "start" });
+      }
     }, 60);
   });
 
   // When smooth-scrolling, delay ResizeObserver until after the animation
-  // (~500 ms) so instant corrections don't interrupt the in-progress scroll.
+  // (~500 ms) so corrections don't interrupt the in-progress scroll.
   const obsDelay = smooth ? 500 : 0;
   setTimeout(() => {
+    if (disconnected) return;
     obs.observe(stage);
-    setTimeout(() => obs.disconnect(), watchMs);
+    setTimeout(() => {
+      disconnected = true;
+      obs.disconnect();
+    }, watchMs);
   }, obsDelay);
 }
 
