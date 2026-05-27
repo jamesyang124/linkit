@@ -21,6 +21,12 @@
   --c-muted:        rgba(26, 23, 20, 0.60);
   --c-border:       rgba(26, 23, 20, 0.09);
   --c-border-mid:   rgba(26, 23, 20, 0.17);
+
+  /* Site nav height: py-4 (32px) + leading-6 content (24px) = 56px.
+     Used to give each gallery section enough bottom clearance so the
+     last section can scroll its header to the same top position as all
+     other sections. */
+  --site-nav-height: 56px;
 }
 
 * { box-sizing: border-box; }
@@ -313,6 +319,11 @@ button { cursor: pointer; }
 
 .gallery-section {
   margin-bottom: 3rem;
+  /* Enough bottom clearance so even the last section can scroll its
+     header to the catalogue-rail sticky top (2rem). Equals nav height
+     (56px) + 10px buffer so the section header always aligns at the
+     same top position regardless of which provider is clicked. */
+  padding-bottom: calc(var(--site-nav-height) + 10px);
   /* Match catalogue-rail sticky top (2rem) so every provider section
      lands at the same fixed distance from the top of the viewport. */
   scroll-margin-top: 2rem;
