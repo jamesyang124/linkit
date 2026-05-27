@@ -43,12 +43,14 @@ function ReplyForm({
   postId,
   parentId,
   replyToUserName,
-  onPosted
+  onPosted,
+  onCancel
 }: {
   postId: string;
   parentId: string;
   replyToUserName: string;
   onPosted: () => void;
+  onCancel: () => void;
 }) {
   const [isPending, startTransition] = useTransition();
 
@@ -82,6 +84,14 @@ function ReplyForm({
         autoFocus
       />
       <div className="comment-actions">
+        <button
+          type="button"
+          className="comment-reply-btn"
+          onClick={onCancel}
+          disabled={isPending}
+        >
+          Cancel
+        </button>
         <button className="reply-button" disabled={isPending}>
           {isPending ? "…" : "↩ Reply"}
         </button>
@@ -124,12 +134,14 @@ function ReplyItem({
         {reply.body}
       </p>
       <div className="comment-actions">
-        <button
-          className="comment-reply-btn"
-          onClick={toggleForm}
-        >
-          {showForm ? "Cancel" : "Reply"}
-        </button>
+        {!showForm && (
+          <button
+            className="comment-reply-btn"
+            onClick={toggleForm}
+          >
+            Reply
+          </button>
+        )}
       </div>
       {showForm && (
         <ReplyForm
@@ -140,6 +152,10 @@ function ReplyItem({
             setShowForm(false);
             onReplyToggle(false);
             onReplyPosted();
+          }}
+          onCancel={() => {
+            setShowForm(false);
+            onReplyToggle(false);
           }}
         />
       )}
@@ -209,12 +225,14 @@ function CommentItem({
                 : `${comment.replyCount} ${comment.replyCount === 1 ? "reply" : "replies"}`}
           </button>
         )}
-        <button
-          className="comment-reply-btn"
-          onClick={toggleReplyForm}
-        >
-          {showReplyForm ? "Cancel" : "Reply"}
-        </button>
+        {!showReplyForm && (
+          <button
+            className="comment-reply-btn"
+            onClick={toggleReplyForm}
+          >
+            Reply
+          </button>
+        )}
       </div>
 
       {expanded && (
@@ -241,6 +259,10 @@ function CommentItem({
             setShowReplyForm(false);
             onReplyToggle(false);
             fetchReplies();
+          }}
+          onCancel={() => {
+            setShowReplyForm(false);
+            onReplyToggle(false);
           }}
         />
       )}
