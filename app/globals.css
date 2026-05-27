@@ -321,14 +321,14 @@ button { cursor: pointer; }
 
 .gallery-section {
   margin-bottom: 3rem;
-  /* Enough bottom clearance so even the last section can scroll its
-     header to the catalogue-rail sticky top (2rem). Equals nav height
-     (56px) + 10px buffer so the section header always aligns at the
-     same top position regardless of which provider is clicked. */
+  /* Bottom clearance so the last section can scroll its header to the
+     sticky top position. Nav height + 10px buffer ensures every section
+     can always be scrolled to the same top position. */
   padding-bottom: calc(var(--site-nav-height) + 10px);
-  /* Match catalogue-rail sticky top (2rem) so every provider section
-     lands at the same fixed distance from the top of the viewport. */
-  scroll-margin-top: 2rem;
+  /* Equal to nav-bar height so scrollIntoView never lands a section
+     behind the nav, regardless of whether the browser scrolls the
+     viewport or #page-main. */
+  scroll-margin-top: var(--site-nav-height);
 }
 
 .gallery-section-header {
