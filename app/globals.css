@@ -156,11 +156,6 @@ button { cursor: pointer; }
 
 .infinite-page {
   position: relative;
-  /* Creates stacking context above .selection-word (z-index:0 fixed).
-     Also serves as the sticky-containing block for .catalogue-rail —
-     sidebar stays sticky for the full page (gallery + submit-dock),
-     not just until the end of .infinite-shell. */
-  z-index: 1;
 }
 
 .selection-word {
@@ -178,9 +173,8 @@ button { cursor: pointer; }
 }
 
 .infinite-shell {
-  /* position:relative / z-index:1 removed — stacking context now lives on
-     .infinite-page so .catalogue-rail's sticky containing block spans the
-     full page height instead of stopping at the grid's bottom edge. */
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 200px minmax(0, 1fr);
   gap: 0;
@@ -194,12 +188,22 @@ button { cursor: pointer; }
 /* ─── Catalogue rail (Detroit sidebar style) ── */
 
 .catalogue-rail {
-  position: sticky;
-  top: 2rem;
-  align-self: start;
+  /* Fixed so the sidebar always stays at the top of the viewport regardless
+     of how far the gallery (infinite-stage) is scrolled. CSS sticky fails for
+     grid items because the sticky-containing block is the grid area, which runs
+     out at the gallery's bottom edge.
+     Left formula: page padding (32px at ≥768px) + half the remaining space when
+     .infinite-shell is narrower than the viewport (it's centered, 1120px max).
+     = max(32px, 32px + (100vw - 1184px) / 2)  [1184 = 1120 + 2×32] */
+  position: fixed;
+  top: var(--site-nav-height);
+  left: max(32px, calc(32px + (100vw - 1184px) / 2));
+  width: 200px;
+  height: calc(100dvh - var(--site-nav-height));
+  background: var(--c-bg);
+  z-index: 10;
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - 4rem);
   overflow: hidden;
 }
 
@@ -307,6 +311,9 @@ button { cursor: pointer; }
 /* ─── Masonry stage ─────────────────── */
 
 .infinite-stage {
+  /* Force column 2 — .catalogue-rail is position:fixed (out of grid flow),
+     so without this the stage would auto-place in column 1. */
+  grid-column: 2;
   min-height: 1420px;
   padding: 1.5rem 1rem 4rem;
   border-left: 0.5px solid var(--c-border-mid);
@@ -1002,11 +1009,19 @@ button { cursor: pointer; }
   .catalogue-rail {
     position: relative;
     top: auto;
+    left: auto;
+    width: auto;
     height: auto;
     min-height: 0;
+    background: transparent;
+    z-index: auto;
     flex-direction: row;
     flex-wrap: wrap;
     border-bottom: 0.5px solid var(--c-border-mid);
+  }
+
+  .infinite-stage {
+    grid-column: auto;
   }
 
   .catalogue-rail h1 {
