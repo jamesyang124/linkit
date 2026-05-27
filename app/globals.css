@@ -180,7 +180,7 @@ button { cursor: pointer; }
   gap: 0;
   width: min(100%, 1120px);
   margin: 0 auto;
-  padding-top: 3rem;
+  padding-top: 2rem;
   border-left: 0.5px solid var(--c-border-mid);
   border-right: 0.5px solid var(--c-border-mid);
 }
@@ -213,8 +213,10 @@ button { cursor: pointer; }
 /* Scrollable list — matches Detroit .talent-list */
 .catalogue-rail ol {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   scrollbar-width: none;
+  overscroll-behavior: contain;
   list-style: none;
   padding: 0;
   margin: 0;
