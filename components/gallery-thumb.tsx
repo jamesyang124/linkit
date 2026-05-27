@@ -37,6 +37,7 @@ export function GalleryThumb({
           ref={imageRef}
           src={thumbnailUrl}
           alt=""
+          loading="lazy"
           className="gallery-thumb-img"
           onLoad={() => setLoaded(true)}
           onError={() => setErrored(true)}

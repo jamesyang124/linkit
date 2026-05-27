@@ -30,16 +30,20 @@ export default async function ProfilePage() {
   const savedItems = toFeedItems(savedPosts);
 
   return (
-    <main className="site-shell min-h-screen px-5 py-10 md:px-8">
-      <div className="mx-auto max-w-md">
-        <h1 className="mb-10 font-display text-2xl font-light tracking-wide">Profile</h1>
-        <ProfileForms currentName={currentName} />
-      </div>
+    <main className="profile-shell">
+      <div className="profile-layout">
+        {/* Left: user settings */}
+        <div className="profile-layout-settings">
+          <h1 className="mb-10 font-display text-2xl font-light tracking-wide">Profile</h1>
+          <ProfileForms currentName={currentName} />
+        </div>
 
-      <section className="saved-section">
-        <h2 className="saved-section-heading">Saved</h2>
-        <SavedGallery initialItems={savedItems} />
-      </section>
+        {/* Right: saved list — independent scroll, batch reveal */}
+        <div className="profile-layout-saved">
+          <h2 className="saved-section-heading">Saved</h2>
+          <SavedGallery initialItems={savedItems} />
+        </div>
+      </div>
     </main>
   );
 }

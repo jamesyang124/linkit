@@ -118,6 +118,50 @@ export function GalleryFeed({
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   // Pending section id to scroll to after preceding-section items are rendered.
   const scrollTargetRef = useRef<string | null>(null);
+  // Snapshot of initialItems at mount — used by the open-from-saved effect.
+  const initialItemsRef = useRef(initialItems);
+
+  // Open a card when navigated from the saved list (?open=<id>).
+  // Reads sessionStorage for the full FeedItem (set by SavedGallery before push),
+  // falls back to searching the initial server items.
+  // Cleans the URL param so back-navigation is clean.
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const openId = url.searchParams.get("open");
+    if (!openId) return;
+
+    // Strip the param immediately — keep the URL clean.
+    url.searchParams.delete("open");
+    window.history.replaceState({}, "", url.pathname + (url.search === "?" ? "" : url.search));
+
+    // Centered rect → panel animates from screen centre (scale from tiny square)
+    // giving a subtle pop-in instead of FLIP from a now-gone profile card.
+    const cx = Math.round(window.innerWidth / 2);
+    const cy = Math.round(window.innerHeight / 2);
+    const centeredRect = new DOMRect(cx - 2, cy - 2, 4, 4);
+
+    const openItem = (item: FeedItem) => {
+      setExpanded({ item, cardRect: centeredRect });
+    };
+
+    // Try sessionStorage first (fastest path).
+    try {
+      const stored = sessionStorage.getItem(`pending-open-${openId}`);
+      if (stored) {
+        sessionStorage.removeItem(`pending-open-${openId}`);
+        openItem(JSON.parse(stored) as FeedItem);
+        return;
+      }
+    } catch {
+      // Storage blocked — fall through.
+    }
+
+    // Fall back to searching initial server items.
+    const found = initialItemsRef.current.find((i) => i.id === openId);
+    if (found) openItem(found);
+    // If still not found: item lives in a provider not yet loaded.
+    // The user can scroll to find it; a future enhancement could fetch by ID.
+  }, []); // run once on mount
 
   // Load saved post IDs for the current user on mount.
   useEffect(() => {
