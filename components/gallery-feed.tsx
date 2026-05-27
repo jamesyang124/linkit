@@ -298,6 +298,16 @@ export function GalleryFeed({
     if (li) li.scrollIntoView({ block: "nearest" });
   }, [activeProvider, providers]);
 
+  // Infinity-scroll prefetch: when active section changes, preload adjacent sections
+  // so scrolling up/down always finds content ready (sections may be off-screen)
+  useEffect(() => {
+    if (!activeProvider) return;
+    const idx = providers.findIndex((p) => p.providerName === activeProvider);
+    if (idx < 0) return;
+    if (idx > 0) void loadProvider(providers[idx - 1].providerName);
+    if (idx < providers.length - 1) void loadProvider(providers[idx + 1].providerName);
+  }, [activeProvider, providers, loadProvider]);
+
   const handleProviderClick = useCallback(
     async (providerName: string) => {
       window.dispatchEvent(new Event("provider-switch"));
