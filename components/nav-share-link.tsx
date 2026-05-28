@@ -25,7 +25,6 @@ function scrollToSubmit(watchMs = 6000) {
 
   const scrollContainer = document.getElementById("page-main");
 
-  /** Compute scrollTop that places `el` at the top of `#page-main`, honoring scroll-margin-top. */
   function getTargetScrollTop(): number {
     if (!scrollContainer) return 0;
     const containerTop = scrollContainer.getBoundingClientRect().top;
@@ -34,7 +33,6 @@ function scrollToSubmit(watchMs = 6000) {
     return scrollContainer.scrollTop + (elTop - containerTop) - marginTop;
   }
 
-  // Direct scrollTop bypasses CSS scroll-behavior: smooth.
   if (scrollContainer) {
     scrollContainer.scrollTop = getTargetScrollTop();
   } else {
@@ -71,7 +69,6 @@ function scrollToSubmit(watchMs = 6000) {
 export function NavShareLink({ className }: { className?: string }) {
   const pathname = usePathname();
   const router = useRouter();
-  // Flag: navigate to "/" was triggered; scroll to #submit once we land there.
   const shouldScrollRef = useRef(false);
 
   useEffect(() => {
@@ -84,12 +81,8 @@ export function NavShareLink({ className }: { className?: string }) {
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     if (pathname === "/") {
-      // Already on home — scroll directly.
       scrollToSubmit();
     } else {
-      // Cross-page: navigate to "/" then scroll via the effect above.
-      // Next.js hash navigation only scrolls window, not the custom #page-main
-      // scroll container — so we handle it ourselves.
       shouldScrollRef.current = true;
       router.push("/");
     }
