@@ -39,7 +39,8 @@ export function createPostgresLinkitStore(db: LinkitDb): LinkitStore {
           body: input.body,
           link: input.link,
           thumbnailUrl: input.thumbnailUrl,
-          providerName: input.providerName
+          providerName: input.providerName,
+          tags: input.tags ?? []
         })
         .returning();
 
@@ -351,6 +352,7 @@ export function mapPostWithUser(row: PostWithUserRow): LinkitPost {
     thumbnailUrl: row.post.thumbnailUrl,
     profileThumbnailUrl: row.post.profileThumbnailUrl ?? null,
     providerName: row.post.providerName,
+    tags: row.post.tags ?? [],
     clickCount: row.post.clickCount,
     commentsCount: row.post.commentsCount,
     user: mapDbUser(row.user),

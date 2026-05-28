@@ -19,6 +19,7 @@ export type LinkitPost = {
   thumbnailUrl: string | null;
   profileThumbnailUrl: string | null;
   providerName: string;
+  tags: string[];
   clickCount: number;
   commentsCount: number;
   user: LinkitUser;
@@ -120,6 +121,7 @@ export type CreateStoredPostInput = {
   body: string | null;
   providerName: string;
   thumbnailUrl: string | null;
+  tags?: string[];
   user: LinkitUser;
 };
 
@@ -185,7 +187,7 @@ export class PostNotFoundError extends Error {
 
 export function createLinkitService({ store, enqueue, metadataProvider }: CreateLinkitServiceInput) {
   return {
-    async submitLink(input: { link: string; user: LinkitUser }): Promise<LinkitPost> {
+    async submitLink(input: { link: string; user: LinkitUser; tags?: string[] }): Promise<LinkitPost> {
       const link = normalizeLink(input.link);
       if (link.length === 0) {
         throw new BlankLinkError();
@@ -229,6 +231,7 @@ export function createLinkitService({ store, enqueue, metadataProvider }: Create
         body,
         providerName,
         thumbnailUrl,
+        tags: input.tags ?? [],
         user: input.user
       });
 
@@ -314,6 +317,7 @@ export function createMemoryLinkitStore(): LinkitStore {
         thumbnailUrl: input.thumbnailUrl,
         profileThumbnailUrl: null,
         providerName: input.providerName,
+        tags: input.tags ?? [],
         clickCount: 0,
         commentsCount: 0,
         user: input.user,

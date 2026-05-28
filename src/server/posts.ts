@@ -54,6 +54,8 @@ export async function submitLinkFromForm(
   }
 
   const link = String(formData.get("link") ?? "");
+  const tagsRaw = formData.get("tags");
+  const tags = tagsRaw ? String(tagsRaw).split(",").filter(Boolean) : [];
   const service = createLinkitService({
     store: deps.store,
     enqueue: deps.enqueue,
@@ -61,7 +63,7 @@ export async function submitLinkFromForm(
   });
 
   try {
-    const post = await service.submitLink({ link, user });
+    const post = await service.submitLink({ link, user, tags });
     deps.revalidateFeed();
     return {
       ok: true,

@@ -6,6 +6,7 @@ import {
   timestamp,
   uuid
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -75,6 +76,7 @@ export const posts = pgTable("posts", {
   thumbnailUrl: text("thumbnail_url"),
   profileThumbnailUrl: text("profile_thumbnail_url"),
   providerName: text("provider_name").notNull(),
+  tags: text("tags").array().notNull().default(sql`'{}'::text[]`),
   clickCount: integer("click_count").notNull().default(0),
   commentsCount: integer("comments_count").notNull().default(0),
   createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),

@@ -25,6 +25,7 @@ export type FeedItem = {
   thumbnailUrl: string | null;
   profileThumbnailUrl: string | null;
   providerName: string;
+  tags: string[];
   commentsCount: number;
   clickCount: number;
   href: string;
@@ -54,6 +55,7 @@ export function toFeedItems(
     thumbnailUrl: post.thumbnailUrl,
     profileThumbnailUrl: post.profileThumbnailUrl,
     providerName: post.providerName,
+    tags: post.tags ?? [],
     commentsCount: post.commentsCount,
     clickCount: post.clickCount,
     href: `/r/${post.id}`,

@@ -196,9 +196,12 @@ button { cursor: pointer; }
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 200px minmax(0, 1fr);
+  /* Col 1: left rail placeholder (fixed, out-of-flow)
+     Col 2: gallery stage
+     Col 3: right tag rail placeholder (fixed, out-of-flow) */
+  grid-template-columns: 200px minmax(0, 1fr) 180px;
   gap: 0;
-  width: min(100%, 1120px);
+  width: min(100%, 1300px);
   margin: 0 auto;
   padding-top: 2rem;
   border-left: 0.5px solid var(--c-border-mid);
@@ -213,11 +216,11 @@ button { cursor: pointer; }
      grid items because the sticky-containing block is the grid area, which runs
      out at the gallery's bottom edge.
      Left formula: page padding (32px at ≥768px) + half the remaining space when
-     .infinite-shell is narrower than the viewport (it's centered, 1120px max).
-     = max(32px, 32px + (100vw - 1184px) / 2)  [1184 = 1120 + 2×32] */
+     .infinite-shell is narrower than the viewport (it's centered, 1300px max).
+     = max(32px, 32px + (100vw - 1364px) / 2)  [1364 = 1300 + 2×32] */
   position: fixed;
   top: var(--site-nav-height);
-  left: max(32px, calc(32px + (100vw - 1184px) / 2));
+  left: max(32px, calc(32px + (100vw - 1364px) / 2));
   width: 200px;
   height: calc(100dvh - var(--site-nav-height));
   background: var(--c-bg);
@@ -403,7 +406,7 @@ button { cursor: pointer; }
 .theme-switcher {
   position: fixed;
   bottom: 1.5rem;
-  left: max(32px, calc(32px + (100vw - 1184px) / 2));
+  left: max(32px, calc(32px + (100vw - 1364px) / 2));
   z-index: 50;
   width: 200px;
   padding: 0 16px;
@@ -494,6 +497,97 @@ button { cursor: pointer; }
   font-weight: 200;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+  color: var(--c-ink);
+}
+
+/* ─── Tag rail (right sidebar) ──────── */
+
+.tag-rail {
+  /* Mirrors .catalogue-rail on the right side.
+     Right formula: page padding (32px) + half remaining space when shell is < viewport.
+     = max(32px, 32px + (100vw - 1364px) / 2)  [1364 = 1300 + 2×32] */
+  position: fixed;
+  top: var(--site-nav-height);
+  right: max(32px, calc(32px + (100vw - 1364px) / 2));
+  width: 180px;
+  height: calc(100dvh - var(--site-nav-height));
+  background: var(--c-bg);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-left: 0.5px solid var(--c-border-mid);
+}
+
+.tag-rail-heading {
+  flex-shrink: 0;
+  padding: 14px 16px 10px;
+  font-family: var(--font-sans);
+  font-size: 0.56rem;
+  font-weight: 200;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  border-bottom: 0.5px solid var(--c-border-mid);
+}
+
+.tag-rail-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 0.5rem 0;
+}
+
+.tag-rail-list::-webkit-scrollbar { display: none; }
+
+.tag-rail-btn {
+  display: block;
+  width: 100%;
+  padding: 6px 16px;
+  border: 0;
+  background: transparent;
+  color: var(--c-ink);
+  text-align: left;
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.tag-rail-btn:hover {
+  background: var(--c-ink);
+  color: var(--c-bg);
+}
+
+.tag-rail-btn.is-active {
+  background: var(--c-ink);
+  color: var(--c-bg);
+  font-weight: 400;
+}
+
+.tag-rail-clear {
+  flex-shrink: 0;
+  margin: 0 16px 12px;
+  padding: 5px 0;
+  border: 0;
+  border-top: 0.5px solid var(--c-border-mid);
+  background: transparent;
+  color: var(--c-muted);
+  font-family: var(--font-sans);
+  font-size: 0.56rem;
+  font-weight: 200;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 120ms ease;
+  text-align: left;
+  padding-top: 8px;
+}
+
+.tag-rail-clear:hover {
   color: var(--c-ink);
 }
 
@@ -647,8 +741,9 @@ button { cursor: pointer; }
 
 .gallery-tile-stats {
   display: flex;
-  justify-content: flex-end;
-  gap: 0.55rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
   margin-top: 0.6rem;
   padding-bottom: 0.6rem;
   font-size: 0.68rem;
@@ -664,15 +759,24 @@ button { cursor: pointer; }
   color: var(--c-ink);
 }
 
-.gallery-tile-stats span {
+.gallery-tile-provider {
+  flex: 1;
   min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.62rem;
+}
+
+.gallery-tile-counts {
+  display: flex;
+  gap: 0.45rem;
+  flex-shrink: 0;
   white-space: nowrap;
 }
 
-.gallery-tile-stats span:last-child {
-  overflow: hidden;
-  text-align: right;
-  text-overflow: ellipsis;
+.gallery-tile-counts span {
+  white-space: nowrap;
 }
 
 /* ─── Save button ───────────────────── */
@@ -826,9 +930,9 @@ button { cursor: pointer; }
 .submit-dock {
   position: relative;
   z-index: 1;
-  width: min(100%, 1120px);
+  width: min(100%, 1300px);
   margin: 0 auto;
-  padding: 4rem 0 6rem 10.5rem;
+  padding: 4rem 180px 6rem 212px;
   scroll-margin-top: 3.5rem;
 }
 
@@ -857,7 +961,7 @@ button { cursor: pointer; }
   font-weight: 300;
 }
 
-.submit-panel button,
+.submit-panel > button,
 .profile-comments button {
   width: fit-content;
   border: 0.5px solid var(--c-ink);
@@ -872,12 +976,82 @@ button { cursor: pointer; }
     color 140ms ease;
 }
 
-.submit-panel button:hover,
-.submit-panel button:focus-visible,
+.submit-panel > button:hover,
+.submit-panel > button:focus-visible,
 .profile-comments button:hover,
 .profile-comments button:focus-visible {
   background: var(--c-ink);
   color: var(--c-bg);
+}
+
+/* ─── Submit tag picker ───────────────── */
+
+.submit-tags {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.submit-tags-label {
+  font-size: 0.58rem;
+  font-weight: 200;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--c-muted);
+}
+
+.submit-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.submit-tag-btn {
+  padding: 0.28rem 0.65rem;
+  border: 0.5px solid var(--c-border-mid);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--c-muted);
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  font-weight: 200;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
+}
+
+.submit-tag-btn:hover {
+  border-color: var(--c-ink);
+  color: var(--c-ink);
+}
+
+.submit-tag-btn.is-active {
+  background: var(--c-ink);
+  border-color: var(--c-ink);
+  color: var(--c-bg);
+}
+
+/* ─── Gallery filter view ────────────── */
+
+.gallery-filter-header {
+  padding-bottom: 0.6rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 0.5px solid var(--c-border-mid);
+}
+
+.gallery-filter-label {
+  font-size: 0.56rem;
+  font-weight: 200;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.gallery-filter-empty {
+  font-size: 0.75rem;
+  font-weight: 200;
+  letter-spacing: 0.1em;
+  color: var(--c-muted);
+  padding: 2rem 0;
 }
 
 /* ─── Profile / post page ───────────── */
@@ -1178,6 +1352,10 @@ button { cursor: pointer; }
   .feed-row:hover { padding-left: 0; }
 
   .theme-switcher {
+    display: none;
+  }
+
+  .tag-rail {
     display: none;
   }
 

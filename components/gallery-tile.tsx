@@ -63,11 +63,10 @@ export function GalleryTile({
           providerName={providerName}
         />
         <span className="gallery-tile-stats">
-          <span>
-            {clickCount} {clickCount === 1 ? "visit" : "visits"}
-          </span>
-          <span>
-            {commentsCount} {commentsCount === 1 ? "comment" : "comments"}
+          <span className="gallery-tile-provider">{providerName}</span>
+          <span className="gallery-tile-counts">
+            <span>{clickCount} {clickCount === 1 ? "visit" : "visits"}</span>
+            <span>{commentsCount} {commentsCount === 1 ? "comment" : "comments"}</span>
           </span>
         </span>
       </button>

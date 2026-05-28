@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, memo } from "react";
 
 import { GalleryTile } from "@/components/gallery-tile";
 import { ExpandedCard } from "@/components/expanded-card";
+import { PRESET_TAGS } from "@/components/submit-form";
 import type { FeedItem } from "@/src/feed/view-model";
 import type { ProviderSummary } from "@/src/domain/linkit";
 
@@ -21,11 +22,6 @@ function slugify(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 }
 
-/**
- * Instant scroll to section — direct scrollTop assignment bypasses
- * CSS scroll-behavior: smooth so there's no fighting with ResizeObserver
- * corrections. No animation: user lands at the section immediately.
- */
 function jumpToSection(sectionId: string) {
   const el = document.getElementById(sectionId);
   if (!el) return;
@@ -41,6 +37,7 @@ function jumpToSection(sectionId: string) {
 }
 
 const COLUMN_COUNT = 3;
+const FILTERED_PAGE_SIZE = 24;
 
 function distributeColumns(items: FeedItem[]): FeedItem[][] {
   const cols: FeedItem[][] = Array.from({ length: COLUMN_COUNT }, () => []);
@@ -113,6 +110,78 @@ const GallerySection = memo(function GallerySection({
   );
 });
 
+// Flat filtered view with client-side pagination
+function FilteredGallery({
+  items,
+  savedIds,
+  onExpand,
+  onSaveToggle
+}: {
+  items: FeedItem[];
+  savedIds: Set<string>;
+  onExpand: (id: string, cardEl: HTMLElement) => void;
+  onSaveToggle: (id: string) => void;
+}) {
+  const [visibleCount, setVisibleCount] = useState(FILTERED_PAGE_SIZE);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  // Reset pagination when items change (different filter)
+  useEffect(() => {
+    setVisibleCount(FILTERED_PAGE_SIZE);
+  }, [items]);
+
+  const visibleItems = useMemo(() => items.slice(0, visibleCount), [items, visibleCount]);
+  const columns = useMemo(() => distributeColumns(visibleItems), [visibleItems]);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel || visibleCount >= items.length) return;
+    const scrollRoot = document.getElementById("page-main");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setVisibleCount((c) => Math.min(c + FILTERED_PAGE_SIZE, items.length));
+        }
+      },
+      { root: scrollRoot, rootMargin: "400px" }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [items.length, visibleCount]);
+
+  if (items.length === 0) {
+    return <p className="gallery-filter-empty">No links match this filter.</p>;
+  }
+
+  return (
+    <>
+      <div className="gallery-section-grid">
+        {columns.map((colItems, colIdx) => (
+          <div key={colIdx} className="gallery-column">
+            {colItems.map((item) => (
+              <GalleryTile
+                key={item.id}
+                id={item.id}
+                title={item.title}
+                providerName={item.providerName}
+                thumbnailUrl={item.thumbnailUrl}
+                clickCount={item.clickCount}
+                commentsCount={item.commentsCount}
+                isSaved={savedIds.has(item.id)}
+                onExpand={onExpand}
+                onSaveToggle={onSaveToggle}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+      {visibleCount < items.length && (
+        <div ref={sentinelRef} style={{ height: 1 }} aria-hidden="true" />
+      )}
+    </>
+  );
+}
+
 export function GalleryFeed({
   initialItems,
   providers
@@ -129,8 +198,13 @@ export function GalleryFeed({
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const railListRef = useRef<HTMLOListElement>(null);
   const initialItemsRef = useRef(initialItems);
-  // Pending section to jump to after preceding providers load
   const scrollTargetRef = useRef<string | null>(null);
+
+  // Tag + provider filter state
+  const [activeTags, setActiveTags] = useState<string[]>([]);
+  const [filterProvider, setFilterProvider] = useState<string | null>(null);
+
+  const isFiltered = activeTags.length > 0;
 
   // Open card from saved list (?open=<id>)
   useEffect(() => {
@@ -187,6 +261,17 @@ export function GalleryFeed({
     return groupMap;
   }, [items]);
 
+  // Filtered items for tag view — OR on tags, AND with provider if set
+  const filteredItems = useMemo(() => {
+    if (!isFiltered) return items;
+    return items.filter((item) => {
+      const tagMatch = item.tags.some((t) => activeTags.includes(t));
+      if (!tagMatch) return false;
+      if (filterProvider && item.providerName !== filterProvider) return false;
+      return true;
+    });
+  }, [items, isFiltered, activeTags, filterProvider]);
+
   const loadProvider = useCallback(
     (providerName: string): Promise<void> => {
       if (loadedProvidersRef.current.has(providerName)) return Promise.resolve();
@@ -231,7 +316,7 @@ export function GalleryFeed({
     [initialItems]
   );
 
-  // After items update, jump to pending scroll target (fired after preceding providers load)
+  // Jump to pending section after items update
   useEffect(() => {
     const target = scrollTargetRef.current;
     if (!target) return;
@@ -239,7 +324,7 @@ export function GalleryFeed({
     jumpToSection(target);
   }, [items]);
 
-  // Map section id → provider name for IntersectionObserver
+  // Section id → provider name map
   const sectionIdToProvider = useMemo(() => {
     const map = new Map<string, string>();
     for (const { providerName } of providers) {
@@ -248,8 +333,9 @@ export function GalleryFeed({
     return map;
   }, [providers]);
 
-  // Track visible section → highlight in sidebar
+  // Track visible section → sidebar highlight (only in non-filtered view)
   useEffect(() => {
+    if (isFiltered) return;
     const sections = document.querySelectorAll<HTMLElement>(".gallery-section");
     if (sections.length === 0) return;
     const scrollRoot = document.getElementById("page-main");
@@ -266,10 +352,11 @@ export function GalleryFeed({
     );
     sections.forEach((s) => observer.observe(s));
     return () => observer.disconnect();
-  }, [sectionIdToProvider]);
+  }, [sectionIdToProvider, isFiltered]);
 
-  // Lazy-load provider content as sections scroll into view
+  // Lazy-load providers as sections become visible
   useEffect(() => {
+    if (isFiltered) return;
     const scrollRoot = document.getElementById("page-main");
     const observer = new IntersectionObserver(
       (entries) => {
@@ -287,9 +374,9 @@ export function GalleryFeed({
     );
     sections.forEach((s) => observer.observe(s));
     return () => observer.disconnect();
-  }, [providers, loadProvider]);
+  }, [providers, loadProvider, isFiltered]);
 
-  // Sidebar auto-scrolls to keep active item visible
+  // Sidebar auto-scroll to active item
   useEffect(() => {
     if (!activeProvider || !railListRef.current) return;
     const idx = providers.findIndex((p) => p.providerName === activeProvider);
@@ -298,23 +385,27 @@ export function GalleryFeed({
     if (li) li.scrollIntoView({ block: "nearest" });
   }, [activeProvider, providers]);
 
-  // Infinity-scroll prefetch: when active section changes, preload adjacent sections
-  // so scrolling up/down always finds content ready (sections may be off-screen)
+  // Prefetch adjacent sections
   useEffect(() => {
-    if (!activeProvider) return;
+    if (!activeProvider || isFiltered) return;
     const idx = providers.findIndex((p) => p.providerName === activeProvider);
     if (idx < 0) return;
     if (idx > 0) void loadProvider(providers[idx - 1].providerName);
     if (idx < providers.length - 1) void loadProvider(providers[idx + 1].providerName);
-  }, [activeProvider, providers, loadProvider]);
+  }, [activeProvider, providers, loadProvider, isFiltered]);
 
   const handleProviderClick = useCallback(
     async (providerName: string) => {
+      if (isFiltered) {
+        // In filter mode: toggle provider filter (click same → clear, click other → set)
+        setFilterProvider((prev) => (prev === providerName ? null : providerName));
+        return;
+      }
+
       window.dispatchEvent(new Event("provider-switch"));
       const targetIdx = providers.findIndex((p) => p.providerName === providerName);
       const sectionId = `section-${slugify(providerName)}`;
 
-      // Load preceding sections first if they haven't been loaded
       const precedingLoads: Promise<void>[] = [];
       for (let i = 0; i < targetIdx; i++) {
         const p = providers[i].providerName;
@@ -324,10 +415,8 @@ export function GalleryFeed({
       }
 
       if (precedingLoads.length > 0) {
-        // Store jump target; the items-change effect will fire it after commit
         scrollTargetRef.current = sectionId;
         await Promise.all(precedingLoads);
-        // Effect fires after React commits the new items
       } else {
         jumpToSection(sectionId);
       }
@@ -336,8 +425,16 @@ export function GalleryFeed({
         void loadProvider(providerName);
       }
     },
-    [providers, stageGroups, loadProvider]
+    [providers, stageGroups, loadProvider, isFiltered]
   );
+
+  const handleTagToggle = useCallback((tag: string) => {
+    setActiveTags((prev) => {
+      const next = prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag];
+      if (next.length === 0) setFilterProvider(null);
+      return next;
+    });
+  }, []);
 
   const handleExpand = useCallback(
     (id: string, cardEl: HTMLElement) => {
@@ -378,6 +475,7 @@ export function GalleryFeed({
 
   return (
     <>
+      {/* Left sidebar — Sources */}
       <aside
         className="catalogue-rail"
         data-testid="catalogue-rail"
@@ -397,7 +495,9 @@ export function GalleryFeed({
               <li
                 key={group.providerName}
                 data-active={
-                  activeProvider === group.providerName ? "" : undefined
+                  isFiltered
+                    ? filterProvider === group.providerName ? "" : undefined
+                    : activeProvider === group.providerName ? "" : undefined
                 }
               >
                 <button
@@ -416,19 +516,32 @@ export function GalleryFeed({
         </ol>
       </aside>
 
+      {/* Main gallery stage */}
       <div className="infinite-stage">
         <p className="catalogue-version">MM26.1</p>
 
         {isEmpty ? (
-          <section
-            className="gallery-section"
-            id="section-linkit"
-          >
+          <section className="gallery-section" id="section-linkit">
             <div className="gallery-section-header">
               <span className="gallery-section-name">Linkit</span>
               <span className="gallery-section-spec">No links yet</span>
             </div>
           </section>
+        ) : isFiltered ? (
+          <div className="gallery-stage-content">
+            <div className="gallery-filter-header">
+              <span className="gallery-filter-label">
+                {filteredItems.length} {filteredItems.length === 1 ? "link" : "links"}
+                {filterProvider ? ` · ${filterProvider}` : ""}
+              </span>
+            </div>
+            <FilteredGallery
+              items={filteredItems}
+              savedIds={savedIds}
+              onExpand={handleExpand}
+              onSaveToggle={handleSaveToggle}
+            />
+          </div>
         ) : (
           providers.map(({ providerName, count }) => (
             <GallerySection
@@ -444,6 +557,35 @@ export function GalleryFeed({
           ))
         )}
       </div>
+
+      {/* Right sidebar — Tags */}
+      <aside className="tag-rail" aria-label="Tag filter">
+        <h2 className="tag-rail-heading">Filter</h2>
+        <div className="tag-rail-list">
+          {PRESET_TAGS.map((tag) => (
+            <button
+              key={tag}
+              type="button"
+              className={`tag-rail-btn${activeTags.includes(tag) ? " is-active" : ""}`}
+              onClick={() => handleTagToggle(tag)}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+        {activeTags.length > 0 && (
+          <button
+            type="button"
+            className="tag-rail-clear"
+            onClick={() => {
+              setActiveTags([]);
+              setFilterProvider(null);
+            }}
+          >
+            Clear
+          </button>
+        )}
+      </aside>
 
       {expanded && (
         <ExpandedCard
