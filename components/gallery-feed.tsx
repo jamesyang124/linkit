@@ -309,6 +309,7 @@ export function GalleryFeed({
       } else {
         setDisplayFilter(null);
         setContentKey((k) => k + 1);
+        document.getElementById("page-main")?.scrollTo({ top: 0 });
       }
     },
     [filterProvider, loadProvider]
@@ -474,6 +475,7 @@ export function GalleryFeed({
               setDisplayFilter(null);
               latestClickRef.current = null;
               setContentKey((k) => k + 1);
+              document.getElementById("page-main")?.scrollTo({ top: 0 });
             }}
           >
             Clear

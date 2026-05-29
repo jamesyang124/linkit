@@ -18,6 +18,7 @@
     "seed:dev": "tsx scripts/seed-dev.ts",
     "seed:designspiration": "tsx scripts/seed-designspiration-pins.ts",
     "seed:gallery": "tsx scripts/seed-gallery.ts",
+    "seed:reseed": "tsx scripts/reseed.ts",
     "legacy:import": "tsx scripts/legacy/import-migration.ts",
     "legacy:verify": "tsx scripts/legacy/verify-migration.ts",
     "test": "vitest run",
