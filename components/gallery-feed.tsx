@@ -39,6 +39,7 @@ function FlatGallery({
   onSaveToggle,
   onLoadMore,
   loadingMore,
+  providerLoading,
 }: {
   items: FeedItem[];
   savedIds: Set<string>;
@@ -46,6 +47,7 @@ function FlatGallery({
   onSaveToggle: (id: string) => void;
   onLoadMore?: () => void;
   loadingMore?: boolean;
+  providerLoading?: boolean;
 }) {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const columns = useMemo(() => distributeColumns(items), [items]);
@@ -65,6 +67,9 @@ function FlatGallery({
   }, [onLoadMore]);
 
   if (items.length === 0) {
+    if (providerLoading) {
+      return <p className="gallery-section-loading">Loading…</p>;
+    }
     if (loadingMore || onLoadMore) {
       return (
         <div ref={sentinelRef} style={{ height: 1 }} aria-hidden="true" />
@@ -119,6 +124,7 @@ export function GalleryFeed({
   const [activeTags, setActiveTags] = useState<string[]>([]);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [showSubmit, setShowSubmit] = useState(false);
+  const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
 
   const loadedProvidersRef = useRef<Set<string>>(new Set());
   const inFlightRef = useRef<Map<string, Promise<void>>>(new Map());
@@ -219,6 +225,7 @@ export function GalleryFeed({
       const existing = inFlightRef.current.get(providerName);
       if (existing) return existing;
 
+      setLoadingProvider(providerName);
       const promise = (async () => {
         try {
           const res = await fetch(
@@ -236,6 +243,7 @@ export function GalleryFeed({
           ]);
         } finally {
           inFlightRef.current.delete(providerName);
+          setLoadingProvider((prev) => (prev === providerName ? null : prev));
         }
       })();
 
@@ -299,6 +307,7 @@ export function GalleryFeed({
 
   // Cursor-paginate only when no provider filter active (provider load covers that case)
   const canLoadMore = nextCursor !== null && filterProvider === null && !loadingMore;
+  const isProviderLoading = filterProvider !== null && loadingProvider === filterProvider;
 
   return (
     <>
@@ -378,6 +387,7 @@ export function GalleryFeed({
               onSaveToggle={handleSaveToggle}
               onLoadMore={canLoadMore ? loadMore : undefined}
               loadingMore={loadingMore}
+              providerLoading={isProviderLoading}
             />
           </div>
         )}
