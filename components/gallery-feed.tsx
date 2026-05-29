@@ -348,14 +348,6 @@ export function GalleryFeed({
             ))
           )}
         </ol>
-        <button
-          type="button"
-          className="rail-share-btn"
-          onClick={() => setShowSubmit(true)}
-        >
-          <span className="rail-name">Share</span>
-          <span className="rail-type">Add link</span>
-        </button>
       </aside>
 
       {/* Main gallery stage */}
