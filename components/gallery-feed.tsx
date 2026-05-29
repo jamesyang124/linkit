@@ -209,12 +209,6 @@ export function GalleryFeed({
       .catch(() => {});
   }, []);
 
-  // Scroll to top when displayed content switches
-  useEffect(() => {
-    const el = document.getElementById("page-main");
-    if (el) el.scrollTop = 0;
-  }, [displayFilter]);
-
   const allItems = useMemo(() => {
     const baseIds = new Set(initialItems.map((i) => i.id));
     return [...initialItems, ...extraItems.filter((i) => !baseIds.has(i.id))];
