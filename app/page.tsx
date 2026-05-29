@@ -19,6 +19,7 @@ export default async function HomePage() {
       >
         <GalleryFeed
           initialItems={galleryPage.items}
+          initialNextCursor={galleryPage.nextCursor}
           providers={providers}
         />
       </section>

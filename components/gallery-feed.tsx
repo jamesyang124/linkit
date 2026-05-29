@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, memo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { GalleryTile } from "@/components/gallery-tile";
 import { ExpandedCard } from "@/components/expanded-card";
@@ -18,26 +18,7 @@ type ExpandedState = {
   cardRect: DOMRect;
 };
 
-function slugify(s: string) {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-}
-
-function jumpToSection(sectionId: string) {
-  const el = document.getElementById(sectionId);
-  if (!el) return;
-  const scrollContainer = document.getElementById("page-main");
-  if (scrollContainer) {
-    const containerTop = scrollContainer.getBoundingClientRect().top;
-    const elTop = el.getBoundingClientRect().top;
-    const marginTop = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
-    scrollContainer.scrollTop += elTop - containerTop - marginTop;
-  } else {
-    el.scrollIntoView({ behavior: "instant", block: "start" });
-  }
-}
-
 const COLUMN_COUNT = 3;
-const FILTERED_PAGE_SIZE = 24;
 
 function distributeColumns(items: FeedItem[]): FeedItem[][] {
   const cols: FeedItem[][] = Array.from({ length: COLUMN_COUNT }, () => []);
@@ -50,106 +31,44 @@ function distributeColumns(items: FeedItem[]): FeedItem[][] {
   return cols;
 }
 
-const GallerySection = memo(function GallerySection({
-  provider,
-  items,
-  totalCount,
-  loading,
-  savedIds,
-  onExpand,
-  onSaveToggle
-}: {
-  provider: string;
-  items: FeedItem[];
-  totalCount: number;
-  loading: boolean;
-  savedIds: Set<string>;
-  onExpand: (id: string, cardEl: HTMLElement) => void;
-  onSaveToggle: (id: string) => void;
-}) {
-  const columns = useMemo(() => distributeColumns(items), [items]);
-  const hasItems = items.length > 0;
-
-  return (
-    <section
-      className="gallery-section"
-      id={`section-${slugify(provider)}`}
-      data-provider={provider}
-    >
-      <div className="gallery-section-header">
-        <span className="gallery-section-name">{provider}</span>
-        <span className="gallery-section-spec">
-          {totalCount} {totalCount === 1 ? "link" : "links"}
-        </span>
-      </div>
-      {hasItems ? (
-        <div className="gallery-section-grid">
-          {columns.map((colItems, colIdx) => (
-            <div key={colIdx} className="gallery-column">
-              {colItems.map((item) => (
-                <GalleryTile
-                  key={item.id}
-                  id={item.id}
-                  title={item.title}
-                  providerName={item.providerName}
-                  thumbnailUrl={item.thumbnailUrl}
-                  clickCount={item.clickCount}
-                  commentsCount={item.commentsCount}
-                  isSaved={savedIds.has(item.id)}
-                  onExpand={onExpand}
-                  onSaveToggle={onSaveToggle}
-                />
-              ))}
-            </div>
-          ))}
-        </div>
-      ) : loading ? (
-        <p className="gallery-section-loading">Loading…</p>
-      ) : null}
-    </section>
-  );
-});
-
-// Flat filtered view with client-side pagination
-function FilteredGallery({
+function FlatGallery({
   items,
   savedIds,
   onExpand,
-  onSaveToggle
+  onSaveToggle,
+  onLoadMore,
+  loadingMore,
 }: {
   items: FeedItem[];
   savedIds: Set<string>;
   onExpand: (id: string, cardEl: HTMLElement) => void;
   onSaveToggle: (id: string) => void;
+  onLoadMore?: () => void;
+  loadingMore?: boolean;
 }) {
-  const [visibleCount, setVisibleCount] = useState(FILTERED_PAGE_SIZE);
   const sentinelRef = useRef<HTMLDivElement>(null);
-
-  // Reset pagination when items change (different filter)
-  useEffect(() => {
-    setVisibleCount(FILTERED_PAGE_SIZE);
-  }, [items]);
-
-  const visibleItems = useMemo(() => items.slice(0, visibleCount), [items, visibleCount]);
-  const columns = useMemo(() => distributeColumns(visibleItems), [visibleItems]);
+  const columns = useMemo(() => distributeColumns(items), [items]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
-    if (!sentinel || visibleCount >= items.length) return;
+    if (!sentinel || !onLoadMore) return;
     const scrollRoot = document.getElementById("page-main");
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          setVisibleCount((c) => Math.min(c + FILTERED_PAGE_SIZE, items.length));
-        }
+        if (entries.some((e) => e.isIntersecting)) onLoadMore();
       },
       { root: scrollRoot, rootMargin: "400px" }
     );
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [items.length, visibleCount]);
+  }, [onLoadMore]);
 
   if (items.length === 0) {
+    if (loadingMore || onLoadMore) {
+      return (
+        <div ref={sentinelRef} style={{ height: 1 }} aria-hidden="true" />
+      );
+    }
     return <p className="gallery-filter-empty">No links match this filter.</p>;
   }
 
@@ -175,7 +94,7 @@ function FilteredGallery({
           </div>
         ))}
       </div>
-      {visibleCount < items.length && (
+      {onLoadMore && (
         <div ref={sentinelRef} style={{ height: 1 }} aria-hidden="true" />
       )}
     </>
@@ -184,27 +103,26 @@ function FilteredGallery({
 
 export function GalleryFeed({
   initialItems,
-  providers
+  initialNextCursor,
+  providers,
 }: {
   initialItems: FeedItem[];
+  initialNextCursor: string | null;
   providers: ProviderSummary[];
 }) {
   const [extraItems, setExtraItems] = useState<FeedItem[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [expanded, setExpanded] = useState<ExpandedState | null>(null);
-  const [activeProvider, setActiveProvider] = useState<string | null>(null);
-  const [loadingProviders, setLoadingProviders] = useState<Set<string>>(new Set());
+  const [filterProvider, setFilterProvider] = useState<string | null>(null);
+  const [activeTags, setActiveTags] = useState<string[]>([]);
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+
   const loadedProvidersRef = useRef<Set<string>>(new Set());
   const inFlightRef = useRef<Map<string, Promise<void>>>(new Map());
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
-  const railListRef = useRef<HTMLOListElement>(null);
   const initialItemsRef = useRef(initialItems);
-  const scrollTargetRef = useRef<string | null>(null);
 
-  // Tag + provider filter state
-  const [activeTags, setActiveTags] = useState<string[]>([]);
-  const [filterProvider, setFilterProvider] = useState<string | null>(null);
-
-  const isFiltered = activeTags.length > 0;
+  const isFiltered = activeTags.length > 0 || filterProvider !== null;
 
   // Open card from saved list (?open=<id>)
   useEffect(() => {
@@ -246,31 +164,36 @@ export function GalleryFeed({
       .catch(() => {});
   }, []);
 
-  const items = useMemo(() => {
+  const allItems = useMemo(() => {
     const baseIds = new Set(initialItems.map((i) => i.id));
     return [...initialItems, ...extraItems.filter((i) => !baseIds.has(i.id))];
   }, [initialItems, extraItems]);
 
-  const stageGroups = useMemo(() => {
-    const groupMap = new Map<string, FeedItem[]>();
-    for (const item of items) {
-      const bucket = groupMap.get(item.providerName) ?? [];
-      bucket.push(item);
-      groupMap.set(item.providerName, bucket);
-    }
-    return groupMap;
-  }, [items]);
-
-  // Filtered items for tag view — OR on tags, AND with provider if set
-  const filteredItems = useMemo(() => {
-    if (!isFiltered) return items;
-    return items.filter((item) => {
-      const tagMatch = item.tags.some((t) => activeTags.includes(t));
-      if (!tagMatch) return false;
+  const displayItems = useMemo(() => {
+    if (!isFiltered) return allItems;
+    return allItems.filter((item) => {
       if (filterProvider && item.providerName !== filterProvider) return false;
+      if (activeTags.length > 0 && !item.tags.some((t) => activeTags.includes(t))) return false;
       return true;
     });
-  }, [items, isFiltered, activeTags, filterProvider]);
+  }, [allItems, isFiltered, filterProvider, activeTags]);
+
+  const loadMore = useCallback(async () => {
+    if (!nextCursor || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const res = await fetch(`/api/gallery?cursor=${encodeURIComponent(nextCursor)}`);
+      if (!res.ok) return;
+      const page = (await res.json()) as GalleryPageResponse;
+      setExtraItems((prev) => {
+        const ids = new Set([...initialItems, ...prev].map((i) => i.id));
+        return [...prev, ...page.items.filter((i) => !ids.has(i.id))];
+      });
+      setNextCursor(page.nextCursor);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [nextCursor, loadingMore, initialItems]);
 
   const loadProvider = useCallback(
     (providerName: string): Promise<void> => {
@@ -279,33 +202,21 @@ export function GalleryFeed({
       if (existing) return existing;
 
       const promise = (async () => {
-        setLoadingProviders((prev) => new Set([...prev, providerName]));
         try {
-          const response = await fetch(
-            `/api/gallery?provider=${encodeURIComponent(providerName)}`,
-            { headers: { accept: "application/json" } }
+          const res = await fetch(
+            `/api/gallery?provider=${encodeURIComponent(providerName)}`
           );
-          if (!response.ok) return;
-          const page = (await response.json()) as GalleryPageResponse;
-          setExtraItems((current) => {
-            const existingIds = new Set(
-              [...initialItems, ...current].map((i) => i.id)
-            );
-            return [
-              ...current,
-              ...page.items.filter((i) => !existingIds.has(i.id))
-            ];
+          if (!res.ok) return;
+          const page = (await res.json()) as GalleryPageResponse;
+          setExtraItems((prev) => {
+            const ids = new Set([...initialItems, ...prev].map((i) => i.id));
+            return [...prev, ...page.items.filter((i) => !ids.has(i.id))];
           });
           loadedProvidersRef.current = new Set([
             ...loadedProvidersRef.current,
-            providerName
+            providerName,
           ]);
         } finally {
-          setLoadingProviders((prev) => {
-            const next = new Set(prev);
-            next.delete(providerName);
-            return next;
-          });
           inFlightRef.current.delete(providerName);
         }
       })();
@@ -316,133 +227,28 @@ export function GalleryFeed({
     [initialItems]
   );
 
-  // Jump to pending section after items update
-  useEffect(() => {
-    const target = scrollTargetRef.current;
-    if (!target) return;
-    scrollTargetRef.current = null;
-    jumpToSection(target);
-  }, [items]);
-
-  // Section id → provider name map
-  const sectionIdToProvider = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const { providerName } of providers) {
-      map.set(`section-${slugify(providerName)}`, providerName);
-    }
-    return map;
-  }, [providers]);
-
-  // Track visible section → sidebar highlight (only in non-filtered view)
-  useEffect(() => {
-    if (isFiltered) return;
-    const sections = document.querySelectorAll<HTMLElement>(".gallery-section");
-    if (sections.length === 0) return;
-    const scrollRoot = document.getElementById("page-main");
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            const provider = sectionIdToProvider.get(entry.target.id);
-            if (provider) setActiveProvider(provider);
-          }
-        }
-      },
-      { root: scrollRoot, rootMargin: "-60px 0px -65% 0px", threshold: 0 }
-    );
-    sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
-  }, [sectionIdToProvider, isFiltered]);
-
-  // Lazy-load providers as sections become visible
-  useEffect(() => {
-    if (isFiltered) return;
-    const scrollRoot = document.getElementById("page-main");
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            const provider = entry.target.getAttribute("data-provider");
-            if (provider) void loadProvider(provider);
-          }
-        }
-      },
-      { root: scrollRoot, rootMargin: "60% 0px" }
-    );
-    const sections = document.querySelectorAll<HTMLElement>(
-      ".gallery-section[data-provider]"
-    );
-    sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
-  }, [providers, loadProvider, isFiltered]);
-
-  // Sidebar auto-scroll to active item
-  useEffect(() => {
-    if (!activeProvider || !railListRef.current) return;
-    const idx = providers.findIndex((p) => p.providerName === activeProvider);
-    if (idx < 0) return;
-    const li = railListRef.current.querySelectorAll("li")[idx];
-    if (li) li.scrollIntoView({ block: "nearest" });
-  }, [activeProvider, providers]);
-
-  // Prefetch adjacent sections
-  useEffect(() => {
-    if (!activeProvider || isFiltered) return;
-    const idx = providers.findIndex((p) => p.providerName === activeProvider);
-    if (idx < 0) return;
-    if (idx > 0) void loadProvider(providers[idx - 1].providerName);
-    if (idx < providers.length - 1) void loadProvider(providers[idx + 1].providerName);
-  }, [activeProvider, providers, loadProvider, isFiltered]);
-
   const handleProviderClick = useCallback(
-    async (providerName: string) => {
-      if (isFiltered) {
-        // In filter mode: toggle provider filter (click same → clear, click other → set)
-        setFilterProvider((prev) => (prev === providerName ? null : providerName));
-        return;
-      }
-
-      window.dispatchEvent(new Event("provider-switch"));
-      const targetIdx = providers.findIndex((p) => p.providerName === providerName);
-      const sectionId = `section-${slugify(providerName)}`;
-
-      const precedingLoads: Promise<void>[] = [];
-      for (let i = 0; i < targetIdx; i++) {
-        const p = providers[i].providerName;
-        if (!stageGroups.has(p)) {
-          precedingLoads.push(loadProvider(p));
-        }
-      }
-
-      if (precedingLoads.length > 0) {
-        scrollTargetRef.current = sectionId;
-        await Promise.all(precedingLoads);
-      } else {
-        jumpToSection(sectionId);
-      }
-
-      if (!stageGroups.has(providerName)) {
-        void loadProvider(providerName);
-      }
+    (providerName: string) => {
+      const next = filterProvider === providerName ? null : providerName;
+      setFilterProvider(next);
+      if (next) void loadProvider(next);
     },
-    [providers, stageGroups, loadProvider, isFiltered]
+    [filterProvider, loadProvider]
   );
 
   const handleTagToggle = useCallback((tag: string) => {
-    setActiveTags((prev) => {
-      const next = prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag];
-      if (next.length === 0) setFilterProvider(null);
-      return next;
-    });
+    setActiveTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
   }, []);
 
   const handleExpand = useCallback(
     (id: string, cardEl: HTMLElement) => {
-      const item = items.find((i) => i.id === id);
+      const item = allItems.find((i) => i.id === id);
       if (!item) return;
       setExpanded({ item, cardRect: cardEl.getBoundingClientRect() });
     },
-    [items]
+    [allItems]
   );
 
   const handleClose = useCallback(() => setExpanded(null), []);
@@ -457,7 +263,7 @@ export function GalleryFeed({
       });
       try {
         const res = await fetch(`/api/saves/${id}`, {
-          method: wasSaved ? "DELETE" : "POST"
+          method: wasSaved ? "DELETE" : "POST",
         });
         if (!res.ok) throw new Error(`save ${res.status}`);
       } catch {
@@ -473,6 +279,9 @@ export function GalleryFeed({
 
   const isEmpty = providers.length === 0;
 
+  // Cursor-paginate only when no provider filter active (provider load covers that case)
+  const canLoadMore = nextCursor !== null && filterProvider === null && !loadingMore;
+
   return (
     <>
       {/* Left sidebar — Sources */}
@@ -482,7 +291,7 @@ export function GalleryFeed({
         aria-label="Sources index"
       >
         <h1 id="sources-heading">Sources</h1>
-        <ol ref={railListRef}>
+        <ol>
           {isEmpty ? (
             <li>
               <button type="button" className="rail-item-btn">
@@ -495,15 +304,13 @@ export function GalleryFeed({
               <li
                 key={group.providerName}
                 data-active={
-                  isFiltered
-                    ? filterProvider === group.providerName ? "" : undefined
-                    : activeProvider === group.providerName ? "" : undefined
+                  filterProvider === group.providerName ? "" : undefined
                 }
               >
                 <button
                   type="button"
                   className="rail-item-btn"
-                  onClick={() => void handleProviderClick(group.providerName)}
+                  onClick={() => handleProviderClick(group.providerName)}
                 >
                   <span className="rail-name">{group.providerName}</span>
                   <span className="rail-type">
@@ -527,34 +334,26 @@ export function GalleryFeed({
               <span className="gallery-section-spec">No links yet</span>
             </div>
           </section>
-        ) : isFiltered ? (
+        ) : (
           <div className="gallery-stage-content">
-            <div className="gallery-filter-header">
-              <span className="gallery-filter-label">
-                {filteredItems.length} {filteredItems.length === 1 ? "link" : "links"}
-                {filterProvider ? ` · ${filterProvider}` : ""}
-              </span>
-            </div>
-            <FilteredGallery
-              items={filteredItems}
+            {isFiltered && (
+              <div className="gallery-filter-header">
+                <span className="gallery-filter-label">
+                  {displayItems.length}{" "}
+                  {displayItems.length === 1 ? "link" : "links"}
+                  {filterProvider ? ` · ${filterProvider}` : ""}
+                </span>
+              </div>
+            )}
+            <FlatGallery
+              items={displayItems}
               savedIds={savedIds}
               onExpand={handleExpand}
               onSaveToggle={handleSaveToggle}
+              onLoadMore={canLoadMore ? loadMore : undefined}
+              loadingMore={loadingMore}
             />
           </div>
-        ) : (
-          providers.map(({ providerName, count }) => (
-            <GallerySection
-              key={providerName}
-              provider={providerName}
-              items={stageGroups.get(providerName) ?? []}
-              totalCount={count}
-              loading={loadingProviders.has(providerName)}
-              savedIds={savedIds}
-              onExpand={handleExpand}
-              onSaveToggle={handleSaveToggle}
-            />
-          ))
         )}
       </div>
 
@@ -573,7 +372,7 @@ export function GalleryFeed({
             </button>
           ))}
         </div>
-        {activeTags.length > 0 && (
+        {(activeTags.length > 0 || filterProvider !== null) && (
           <button
             type="button"
             className="tag-rail-clear"
