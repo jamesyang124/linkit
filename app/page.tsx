@@ -1,6 +1,5 @@
 import { getPublicGalleryFeedPage, getPublicProviderSummaries } from "@/src/feed/load-feed";
 import { GalleryFeed } from "@/components/gallery-feed";
-import { SubmitForm } from "@/components/submit-form";
 
 export const revalidate = 60;
 
@@ -22,10 +21,6 @@ export default async function HomePage() {
           initialNextCursor={galleryPage.nextCursor}
           providers={providers}
         />
-      </section>
-
-      <section className="submit-dock" id="submit" data-testid="submit-dock">
-        <SubmitForm />
       </section>
     </main>
   );

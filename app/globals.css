@@ -204,7 +204,6 @@ button { cursor: pointer; }
   width: min(100%, 1300px);
   margin: 0 auto;
   padding-top: 2rem;
-  border-left: 0.5px solid var(--c-border-mid);
   border-right: 0.5px solid var(--c-border-mid);
 }
 
@@ -313,6 +312,31 @@ button { cursor: pointer; }
   color: var(--c-muted);
   margin-top: 2px;
   text-transform: uppercase;
+}
+
+/* Share / add-link button at rail bottom */
+.rail-share-btn {
+  flex-shrink: 0;
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  border: 0;
+  border-top: 0.5px solid var(--c-border-mid);
+  background: transparent;
+  color: var(--c-ink);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.rail-share-btn:hover {
+  background: var(--c-ink);
+}
+
+.rail-share-btn:hover .rail-name,
+.rail-share-btn:hover .rail-type {
+  color: var(--c-bg);
 }
 
 /* Topics footer */
@@ -1052,6 +1076,37 @@ button { cursor: pointer; }
   letter-spacing: 0.1em;
   color: var(--c-muted);
   padding: 2rem 0;
+}
+
+/* ─── Submit modal ───────────────────── */
+
+.submit-modal-panel {
+  position: fixed;
+  z-index: 300;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(540px, calc(100vw - 2rem));
+  max-height: calc(100dvh - 4rem);
+  overflow-y: auto;
+  background: var(--c-bg);
+  border: 0.5px solid var(--c-border-mid);
+  padding: 2rem 2rem 2.5rem;
+  scrollbar-width: none;
+  animation: modal-slide-in 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.submit-modal-panel::-webkit-scrollbar { display: none; }
+
+@keyframes modal-slide-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 14px));
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
 }
 
 /* ─── Profile / post page ───────────── */

@@ -13,7 +13,7 @@ export const PRESET_TAGS = [
   "Culture", "Film", "Music", "Fashion", "Space"
 ] as const;
 
-export function SubmitForm() {
+export function SubmitForm({ onSuccess }: { onSuccess?: () => void } = {}) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -39,6 +39,7 @@ export function SubmitForm() {
         setSelectedTags([]);
         document.getElementById("page-main")?.scrollTo({ top: 0 });
         router.refresh();
+        onSuccess?.();
       }
     });
   }

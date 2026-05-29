@@ -1,10 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { GalleryTile } from "@/components/gallery-tile";
 import { ExpandedCard } from "@/components/expanded-card";
-import { PRESET_TAGS } from "@/components/submit-form";
+import { SubmitForm, PRESET_TAGS } from "@/components/submit-form";
 import type { FeedItem } from "@/src/feed/view-model";
 import type { ProviderSummary } from "@/src/domain/linkit";
 
@@ -117,12 +118,29 @@ export function GalleryFeed({
   const [filterProvider, setFilterProvider] = useState<string | null>(null);
   const [activeTags, setActiveTags] = useState<string[]>([]);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const [showSubmit, setShowSubmit] = useState(false);
 
   const loadedProvidersRef = useRef<Set<string>>(new Set());
   const inFlightRef = useRef<Map<string, Promise<void>>>(new Map());
   const initialItemsRef = useRef(initialItems);
 
   const isFiltered = activeTags.length > 0 || filterProvider !== null;
+
+  // Open submit modal from nav Share link
+  useEffect(() => {
+    const handler = () => setShowSubmit(true);
+    window.addEventListener("show-submit-modal", handler);
+    return () => window.removeEventListener("show-submit-modal", handler);
+  }, []);
+
+  useEffect(() => {
+    if (!showSubmit) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowSubmit(false);
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [showSubmit]);
 
   // Open card from saved list (?open=<id>)
   useEffect(() => {
@@ -321,6 +339,14 @@ export function GalleryFeed({
             ))
           )}
         </ol>
+        <button
+          type="button"
+          className="rail-share-btn"
+          onClick={() => setShowSubmit(true)}
+        >
+          <span className="rail-name">Share</span>
+          <span className="rail-type">Add link</span>
+        </button>
       </aside>
 
       {/* Main gallery stage */}
@@ -385,6 +411,26 @@ export function GalleryFeed({
           </button>
         )}
       </aside>
+
+      {showSubmit &&
+        createPortal(
+          <>
+            <div
+              className="card-expand-backdrop"
+              style={{
+                background:
+                  "linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(12, 10, 8, 0.34)), rgba(12, 10, 8, 0.32)",
+                backdropFilter: "blur(18px) saturate(1.35)",
+                WebkitBackdropFilter: "blur(18px) saturate(1.35)"
+              }}
+              onClick={() => setShowSubmit(false)}
+            />
+            <div className="submit-modal-panel">
+              <SubmitForm onSuccess={() => setShowSubmit(false)} />
+            </div>
+          </>,
+          document.body
+        )}
 
       {expanded && (
         <ExpandedCard
