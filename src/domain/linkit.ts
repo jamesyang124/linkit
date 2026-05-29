@@ -439,6 +439,7 @@ export function createMemoryLinkitStore(): LinkitStore {
     async listProviders() {
       const counts = new Map<string, number>();
       for (const post of posts.values()) {
+        if (post.thumbnailUrl === null) continue;
         counts.set(post.providerName, (counts.get(post.providerName) ?? 0) + 1);
       }
       return [...counts.entries()]
