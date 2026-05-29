@@ -95,30 +95,44 @@ export function ExpandedCard({ item, cardRect, onClose }: ExpandedCardProps) {
     };
   }, [imageAspectRatio, viewport]);
 
-  // FLIP: start at card rect, animate to centered panel
+  // Desktop: FLIP from card rect. Mobile: slide up from below.
   useEffect(() => {
     const el = panelRef.current;
     if (!el || didAnimateRef.current) return;
     didAnimateRef.current = true;
 
-    const scaleX = cardRect.width / panelWidth;
-    const scaleY = cardRect.height / panelHeight;
-    const dx = cardRect.left - panelLeft;
-    const dy = cardRect.top - panelTop;
-
-    el.style.transform = `translate(${dx}px, ${dy}px) scale(${scaleX}, ${scaleY})`;
-    el.style.opacity = "0";
-    el.style.transition = "none";
-
-    requestAnimationFrame(() => {
+    if (viewport.width <= 767) {
+      el.style.transform = "translateY(48px)";
+      el.style.opacity = "0";
+      el.style.transition = "none";
       requestAnimationFrame(() => {
-        el.style.transition =
-          "transform 340ms cubic-bezier(0.16, 1, 0.3, 1), opacity 180ms ease";
-        el.style.transform = "none";
-        el.style.opacity = "1";
+        requestAnimationFrame(() => {
+          el.style.transition =
+            "transform 320ms cubic-bezier(0.16, 1, 0.3, 1), opacity 200ms ease";
+          el.style.transform = "none";
+          el.style.opacity = "1";
+        });
       });
-    });
-  }, [cardRect, panelHeight, panelLeft, panelTop, panelWidth]);
+    } else {
+      const scaleX = cardRect.width / panelWidth;
+      const scaleY = cardRect.height / panelHeight;
+      const dx = cardRect.left - panelLeft;
+      const dy = cardRect.top - panelTop;
+
+      el.style.transform = `translate(${dx}px, ${dy}px) scale(${scaleX}, ${scaleY})`;
+      el.style.opacity = "0";
+      el.style.transition = "none";
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          el.style.transition =
+            "transform 340ms cubic-bezier(0.16, 1, 0.3, 1), opacity 180ms ease";
+          el.style.transform = "none";
+          el.style.opacity = "1";
+        });
+      });
+    }
+  }, [cardRect, panelHeight, panelLeft, panelTop, panelWidth, viewport.width]);
 
   // Close on ESC
   useEffect(() => {

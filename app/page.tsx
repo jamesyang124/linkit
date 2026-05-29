@@ -10,7 +10,7 @@ export default async function HomePage() {
   ]);
 
   return (
-    <main className="infinite-page site-shell min-h-screen px-5 md:px-8">
+    <main className="infinite-page site-shell min-h-screen px-0 md:px-8">
       <section
         className="infinite-shell"
         data-testid="infinite-gallery"

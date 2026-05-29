@@ -1418,43 +1418,94 @@ button { cursor: pointer; }
 
   .infinite-shell {
     grid-template-columns: 1fr;
-    padding-top: 1.5rem;
+    padding-top: 0;
     border: none;
   }
 
+  /* ── Sources chip bar ── */
+
   .catalogue-rail {
-    position: relative;
-    top: auto;
+    position: sticky;
+    top: 0;
     left: auto;
-    width: auto;
+    z-index: 50;
+    background: var(--c-bg);
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    border-right: none;
+    border-left: none;
+    border-bottom: 0.5px solid var(--c-border-mid);
+    width: 100%;
     height: auto;
     min-height: 0;
-    background: transparent;
-    z-index: auto;
-    flex-direction: row;
-    flex-wrap: wrap;
-    border-right: none;
-    border-bottom: 0.5px solid var(--c-border-mid);
   }
 
-  .infinite-stage {
-    grid-column: auto;
+  .catalogue-rail::-webkit-scrollbar {
+    display: none;
   }
 
   .catalogue-rail h1 {
-    width: 100%;
-    border-bottom: 0.5px solid var(--c-border-mid);
+    display: none;
   }
 
   .catalogue-rail ol {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     flex: 1;
-    padding: 0.5rem 0;
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem;
+    overflow: visible;
   }
 
   .catalogue-rail li {
+    flex-shrink: 0;
     border-left: none;
+  }
+
+  .catalogue-rail .rail-item-btn {
+    width: auto;
+    padding: 0.25rem 0.75rem;
+    border: 0.5px solid var(--c-border-mid);
+    border-radius: 99px;
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    background: transparent;
+    color: var(--c-ink);
+    transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+  }
+
+  .catalogue-rail li[data-active] .rail-item-btn {
+    background: var(--c-ink);
+    color: var(--c-bg);
+    border-color: var(--c-ink);
+  }
+
+  /* Disable full-row hover on mobile — chip hover handles it */
+  .catalogue-rail li:not([data-active]):hover {
+    background: transparent;
+  }
+
+  .catalogue-rail li:not([data-active]):hover .rail-name,
+  .catalogue-rail li:not([data-active]):hover .rail-type,
+  .catalogue-rail li:not([data-active]):hover .rail-item-btn {
+    color: var(--c-ink);
+  }
+
+  .catalogue-rail li:not([data-active]):hover .rail-item-btn {
+    background: var(--c-surface);
+    border-color: var(--c-border-mid);
+  }
+
+  .catalogue-rail .rail-name {
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+  }
+
+  .catalogue-rail .rail-type {
+    display: none;
   }
 
   .catalogue-topics {
@@ -1465,9 +1516,10 @@ button { cursor: pointer; }
   }
 
   .infinite-stage {
+    grid-column: auto;
     min-height: 0;
     border-left: none;
-    padding: 1rem 0.5rem 3rem;
+    padding: 1rem 0.75rem 4rem;
   }
 
   .gallery-tile[data-slot] {
@@ -1506,6 +1558,33 @@ button { cursor: pointer; }
   }
 
   .profile-related { display: none; }
+
+  /* Submit modal → bottom sheet on mobile */
+  .submit-modal-panel {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: 90dvh;
+    transform: none;
+    border-radius: 0;
+    border-top: 0.5px solid var(--c-border-mid);
+    border-left: none;
+    border-right: none;
+    animation: modal-slide-up 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+@keyframes modal-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* ─── Gallery tile button ───────────── */
@@ -1937,20 +2016,40 @@ button { cursor: pointer; }
     break-inside: avoid;
   }
 
+  /* Full-viewport modal on mobile — slide-up from bottom */
   .card-expand-panel {
     position: fixed !important;
-    left: 8px !important;
-    right: 8px !important;
-    width: calc(100vw - 16px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: var(--site-nav-height) !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: auto !important;
+    border-radius: 0 !important;
+    box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.12) !important;
   }
 
   .card-expand-inner {
     grid-template-columns: 1fr;
-    grid-template-rows: 36vw 1fr;
+    grid-template-rows: min(44vw, 230px) 1fr;
+    height: 100%;
   }
 
   .card-expand-image {
-    height: 36vw;
+    overflow: hidden;
+  }
+
+  .card-expand-detail {
+    border-left: none;
+    border-top: 0.5px solid var(--c-border-mid);
+  }
+}
+
+/* Always show save button on touch devices (no hover state) */
+@media (hover: none) and (pointer: coarse) {
+  .gallery-save-btn {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
