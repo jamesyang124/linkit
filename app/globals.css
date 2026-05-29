@@ -227,6 +227,7 @@ button { cursor: pointer; }
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  border-left: 0.5px solid var(--c-border-mid);
   border-right: 0.5px solid var(--c-border-mid);
 }
 
@@ -1462,6 +1463,7 @@ button { cursor: pointer; }
     z-index: auto;
     flex-direction: row;
     flex-wrap: wrap;
+    border-left: none;
     border-right: none;
     border-bottom: 0.5px solid var(--c-border-mid);
   }
