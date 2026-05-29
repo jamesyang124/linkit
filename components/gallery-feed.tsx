@@ -169,6 +169,20 @@ export function GalleryFeed({
     return () => document.removeEventListener("keydown", handler);
   }, [showSubmit]);
 
+  // Open submit modal from ?share=true param (navigated from another page)
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("share") === "true") {
+      url.searchParams.delete("share");
+      window.history.replaceState(
+        {},
+        "",
+        url.pathname + (url.search === "?" ? "" : url.search)
+      );
+      setShowSubmit(true);
+    }
+  }, []);
+
   // Open card from saved list (?open=<id>)
   useEffect(() => {
     const url = new URL(window.location.href);
