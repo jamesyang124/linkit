@@ -231,6 +231,7 @@ export function createPostgresLinkitStore(db: LinkitDb): LinkitStore {
           count: sql<number>`count(*)::int`
         })
         .from(posts)
+        .where(isNotNull(posts.thumbnailUrl))
         .groupBy(posts.providerName)
         .orderBy(asc(posts.providerName));
       return rows;
