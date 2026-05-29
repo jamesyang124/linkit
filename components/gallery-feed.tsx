@@ -19,6 +19,22 @@ type ExpandedState = {
   cardRect: DOMRect;
 };
 
+type PendingPost = { id: string; providerName: string };
+
+function PendingTile({ providerName }: { providerName: string }) {
+  return (
+    <article className="gallery-tile pending-tile" data-testid="pending-tile">
+      <div className="gallery-thumb gallery-thumb-placeholder pending-tile-thumb">
+        <span>Processing</span>
+      </div>
+      <div className="gallery-tile-stats">
+        <span className="gallery-tile-provider">{providerName}</span>
+        <span className="pending-tile-badge">Under review</span>
+      </div>
+    </article>
+  );
+}
+
 const COLUMN_COUNT = 3;
 
 function distributeColumns(items: FeedItem[]): FeedItem[][] {
@@ -127,6 +143,7 @@ export function GalleryFeed({
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [showSubmit, setShowSubmit] = useState(false);
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
+  const [pendingPosts, setPendingPosts] = useState<PendingPost[]>([]);
 
   const loadedProvidersRef = useRef<Set<string>>(new Set());
   const inFlightRef = useRef<Map<string, Promise<void>>>(new Map());
@@ -202,6 +219,25 @@ export function GalleryFeed({
     const baseIds = new Set(initialItems.map((i) => i.id));
     return [...initialItems, ...extraItems.filter((i) => !baseIds.has(i.id))];
   }, [initialItems, extraItems]);
+
+  // Remove pending cards once the real post appears in allItems
+  useEffect(() => {
+    setPendingPosts((prev) => {
+      if (prev.length === 0) return prev;
+      const realIds = new Set(allItems.map((i) => i.id));
+      const next = prev.filter((p) => !realIds.has(p.id));
+      return next.length === prev.length ? prev : next;
+    });
+  }, [allItems]);
+
+  const handlePostSuccess = useCallback(({ postId, link }: { postId: string; link: string }) => {
+    try {
+      const providerName = new URL(link).hostname;
+      setPendingPosts((prev) => [...prev, { id: postId, providerName }]);
+    } catch {
+      // invalid URL — skip pending card
+    }
+  }, []);
 
   const displayItems = useMemo(() => {
     if (!isFiltered) return allItems;
@@ -393,6 +429,19 @@ export function GalleryFeed({
                 </span>
               </div>
             )}
+            {activeTags.length === 0 && pendingPosts.filter((p) =>
+              displayFilter === null || p.providerName === displayFilter
+            ).length > 0 && (
+              <div className="gallery-section-grid pending-tiles-row" aria-live="polite" aria-label="Pending posts">
+                {pendingPosts
+                  .filter((p) => displayFilter === null || p.providerName === displayFilter)
+                  .map((p) => (
+                    <div key={p.id} className="gallery-column">
+                      <PendingTile providerName={p.providerName} />
+                    </div>
+                  ))}
+              </div>
+            )}
             <FlatGallery
               items={displayItems}
               savedIds={savedIds}
@@ -452,7 +501,7 @@ export function GalleryFeed({
               onClick={() => setShowSubmit(false)}
             />
             <div className="submit-modal-panel">
-              <SubmitForm onSuccess={() => setShowSubmit(false)} />
+              <SubmitForm onSuccess={(info) => { handlePostSuccess(info); setShowSubmit(false); }} />
             </div>
           </>,
           document.body
