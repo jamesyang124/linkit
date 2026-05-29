@@ -29,7 +29,7 @@ export function GalleryThumb({
   return (
     <div
       data-testid="gallery-thumb"
-      className={`gallery-thumb${loaded && showImage ? " gallery-thumb-loaded" : ""}`}
+      className={`gallery-thumb${!showImage || loaded ? " gallery-thumb-loaded" : ""}`}
       aria-hidden="true"
     >
       {showImage ? (
