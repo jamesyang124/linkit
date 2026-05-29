@@ -30,6 +30,7 @@ export function GalleryTile({
   clickCount,
   commentsCount,
   isSaved,
+  hideProvider,
   onExpand,
   onSaveToggle
 }: {
@@ -40,6 +41,7 @@ export function GalleryTile({
   clickCount: number;
   commentsCount: number;
   isSaved?: boolean;
+  hideProvider?: boolean;
   onExpand: (id: string, cardEl: HTMLElement) => void;
   onSaveToggle?: (id: string) => void;
 }) {
@@ -63,7 +65,7 @@ export function GalleryTile({
           providerName={providerName}
         />
         <span className="gallery-tile-stats">
-          <span className="gallery-tile-provider">{providerName}</span>
+          {!hideProvider && <span className="gallery-tile-provider">{providerName}</span>}
           <span className="gallery-tile-counts">
             <span>{clickCount} {clickCount === 1 ? "visit" : "visits"}</span>
             <span>{commentsCount} {commentsCount === 1 ? "comment" : "comments"}</span>

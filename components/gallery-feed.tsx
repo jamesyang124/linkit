@@ -40,6 +40,7 @@ function FlatGallery({
   onLoadMore,
   loadingMore,
   providerLoading,
+  hideProvider,
 }: {
   items: FeedItem[];
   savedIds: Set<string>;
@@ -48,6 +49,7 @@ function FlatGallery({
   onLoadMore?: () => void;
   loadingMore?: boolean;
   providerLoading?: boolean;
+  hideProvider?: boolean;
 }) {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const columns = useMemo(() => distributeColumns(items), [items]);
@@ -93,6 +95,7 @@ function FlatGallery({
                 clickCount={item.clickCount}
                 commentsCount={item.commentsCount}
                 isSaved={savedIds.has(item.id)}
+                hideProvider={hideProvider}
                 onExpand={onExpand}
                 onSaveToggle={onSaveToggle}
               />
@@ -187,6 +190,12 @@ export function GalleryFeed({
       })
       .catch(() => {});
   }, []);
+
+  // Scroll to top whenever provider filter changes
+  useEffect(() => {
+    const el = document.getElementById("page-main");
+    if (el) el.scrollTop = 0;
+  }, [filterProvider]);
 
   const allItems = useMemo(() => {
     const baseIds = new Set(initialItems.map((i) => i.id));
@@ -379,6 +388,7 @@ export function GalleryFeed({
               onLoadMore={canLoadMore ? loadMore : undefined}
               loadingMore={loadingMore}
               providerLoading={isProviderLoading}
+              hideProvider={filterProvider !== null}
             />
           </div>
         )}
