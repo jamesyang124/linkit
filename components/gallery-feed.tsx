@@ -363,12 +363,11 @@ export function GalleryFeed({
           </section>
         ) : (
           <div className="gallery-stage-content">
-            {isFiltered && (
+            {isFiltered && !filterProvider && (
               <div className="gallery-filter-header">
                 <span className="gallery-filter-label">
                   {displayItems.length}{" "}
                   {displayItems.length === 1 ? "link" : "links"}
-                  {filterProvider ? ` · ${filterProvider}` : ""}
                 </span>
               </div>
             )}
