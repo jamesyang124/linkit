@@ -39,7 +39,6 @@ function FlatGallery({
   onSaveToggle,
   onLoadMore,
   loadingMore,
-  providerLoading,
   hideProvider,
 }: {
   items: FeedItem[];
@@ -48,7 +47,6 @@ function FlatGallery({
   onSaveToggle: (id: string) => void;
   onLoadMore?: () => void;
   loadingMore?: boolean;
-  providerLoading?: boolean;
   hideProvider?: boolean;
 }) {
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -69,9 +67,6 @@ function FlatGallery({
   }, [onLoadMore]);
 
   if (items.length === 0) {
-    if (providerLoading) {
-      return <p className="gallery-section-loading">Loading…</p>;
-    }
     if (loadingMore || onLoadMore) {
       return (
         <div ref={sentinelRef} style={{ height: 1 }} aria-hidden="true" />
@@ -123,7 +118,11 @@ export function GalleryFeed({
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
   const [loadingMore, setLoadingMore] = useState(false);
   const [expanded, setExpanded] = useState<ExpandedState | null>(null);
+  // filterProvider: immediately set on click — drives sidebar highlight + loading
   const [filterProvider, setFilterProvider] = useState<string | null>(null);
+  // displayFilter: set only after items are ready — drives what renders + animation
+  const [displayFilter, setDisplayFilter] = useState<string | null>(null);
+  const [contentKey, setContentKey] = useState(0);
   const [activeTags, setActiveTags] = useState<string[]>([]);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [showSubmit, setShowSubmit] = useState(false);
@@ -132,8 +131,10 @@ export function GalleryFeed({
   const loadedProvidersRef = useRef<Set<string>>(new Set());
   const inFlightRef = useRef<Map<string, Promise<void>>>(new Map());
   const initialItemsRef = useRef(initialItems);
+  // Tracks the last-clicked provider so stale loads don't clobber a later click
+  const latestClickRef = useRef<string | null>(null);
 
-  const isFiltered = activeTags.length > 0 || filterProvider !== null;
+  const isFiltered = activeTags.length > 0 || displayFilter !== null;
 
   // Open submit modal from nav Share link
   useEffect(() => {
@@ -191,11 +192,11 @@ export function GalleryFeed({
       .catch(() => {});
   }, []);
 
-  // Scroll to top whenever provider filter changes
+  // Scroll to top when displayed content switches
   useEffect(() => {
     const el = document.getElementById("page-main");
     if (el) el.scrollTop = 0;
-  }, [filterProvider]);
+  }, [displayFilter]);
 
   const allItems = useMemo(() => {
     const baseIds = new Set(initialItems.map((i) => i.id));
@@ -205,11 +206,11 @@ export function GalleryFeed({
   const displayItems = useMemo(() => {
     if (!isFiltered) return allItems;
     return allItems.filter((item) => {
-      if (filterProvider && item.providerName !== filterProvider) return false;
+      if (displayFilter && item.providerName !== displayFilter) return false;
       if (activeTags.length > 0 && !item.tags.some((t) => activeTags.includes(t))) return false;
       return true;
     });
-  }, [allItems, isFiltered, filterProvider, activeTags]);
+  }, [allItems, isFiltered, displayFilter, activeTags]);
 
   const loadMore = useCallback(async () => {
     if (!nextCursor || loadingMore) return;
@@ -266,7 +267,19 @@ export function GalleryFeed({
     (providerName: string) => {
       const next = filterProvider === providerName ? null : providerName;
       setFilterProvider(next);
-      if (next) void loadProvider(next);
+      latestClickRef.current = next;
+
+      if (next) {
+        // Load items first, then commit the display switch + animate
+        void loadProvider(next).then(() => {
+          if (latestClickRef.current !== next) return; // superseded by later click
+          setDisplayFilter(next);
+          setContentKey((k) => k + 1);
+        });
+      } else {
+        setDisplayFilter(null);
+        setContentKey((k) => k + 1);
+      }
     },
     [filterProvider, loadProvider]
   );
@@ -275,6 +288,7 @@ export function GalleryFeed({
     setActiveTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
+    setContentKey((k) => k + 1);
   }, []);
 
   const handleExpand = useCallback(
@@ -314,9 +328,8 @@ export function GalleryFeed({
 
   const isEmpty = providers.length === 0;
 
-  // Cursor-paginate only when no provider filter active (provider load covers that case)
-  const canLoadMore = nextCursor !== null && filterProvider === null && !loadingMore;
-  const isProviderLoading = filterProvider !== null && loadingProvider === filterProvider;
+  // Cursor-paginate only when showing all items (unfiltered)
+  const canLoadMore = nextCursor !== null && displayFilter === null && activeTags.length === 0 && !loadingMore;
 
   return (
     <>
@@ -371,8 +384,8 @@ export function GalleryFeed({
             </div>
           </section>
         ) : (
-          <div className="gallery-stage-content">
-            {isFiltered && !filterProvider && (
+          <div key={contentKey} className="gallery-stage-content">
+            {isFiltered && !displayFilter && (
               <div className="gallery-filter-header">
                 <span className="gallery-filter-label">
                   {displayItems.length}{" "}
@@ -387,8 +400,7 @@ export function GalleryFeed({
               onSaveToggle={handleSaveToggle}
               onLoadMore={canLoadMore ? loadMore : undefined}
               loadingMore={loadingMore}
-              providerLoading={isProviderLoading}
-              hideProvider={filterProvider !== null}
+              hideProvider={displayFilter !== null}
             />
           </div>
         )}
@@ -416,6 +428,9 @@ export function GalleryFeed({
             onClick={() => {
               setActiveTags([]);
               setFilterProvider(null);
+              setDisplayFilter(null);
+              latestClickRef.current = null;
+              setContentKey((k) => k + 1);
             }}
           >
             Clear
