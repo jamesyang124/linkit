@@ -805,6 +805,35 @@ button { cursor: pointer; }
   white-space: nowrap;
 }
 
+/* ─── Pending tile ──────────────────── */
+
+.pending-tiles-row {
+  margin-bottom: var(--gallery-col-gap, 1.5rem);
+}
+
+.pending-tile {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.pending-tile-thumb {
+  animation: pending-pulse 2s ease-in-out infinite;
+}
+
+@keyframes pending-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+.pending-tile-badge {
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 /* ─── Save button ───────────────────── */
 
 .gallery-save-btn {

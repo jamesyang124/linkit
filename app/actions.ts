@@ -8,7 +8,7 @@ import { createRuntimeServices } from "@/src/server/runtime";
 import { submitCommentFromForm, submitLinkFromForm } from "@/src/server/posts";
 import { invalidateTopLevelComments } from "@/src/server/redis";
 
-type ActionResult = { ok: boolean; message: string };
+type ActionResult = { ok: boolean; message: string; postId?: string };
 
 export async function submitLink(
   _prev: ActionResult | null,
@@ -31,7 +31,7 @@ export async function submitLink(
     if (!result.ok) {
       return { ok: false, message: result.message };
     }
-    return { ok: true, message: "Link posted." };
+    return { ok: true, message: "Link posted.", postId: result.postId };
   } finally {
     await services.close();
   }

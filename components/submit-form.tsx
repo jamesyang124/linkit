@@ -13,7 +13,7 @@ export const PRESET_TAGS = [
   "Culture", "Film", "Music", "Fashion", "Space"
 ] as const;
 
-export function SubmitForm({ onSuccess }: { onSuccess?: () => void } = {}) {
+export function SubmitForm({ onSuccess }: { onSuccess?: (info: { postId: string; link: string }) => void } = {}) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -28,6 +28,7 @@ export function SubmitForm({ onSuccess }: { onSuccess?: () => void } = {}) {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
+    const link = String(formData.get("link") ?? "");
     if (selectedTags.length > 0) {
       formData.set("tags", selectedTags.join(","));
     }
@@ -39,7 +40,7 @@ export function SubmitForm({ onSuccess }: { onSuccess?: () => void } = {}) {
         setSelectedTags([]);
         document.getElementById("page-main")?.scrollTo({ top: 0 });
         router.refresh();
-        onSuccess?.();
+        if (result.postId) onSuccess?.({ postId: result.postId, link });
       }
     });
   }
