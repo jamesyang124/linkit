@@ -242,7 +242,7 @@ export function createPostgresLinkitStore(db: LinkitDb): LinkitStore {
         .select({ post: posts, user: users })
         .from(posts)
         .innerJoin(users, eq(posts.userId, users.id))
-        .where(eq(posts.providerName, providerName))
+        .where(and(eq(posts.providerName, providerName), isNotNull(posts.thumbnailUrl)))
         .orderBy(desc(posts.createdAt), desc(posts.id));
       return rows.map(mapPostWithUser);
     },

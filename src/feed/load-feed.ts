@@ -42,7 +42,7 @@ export async function getGalleryFeedPageFromStore(
   const page = await store.listPostsPage({
     limit: normalizePageLimit(input.limit),
     cursor: input.cursor ? decodePostCursor(input.cursor) : null,
-    thumbnailsOnly: false
+    thumbnailsOnly: true
   });
   const comments = await store.listCommentsForPosts(page.posts.map((post) => post.id));
 

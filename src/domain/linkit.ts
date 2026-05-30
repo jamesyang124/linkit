@@ -449,7 +449,7 @@ export function createMemoryLinkitStore(): LinkitStore {
 
     async listPostsByProvider(providerName) {
       return [...posts.values()]
-        .filter((post) => post.providerName === providerName)
+        .filter((post) => post.providerName === providerName && post.thumbnailUrl !== null)
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime() || b.id.localeCompare(a.id));
     },
 
