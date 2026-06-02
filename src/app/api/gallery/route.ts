@@ -9,10 +9,7 @@ import {
   defaultGalleryPageSize
 } from "@/feed/load-feed";
 import { InvalidPostCursorError } from "@/feed/keyset";
-import {
-  getCachedGalleryFirstPage,
-  setCachedGalleryFirstPage
-} from "@/server/redis";
+import { getCachedGalleryPage, setCachedGalleryPage } from "@/server/redis";
 
 export const dynamic = "force-dynamic";
 
@@ -24,15 +21,15 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url);
   const provider = url.searchParams.get("provider");
-  const cursor = url.searchParams.get("cursor");
+  const cursor = url.searchParams.get("cursor") ?? null;
   const limit = normalizePageLimit(Number(url.searchParams.get("limit")));
 
-  // Serve first-page requests from Redis when available.
-  // Subsequent pages (cursor present) always hit the DB — they're keyset-based
-  // and can't be pre-warmed without knowing all cursor values in advance.
-  const isFirstPage = !cursor && limit === defaultGalleryPageSize;
-  if (isFirstPage) {
-    const cached = await getCachedGalleryFirstPage(provider);
+  // Only cache standard-size pages — non-standard limits are rare and shouldn't
+  // pollute the cache with entries the warmer never writes.
+  const isCacheable = limit === defaultGalleryPageSize;
+
+  if (isCacheable) {
+    const cached = await getCachedGalleryPage(provider, cursor);
     if (cached) return NextResponse.json(cached);
   }
 
@@ -46,8 +43,8 @@ export async function GET(request: Request) {
       page = await getGalleryFeedPageFromStore(store, { cursor, limit });
     }
 
-    if (isFirstPage) {
-      await setCachedGalleryFirstPage(provider, page);
+    if (isCacheable) {
+      await setCachedGalleryPage(provider, cursor, page);
     }
 
     return NextResponse.json(page);

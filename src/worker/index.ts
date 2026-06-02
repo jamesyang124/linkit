@@ -18,7 +18,7 @@ import {
   getProviderFeedPageFromStore,
   defaultGalleryPageSize
 } from "@/feed/load-feed";
-import { setCachedGalleryFirstPage } from "@/server/redis";
+import { setCachedGalleryPage } from "@/server/redis";
 
 const queueName = "linkit.worker";
 const rabbitUrl = process.env.RABBITMQ_URL ?? "amqp://guest:guest@localhost:5672";
@@ -84,7 +84,7 @@ async function main() {
     }
   });
 
-  // Warm gallery first-page cache on startup, then every 60s.
+  // Warm all gallery pages on startup, then every 60s.
   const warmStore = createPostgresLinkitStore(createDb(databaseUrl));
   await warmGalleryCache(warmStore);
   setInterval(() => {
@@ -94,17 +94,38 @@ async function main() {
   }, 60_000);
 }
 
+// Walk the full cursor chain for a single feed (global or per-provider) and
+// store every page in Redis. Serial iteration is required because each page's
+// cursor is only known after fetching the previous one.
+async function warmFeedPages(
+  fetchPage: (cursor: string | null) => Promise<{ items: unknown[]; nextCursor: string | null }>,
+  provider: string | null
+): Promise<void> {
+  let cursor: string | null = null;
+  do {
+    const page = await fetchPage(cursor);
+    await setCachedGalleryPage(provider, cursor, page);
+    cursor = page.nextCursor;
+  } while (cursor !== null);
+}
+
 async function warmGalleryCache(store: LinkitStore): Promise<void> {
   const providers = await store.listProviders();
 
   await Promise.all([
-    getGalleryFeedPageFromStore(store, { limit: defaultGalleryPageSize }).then((page) =>
-      setCachedGalleryFirstPage(null, page)
+    warmFeedPages(
+      (cursor) => getGalleryFeedPageFromStore(store, { limit: defaultGalleryPageSize, cursor }),
+      null
     ),
     ...providers.map((p) =>
-      getProviderFeedPageFromStore(store, p.providerName, {
-        limit: defaultGalleryPageSize
-      }).then((page) => setCachedGalleryFirstPage(p.providerName, page))
+      warmFeedPages(
+        (cursor) =>
+          getProviderFeedPageFromStore(store, p.providerName, {
+            limit: defaultGalleryPageSize,
+            cursor
+          }),
+        p.providerName
+      )
     )
   ]);
 }

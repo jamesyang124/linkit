@@ -70,22 +70,27 @@ export async function invalidateTopLevelComments(postId: string): Promise<void> 
   }
 }
 
-// Gallery first-page cache (cursor=null requests only)
-// TTL is 65s so the background warmer (60s interval) always refreshes before expiry.
-const GALLERY_FIRST_PAGE_TTL = 65;
+// Gallery page cache — keyed by (provider, cursor) so every page the client can
+// request is pre-warmed by the background warmer. Only standard page size (30)
+// is cached; non-standard limits bypass the cache and hit the DB.
+// TTL 65s ensures entries outlive the 60s warm interval.
+const GALLERY_PAGE_TTL = 65;
 
-function galleryFirstPageKey(provider: string | null): string {
-  return `gallery:v1:first:${provider ?? "__global__"}`;
+function galleryPageKey(provider: string | null, cursor: string | null): string {
+  const p = provider ?? "__global__";
+  const c = cursor ?? "__null__";
+  return `gallery:v2:page:${p}:${c}`;
 }
 
-export async function getCachedGalleryFirstPage(
-  provider: string | null
+export async function getCachedGalleryPage(
+  provider: string | null,
+  cursor: string | null
 ): Promise<FeedItemsPage | null> {
   const client = getRedisClient();
   if (!client) return null;
 
   try {
-    const raw = await client.get(galleryFirstPageKey(provider));
+    const raw = await client.get(galleryPageKey(provider, cursor));
     if (!raw) return null;
     return JSON.parse(raw) as FeedItemsPage;
   } catch {
@@ -93,8 +98,9 @@ export async function getCachedGalleryFirstPage(
   }
 }
 
-export async function setCachedGalleryFirstPage(
+export async function setCachedGalleryPage(
   provider: string | null,
+  cursor: string | null,
   page: FeedItemsPage
 ): Promise<void> {
   const client = getRedisClient();
@@ -102,25 +108,33 @@ export async function setCachedGalleryFirstPage(
 
   try {
     await client.set(
-      galleryFirstPageKey(provider),
+      galleryPageKey(provider, cursor),
       JSON.stringify(page),
       "EX",
-      GALLERY_FIRST_PAGE_TTL
+      GALLERY_PAGE_TTL
     );
   } catch {
     // cache write failure is non-fatal
   }
 }
 
-export async function invalidateGalleryFirstPages(
-  providers: string[]
-): Promise<void> {
+export async function invalidateGalleryCache(): Promise<void> {
   const client = getRedisClient();
   if (!client) return;
 
   try {
-    const keys = [galleryFirstPageKey(null), ...providers.map(galleryFirstPageKey)];
-    await client.del(...keys);
+    let scanCursor = "0";
+    do {
+      const [nextCursor, keys] = await client.scan(
+        scanCursor,
+        "MATCH",
+        "gallery:v2:page:*",
+        "COUNT",
+        100
+      );
+      scanCursor = nextCursor;
+      if (keys.length > 0) await client.del(...keys);
+    } while (scanCursor !== "0");
   } catch {
     // non-fatal
   }
