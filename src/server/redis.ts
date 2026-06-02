@@ -1,6 +1,7 @@
 import Redis from "ioredis";
 
 import type { LinkitComment } from "@/domain/linkit";
+import type { FeedItemsPage } from "@/feed/load-feed";
 
 declare global {
   // eslint-disable-next-line no-var
@@ -66,6 +67,62 @@ export async function invalidateTopLevelComments(postId: string): Promise<void> 
     await client.del(topLevelKey(postId));
   } catch {
     // cache invalidation failure is non-fatal
+  }
+}
+
+// Gallery first-page cache (cursor=null requests only)
+// TTL is 65s so the background warmer (60s interval) always refreshes before expiry.
+const GALLERY_FIRST_PAGE_TTL = 65;
+
+function galleryFirstPageKey(provider: string | null): string {
+  return `gallery:v1:first:${provider ?? "__global__"}`;
+}
+
+export async function getCachedGalleryFirstPage(
+  provider: string | null
+): Promise<FeedItemsPage | null> {
+  const client = getRedisClient();
+  if (!client) return null;
+
+  try {
+    const raw = await client.get(galleryFirstPageKey(provider));
+    if (!raw) return null;
+    return JSON.parse(raw) as FeedItemsPage;
+  } catch {
+    return null;
+  }
+}
+
+export async function setCachedGalleryFirstPage(
+  provider: string | null,
+  page: FeedItemsPage
+): Promise<void> {
+  const client = getRedisClient();
+  if (!client) return;
+
+  try {
+    await client.set(
+      galleryFirstPageKey(provider),
+      JSON.stringify(page),
+      "EX",
+      GALLERY_FIRST_PAGE_TTL
+    );
+  } catch {
+    // cache write failure is non-fatal
+  }
+}
+
+export async function invalidateGalleryFirstPages(
+  providers: string[]
+): Promise<void> {
+  const client = getRedisClient();
+  if (!client) return;
+
+  try {
+    const keys = [galleryFirstPageKey(null), ...providers.map(galleryFirstPageKey)];
+    await client.del(...keys);
+  } catch {
+    // non-fatal
   }
 }
 
