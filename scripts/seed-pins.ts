@@ -2,9 +2,9 @@
  * Seed 20 Pinterest pins for manual testing.
  * Usage: DATABASE_URL=... RABBITMQ_URL=... tsx scripts/seed-pins.ts
  */
-import { createDb } from "@/src/db/client";
-import { createPostgresLinkitStore } from "@/src/db/linkit-store";
-import { createRabbitPublisher } from "@/src/queue/rabbitmq";
+import { createDb } from "@/db/client";
+import { createPostgresLinkitStore } from "@/db/linkit-store";
+import { createRabbitPublisher } from "@/queue/rabbitmq";
 
 const PINS = [
   // Minimalist interior

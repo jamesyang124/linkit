@@ -2,13 +2,13 @@ import { randomUUID } from "node:crypto";
 
 import { describe, expect, it } from "vitest";
 
-import { createDb } from "@/src/db/client";
-import { createPostgresLinkitStore } from "@/src/db/linkit-store";
+import { createDb } from "@/db/client";
+import { createPostgresLinkitStore } from "@/db/linkit-store";
 import {
   createLinkitService,
   type LinkitJob,
   type LinkitUser
-} from "@/src/domain/linkit";
+} from "@/domain/linkit";
 
 const testDatabaseUrl = process.env.TEST_DATABASE_URL;
 const describeIfDatabase = testDatabaseUrl ? describe : describe.skip;

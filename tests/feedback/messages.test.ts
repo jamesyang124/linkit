@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { feedbackFromSearchParams } from "@/src/feedback/messages";
+import { feedbackFromSearchParams } from "@/feedback/messages";
 
 describe("feedback messages", () => {
   it("maps explicit action errors from the query string", () => {

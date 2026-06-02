@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { toFeedItems, toCommentCard } from "@/src/feed/view-model";
-import type { LinkitComment, LinkitPost } from "@/src/domain/linkit";
+import { toFeedItems, toCommentCard } from "@/feed/view-model";
+import type { LinkitComment, LinkitPost } from "@/domain/linkit";
 
 function makeComment(overrides: Partial<LinkitComment> = {}): LinkitComment {
   return {

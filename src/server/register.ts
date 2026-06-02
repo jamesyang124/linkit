@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 
-import type { LinkitDb } from "@/src/db/client";
-import { users } from "@/src/db/schema";
+import type { LinkitDb } from "@/db/client";
+import { users } from "@/db/schema";
 
 export interface RegisterPort {
   findByEmail(email: string): Promise<{ id: string } | null>;

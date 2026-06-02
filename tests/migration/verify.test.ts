@@ -4,7 +4,7 @@ import {
   verifyMigration,
   type LegacySnapshot,
   type TargetSnapshot
-} from "@/src/migration/verify";
+} from "@/migration/verify";
 
 const legacy: LegacySnapshot = {
   users: [{ id: 1, email: "ada@example.com" }],

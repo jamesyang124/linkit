@@ -1,5 +1,5 @@
-import type { LinkitJob, LinkitStore, LinkitUser, PostMetadataProvider } from "@/src/domain/linkit";
-import { createLinkitService } from "@/src/domain/linkit";
+import type { LinkitJob, LinkitStore, LinkitUser, PostMetadataProvider } from "@/domain/linkit";
+import { createLinkitService } from "@/domain/linkit";
 
 export type SessionUser = {
   id?: string | null;

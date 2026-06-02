@@ -10,7 +10,7 @@ describe("public feed loader", () => {
     delete process.env.DATABASE_URL;
 
     vi.resetModules();
-    const { getPublicFeedItems } = await import("@/src/feed/load-feed");
+    const { getPublicFeedItems } = await import("@/feed/load-feed");
 
     await expect(getPublicFeedItems()).resolves.toEqual([]);
 

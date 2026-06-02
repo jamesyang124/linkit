@@ -2,9 +2,9 @@ import { readFile } from "node:fs/promises";
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 
-import { createPostgresClient } from "@/src/db/client";
-import * as schema from "@/src/db/schema";
-import type { LegacySnapshot } from "@/src/migration/verify";
+import { createPostgresClient } from "@/db/client";
+import * as schema from "@/db/schema";
+import type { LegacySnapshot } from "@/migration/verify";
 
 const { comments, posts, users } = schema;
 

@@ -8,7 +8,7 @@ import {
   createMemoryLinkitStore,
   type LinkitJob,
   type LinkitUser
-} from "@/src/domain/linkit";
+} from "@/domain/linkit";
 
 function testUser(overrides: Partial<LinkitUser> = {}): LinkitUser {
   return {

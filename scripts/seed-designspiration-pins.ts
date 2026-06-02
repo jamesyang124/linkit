@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 
-import { createPostgresClient } from "@/src/db/client";
-import * as schema from "@/src/db/schema";
+import { createPostgresClient } from "@/db/client";
+import * as schema from "@/db/schema";
 
 const { posts, users } = schema;
 

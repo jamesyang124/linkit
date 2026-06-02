@@ -1,9 +1,9 @@
 import { and, isNotNull, not, sql } from "drizzle-orm";
 import path from "node:path";
 
-import { createPostgresClient } from "@/src/db/client";
-import * as schema from "@/src/db/schema";
-import { createSharpImageUploader } from "@/src/images/uploader";
+import { createPostgresClient } from "@/db/client";
+import * as schema from "@/db/schema";
+import { createSharpImageUploader } from "@/images/uploader";
 
 const { posts } = schema;
 

@@ -1,4 +1,4 @@
-import { validateProductionEnv } from "@/src/env";
+import { validateProductionEnv } from "@/env";
 
 try {
   validateProductionEnv();

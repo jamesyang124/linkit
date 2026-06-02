@@ -5,9 +5,9 @@ import {
   getFeedItemsFromStore,
   getFeedItemsWithFallback,
   getProfileFeedItemFromStore
-} from "@/src/feed/load-feed";
-import type { LinkitPost, PostPageCursor } from "@/src/domain/linkit";
-import { decodePostCursor } from "@/src/feed/keyset";
+} from "@/feed/load-feed";
+import type { LinkitPost, PostPageCursor } from "@/domain/linkit";
+import { decodePostCursor } from "@/feed/keyset";
 
 const now = new Date("2026-05-24T08:00:00.000Z");
 

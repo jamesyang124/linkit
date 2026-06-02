@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { UpdatePostMetadataInput } from "@/src/domain/linkit";
-import { handleJob } from "@/src/worker/handlers";
+import type { UpdatePostMetadataInput } from "@/domain/linkit";
+import { handleJob } from "@/worker/handlers";
 
 function updatedPost(input: UpdatePostMetadataInput) {
   return {

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { createOpenGraphMetadataProvider } from "@/src/metadata/provider";
+import { createOpenGraphMetadataProvider } from "@/metadata/provider";
 
 describe("OpenGraph metadata provider", () => {
   it("extracts OpenGraph metadata from HTML", async () => {

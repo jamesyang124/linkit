@@ -1,8 +1,8 @@
-import { createDb } from "@/src/db/client";
-import { createPostgresLinkitStore } from "@/src/db/linkit-store";
-import { createRabbitPublisher } from "@/src/queue/rabbitmq";
-import type { LinkitJob, LinkitStore, PostMetadataProvider } from "@/src/domain/linkit";
-import { createOpenGraphMetadataProvider } from "@/src/metadata/provider";
+import { createDb } from "@/db/client";
+import { createPostgresLinkitStore } from "@/db/linkit-store";
+import { createRabbitPublisher } from "@/queue/rabbitmq";
+import type { LinkitJob, LinkitStore, PostMetadataProvider } from "@/domain/linkit";
+import { createOpenGraphMetadataProvider } from "@/metadata/provider";
 
 export type RuntimeServices = {
   store: LinkitStore;

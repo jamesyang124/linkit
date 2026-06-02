@@ -1,4 +1,4 @@
-import type { LinkitComment, LinkitPost } from "@/src/domain/linkit";
+import type { LinkitComment, LinkitPost } from "@/domain/linkit";
 
 export type CommentNotification = {
   to: string[];

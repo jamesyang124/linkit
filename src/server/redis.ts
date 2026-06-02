@@ -1,6 +1,6 @@
 import Redis from "ioredis";
 
-import type { LinkitComment } from "@/src/domain/linkit";
+import type { LinkitComment } from "@/domain/linkit";
 
 declare global {
   // eslint-disable-next-line no-var

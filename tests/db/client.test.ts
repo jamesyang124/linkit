@@ -23,7 +23,7 @@ describe("database client factory", () => {
   });
 
   it("reuses one Postgres client per database URL for app DB instances", async () => {
-    const { createDb } = await import("@/src/db/client");
+    const { createDb } = await import("@/db/client");
 
     const first = createDb("postgres://linkit:linkit@localhost/linkit");
     const second = createDb("postgres://linkit:linkit@localhost/linkit");
@@ -35,7 +35,7 @@ describe("database client factory", () => {
   });
 
   it("keeps separate Postgres clients for different database URLs", async () => {
-    const { createDb } = await import("@/src/db/client");
+    const { createDb } = await import("@/db/client");
 
     createDb("postgres://linkit:linkit@localhost/linkit");
     createDb("postgres://linkit:linkit@localhost/other");

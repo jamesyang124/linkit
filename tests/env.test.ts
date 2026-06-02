@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { readEnv, validateProductionEnv } from "@/src/env";
+import { readEnv, validateProductionEnv } from "@/env";
 
 const baseEnv = {
   DATABASE_URL: "postgres://linkit:linkit@localhost:55432/linkit",

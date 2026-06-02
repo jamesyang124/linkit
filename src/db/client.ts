@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
-import * as schema from "@/src/db/schema";
+import * as schema from "@/db/schema";
 
 export function createPostgresClient(databaseUrl: string) {
   return postgres(databaseUrl, {

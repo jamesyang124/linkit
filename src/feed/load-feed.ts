@@ -1,13 +1,13 @@
 import { unstable_cache } from "next/cache";
 
-import { createDb } from "@/src/db/client";
-import { createPostgresLinkitStore } from "@/src/db/linkit-store";
-import type { LinkitStore, ProviderSummary } from "@/src/domain/linkit";
-import { toFeedItems, type FeedItem } from "@/src/feed/view-model";
+import { createDb } from "@/db/client";
+import { createPostgresLinkitStore } from "@/db/linkit-store";
+import type { LinkitStore, ProviderSummary } from "@/domain/linkit";
+import { toFeedItems, type FeedItem } from "@/feed/view-model";
 import {
   decodePostCursor,
   encodePostCursor
-} from "@/src/feed/keyset";
+} from "@/feed/keyset";
 
 export const defaultGalleryPageSize = 30;
 

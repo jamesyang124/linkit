@@ -1,4 +1,4 @@
-import type { LinkitJob } from "@/src/domain/linkit";
+import type { LinkitJob } from "@/domain/linkit";
 
 export const linkitExchange = "linkit.events";
 export const linkitDeadLetterExchange = "linkit.dead";

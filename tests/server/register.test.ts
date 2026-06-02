@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { describe, expect, it } from "vitest";
 
-import { registerUser, type RegisterPort } from "@/src/server/register";
+import { registerUser, type RegisterPort } from "@/server/register";
 
 function makePort(existingEmails: string[] = []): RegisterPort {
   const rows: { id: string; email: string; passwordHash: string }[] =

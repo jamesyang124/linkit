@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { buildAuthConfig, facebookProviders } from "@/src/auth/config";
-import { createDb } from "@/src/db/client";
+import { buildAuthConfig, facebookProviders } from "@/auth/config";
+import { createDb } from "@/db/client";
 
 describe("auth config", () => {
   it("uses JWT sessions and credentials by default", () => {

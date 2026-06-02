@@ -10,8 +10,8 @@ import {
   sessions,
   users,
   verificationTokens
-} from "@/src/db/schema";
-import type { LinkitDb } from "@/src/db/client";
+} from "@/db/schema";
+import type { LinkitDb } from "@/db/client";
 
 export type AuthRuntimeEnv = {
   AUTH_SECRET?: string;

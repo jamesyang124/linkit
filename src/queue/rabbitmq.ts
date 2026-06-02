@@ -4,8 +4,8 @@ import {
   linkitDeadLetterExchange,
   linkitExchange,
   routingKeyFor
-} from "@/src/queue/jobs";
-import type { LinkitJob } from "@/src/domain/linkit";
+} from "@/queue/jobs";
+import type { LinkitJob } from "@/domain/linkit";
 
 export async function createRabbitPublisher(url: string) {
   const connection = await amqp.connect(url);

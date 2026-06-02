@@ -8,7 +8,7 @@ import { sql } from "drizzle-orm";
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 
-import * as schema from "@/src/db/schema";
+import * as schema from "@/db/schema";
 
 const { users, posts, comments, accounts, sessions, verificationTokens } = schema;
 

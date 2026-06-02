@@ -4,12 +4,12 @@ import {
   registerPostRedirect,
   submitCommentFromForm,
   submitLinkFromForm
-} from "@/src/server/posts";
+} from "@/server/posts";
 import {
   createMemoryLinkitStore,
   type LinkitJob
-} from "@/src/domain/linkit";
-import { getFeedItemsFromStore } from "@/src/feed/load-feed";
+} from "@/domain/linkit";
+import { getFeedItemsFromStore } from "@/feed/load-feed";
 
 function sessionUser() {
   return {

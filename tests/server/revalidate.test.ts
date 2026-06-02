@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { authorizeRevalidation } from "@/src/server/revalidate";
+import { authorizeRevalidation } from "@/server/revalidate";
 
 describe("cache revalidation authorization", () => {
   it("rejects when no server secret is configured", () => {

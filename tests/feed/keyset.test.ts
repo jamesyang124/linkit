@@ -4,7 +4,7 @@ import {
   decodePostCursor,
   encodePostCursor,
   InvalidPostCursorError
-} from "@/src/feed/keyset";
+} from "@/feed/keyset";
 
 describe("feed keyset cursors", () => {
   it("round-trips a post cursor", () => {

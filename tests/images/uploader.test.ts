@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   createPassthroughImageUploader,
   createSharpImageUploader
-} from "@/src/images/uploader";
+} from "@/images/uploader";
 
 vi.mock("node:fs/promises", () => ({
   default: {

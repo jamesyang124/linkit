@@ -1,9 +1,9 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 
-import { createPostgresClient } from "@/src/db/client";
-import { createPostgresLinkitStore } from "@/src/db/linkit-store";
-import * as schema from "@/src/db/schema";
-import { submitLinkFromForm } from "@/src/server/posts";
+import { createPostgresClient } from "@/db/client";
+import { createPostgresLinkitStore } from "@/db/linkit-store";
+import * as schema from "@/db/schema";
+import { submitLinkFromForm } from "@/server/posts";
 
 type ScrapedProject = {
   link: string;

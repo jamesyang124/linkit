@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   buildCommentNotification,
   createMailgunMailer
-} from "@/src/notifications/comment";
+} from "@/notifications/comment";
 
 const now = new Date("2026-05-24T08:00:00.000Z");
 

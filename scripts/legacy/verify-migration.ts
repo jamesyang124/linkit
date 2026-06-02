@@ -3,13 +3,13 @@ import { readFile } from "node:fs/promises";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 
-import { createPostgresClient } from "@/src/db/client";
-import * as schema from "@/src/db/schema";
+import { createPostgresClient } from "@/db/client";
+import * as schema from "@/db/schema";
 import {
   verifyMigration,
   type LegacySnapshot,
   type TargetSnapshot
-} from "@/src/migration/verify";
+} from "@/migration/verify";
 
 const { comments, posts, users } = schema;
 

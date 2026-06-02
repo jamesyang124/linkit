@@ -1,4 +1,4 @@
-import type { PostPageCursor } from "@/src/domain/linkit";
+import type { PostPageCursor } from "@/domain/linkit";
 
 type CursorPayload = {
   providerName: string;

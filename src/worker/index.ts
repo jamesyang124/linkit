@@ -4,15 +4,15 @@ import {
   linkitDeadLetterExchange,
   linkitExchange,
   routingKeyFor
-} from "@/src/queue/jobs";
-import type { LinkitJob } from "@/src/domain/linkit";
-import { createDb } from "@/src/db/client";
-import { createPostgresLinkitStore } from "@/src/db/linkit-store";
-import { createOpenGraphMetadataProvider } from "@/src/metadata/provider";
+} from "@/queue/jobs";
+import type { LinkitJob } from "@/domain/linkit";
+import { createDb } from "@/db/client";
+import { createPostgresLinkitStore } from "@/db/linkit-store";
+import { createOpenGraphMetadataProvider } from "@/metadata/provider";
 import path from "node:path";
-import { createSharpImageUploader } from "@/src/images/uploader";
-import { createMailgunMailer } from "@/src/notifications/comment";
-import { handleJob } from "@/src/worker/handlers";
+import { createSharpImageUploader } from "@/images/uploader";
+import { createMailgunMailer } from "@/notifications/comment";
+import { handleJob } from "@/worker/handlers";
 
 const queueName = "linkit.worker";
 const rabbitUrl = process.env.RABBITMQ_URL ?? "amqp://guest:guest@localhost:5672";

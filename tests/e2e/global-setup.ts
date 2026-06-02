@@ -6,7 +6,7 @@ import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
 import { eq } from "drizzle-orm";
 
-import * as schema from "@/src/db/schema";
+import * as schema from "@/db/schema";
 
 const { comments, posts, users } = schema;
 

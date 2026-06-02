@@ -1,6 +1,6 @@
 import { and, asc, desc, eq, inArray, isNotNull, isNull, lt, or, sql } from "drizzle-orm";
 
-import { comments, posts, savedPosts, users } from "@/src/db/schema";
+import { comments, posts, savedPosts, users } from "@/db/schema";
 import {
   PostNotFoundError,
   type CreateStoredCommentInput,
@@ -13,8 +13,8 @@ import {
   type ProviderSummary,
   type UpdateNameInput,
   type UpdatePasswordInput
-} from "@/src/domain/linkit";
-import type { LinkitDb } from "@/src/db/client";
+} from "@/domain/linkit";
+import type { LinkitDb } from "@/db/client";
 
 type PostWithUserRow = {
   post: typeof posts.$inferSelect;

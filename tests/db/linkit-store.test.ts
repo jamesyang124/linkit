@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   mapCommentWithUser,
   mapPostWithUser
-} from "@/src/db/linkit-store";
+} from "@/db/linkit-store";
 
 const createdAt = new Date("2026-05-24T08:00:00.000Z");
 const updatedAt = new Date("2026-05-24T08:30:00.000Z");

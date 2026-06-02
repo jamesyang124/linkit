@@ -1,10 +1,10 @@
-import type { LinkitJob, LinkitStore } from "@/src/domain/linkit";
-import type { LinkMetadataProvider } from "@/src/metadata/provider";
-import type { ImageProcessingOptions, ImageUploader } from "@/src/images/uploader";
+import type { LinkitJob, LinkitStore } from "@/domain/linkit";
+import type { LinkMetadataProvider } from "@/metadata/provider";
+import type { ImageProcessingOptions, ImageUploader } from "@/images/uploader";
 import {
   buildCommentNotification,
   type Mailer
-} from "@/src/notifications/comment";
+} from "@/notifications/comment";
 
 export type WorkerDeps = {
   store: Pick<
