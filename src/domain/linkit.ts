@@ -108,6 +108,7 @@ export type ListPostsPageInput = {
   limit: number;
   cursor?: PostPageCursor | null;
   thumbnailsOnly?: boolean;
+  providerFilter?: string;
 };
 
 export type LinkitPostPage = {
@@ -418,6 +419,7 @@ export function createMemoryLinkitStore(): LinkitStore {
     async listPostsPage(input) {
       const sortedPosts = [...posts.values()]
         .filter((post) => !input.thumbnailsOnly || post.thumbnailUrl !== null)
+        .filter((post) => !input.providerFilter || post.providerName === input.providerFilter)
         .filter((post) => !input.cursor || isAfterCursor(post, input.cursor))
         .sort(comparePostsForKeyset);
       const pagePosts = sortedPosts.slice(0, input.limit);

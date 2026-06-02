@@ -131,13 +131,22 @@ export const getPublicGalleryFeedPage = unstable_cache(
   }
 );
 
-export async function getFeedItemsByProviderFromStore(
-  store: Pick<LinkitStore, "listPostsByProvider" | "listCommentsForPosts">,
-  providerName: string
-): Promise<FeedItem[]> {
-  const providerPosts = await store.listPostsByProvider(providerName);
-  const comments = await store.listCommentsForPosts(providerPosts.map((p) => p.id));
-  return toFeedItems(providerPosts, comments);
+export async function getProviderFeedPageFromStore(
+  store: Pick<LinkitStore, "listPostsPage" | "listCommentsForPosts">,
+  providerName: string,
+  input: { limit?: number; cursor?: string | null } = {}
+): Promise<FeedItemsPage> {
+  const page = await store.listPostsPage({
+    limit: normalizePageLimit(input.limit),
+    cursor: input.cursor ? decodePostCursor(input.cursor) : null,
+    thumbnailsOnly: true,
+    providerFilter: providerName
+  });
+  const comments = await store.listCommentsForPosts(page.posts.map((p) => p.id));
+  return {
+    items: toFeedItems(page.posts, comments),
+    nextCursor: page.nextCursor ? encodePostCursor(page.nextCursor) : null
+  };
 }
 
 export const getPublicProviderSummaries = unstable_cache(

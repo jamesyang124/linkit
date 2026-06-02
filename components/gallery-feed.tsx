@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { GalleryTile } from "@/components/gallery-tile";
@@ -18,7 +18,6 @@ type ExpandedState = {
   item: FeedItem;
   cardRect: DOMRect;
 };
-
 
 const COLUMN_COUNT = 3;
 
@@ -116,12 +115,15 @@ export function GalleryFeed({
   providers: ProviderSummary[];
 }) {
   const [extraItems, setExtraItems] = useState<FeedItem[]>([]);
+  // Global (no-provider) pagination cursor
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
+  // Per-provider cursors: undefined = not fetched, null = fully loaded, string = next cursor
+  const [providerCursors, setProviderCursors] = useState<Map<string, string | null>>(new Map());
   const [loadingMore, setLoadingMore] = useState(false);
   const [expanded, setExpanded] = useState<ExpandedState | null>(null);
-  // filterProvider: immediately set on click — drives sidebar highlight + loading
+  // filterProvider: immediately set on click — drives sidebar highlight
   const [filterProvider, setFilterProvider] = useState<string | null>(null);
-  // displayFilter: set only after items are ready — drives what renders + animation
+  // displayFilter: committed after first page loads — drives what renders
   const [displayFilter, setDisplayFilter] = useState<string | null>(null);
   const [contentKey, setContentKey] = useState(0);
   const [activeTags, setActiveTags] = useState<string[]>([]);
@@ -129,13 +131,25 @@ export function GalleryFeed({
   const [showSubmit, setShowSubmit] = useState(false);
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
 
-  const loadedProvidersRef = useRef<Set<string>>(new Set());
+  // Tracks providers whose first page has been fetched (prevents duplicate initial loads)
+  const fetchedProvidersRef = useRef<Set<string>>(new Set());
   const inFlightRef = useRef<Map<string, Promise<void>>>(new Map());
   const initialItemsRef = useRef(initialItems);
   // Tracks the last-clicked provider so stale loads don't clobber a later click
   const latestClickRef = useRef<string | null>(null);
+  // Signals useLayoutEffect to scroll to top after next contentKey commit
+  const pendingScrollRef = useRef(false);
 
   const isFiltered = activeTags.length > 0 || displayFilter !== null;
+
+  // Scroll to top after React commits the new contentKey subtree
+  useLayoutEffect(() => {
+    if (pendingScrollRef.current) {
+      pendingScrollRef.current = false;
+      document.getElementById("page-main")?.scrollTo({ top: 0 });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contentKey]);
 
   // Open submit modal from nav Share link
   useEffect(() => {
@@ -212,7 +226,6 @@ export function GalleryFeed({
     return [...initialItems, ...extraItems.filter((i) => !baseIds.has(i.id))];
   }, [initialItems, extraItems]);
 
-
   const displayItems = useMemo(() => {
     if (!isFiltered) return allItems;
     return allItems.filter((item) => {
@@ -222,6 +235,7 @@ export function GalleryFeed({
     });
   }, [allItems, isFiltered, displayFilter, activeTags]);
 
+  // Load next global page (no provider filter)
   const loadMore = useCallback(async () => {
     if (!nextCursor || loadingMore) return;
     setLoadingMore(true);
@@ -239,9 +253,36 @@ export function GalleryFeed({
     }
   }, [nextCursor, loadingMore, initialItems]);
 
+  // Load next page for the active provider
+  const loadMoreForProvider = useCallback(async () => {
+    if (!displayFilter || loadingMore) return;
+    const cursor = providerCursors.get(displayFilter);
+    if (typeof cursor !== "string") return; // null = fully loaded, undefined = not yet fetched
+    setLoadingMore(true);
+    try {
+      const res = await fetch(
+        `/api/gallery?provider=${encodeURIComponent(displayFilter)}&cursor=${encodeURIComponent(cursor)}&limit=30`
+      );
+      if (!res.ok) return;
+      const page = (await res.json()) as GalleryPageResponse;
+      setExtraItems((prev) => {
+        const ids = new Set([...initialItems, ...prev].map((i) => i.id));
+        return [...prev, ...page.items.filter((i) => !ids.has(i.id))];
+      });
+      setProviderCursors((prev) => {
+        const next = new Map(prev);
+        next.set(displayFilter, page.nextCursor);
+        return next;
+      });
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [displayFilter, loadingMore, initialItems, providerCursors]);
+
+  // Fetch first page for a provider (idempotent — skips if already fetched)
   const loadProvider = useCallback(
     (providerName: string): Promise<void> => {
-      if (loadedProvidersRef.current.has(providerName)) return Promise.resolve();
+      if (fetchedProvidersRef.current.has(providerName)) return Promise.resolve();
       const existing = inFlightRef.current.get(providerName);
       if (existing) return existing;
 
@@ -249,7 +290,7 @@ export function GalleryFeed({
       const promise = (async () => {
         try {
           const res = await fetch(
-            `/api/gallery?provider=${encodeURIComponent(providerName)}`
+            `/api/gallery?provider=${encodeURIComponent(providerName)}&limit=30`
           );
           if (!res.ok) return;
           const page = (await res.json()) as GalleryPageResponse;
@@ -257,10 +298,12 @@ export function GalleryFeed({
             const ids = new Set([...initialItems, ...prev].map((i) => i.id));
             return [...prev, ...page.items.filter((i) => !ids.has(i.id))];
           });
-          loadedProvidersRef.current = new Set([
-            ...loadedProvidersRef.current,
-            providerName,
-          ]);
+          setProviderCursors((prev) => {
+            const next = new Map(prev);
+            next.set(providerName, page.nextCursor);
+            return next;
+          });
+          fetchedProvidersRef.current.add(providerName);
         } finally {
           inFlightRef.current.delete(providerName);
           setLoadingProvider((prev) => (prev === providerName ? null : prev));
@@ -280,16 +323,16 @@ export function GalleryFeed({
       latestClickRef.current = next;
 
       if (next) {
-        // Load items first, then commit the display switch + animate
         void loadProvider(next).then(() => {
           if (latestClickRef.current !== next) return; // superseded by later click
+          pendingScrollRef.current = true;
           setDisplayFilter(next);
           setContentKey((k) => k + 1);
         });
       } else {
+        pendingScrollRef.current = true;
         setDisplayFilter(null);
         setContentKey((k) => k + 1);
-        document.getElementById("page-main")?.scrollTo({ top: 0 });
       }
     },
     [filterProvider, loadProvider]
@@ -339,8 +382,12 @@ export function GalleryFeed({
 
   const isEmpty = providers.length === 0;
 
-  // Cursor-paginate only when showing all items (unfiltered)
-  const canLoadMore = nextCursor !== null && displayFilter === null && activeTags.length === 0 && !loadingMore;
+  const canLoadMore = !loadingMore && activeTags.length === 0 && (
+    (displayFilter === null && nextCursor !== null) ||
+    (displayFilter !== null && typeof providerCursors.get(displayFilter) === "string")
+  );
+
+  const loadMoreFn = displayFilter !== null ? loadMoreForProvider : loadMore;
 
   return (
     <>
@@ -409,7 +456,7 @@ export function GalleryFeed({
               savedIds={savedIds}
               onExpand={handleExpand}
               onSaveToggle={handleSaveToggle}
-              onLoadMore={canLoadMore ? loadMore : undefined}
+              onLoadMore={canLoadMore ? loadMoreFn : undefined}
               loadingMore={loadingMore}
               hideProvider={displayFilter !== null}
             />
@@ -441,8 +488,8 @@ export function GalleryFeed({
               setFilterProvider(null);
               setDisplayFilter(null);
               latestClickRef.current = null;
+              pendingScrollRef.current = true;
               setContentKey((k) => k + 1);
-              document.getElementById("page-main")?.scrollTo({ top: 0 });
             }}
           >
             Clear

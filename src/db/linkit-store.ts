@@ -184,20 +184,34 @@ export function createPostgresLinkitStore(db: LinkitDb): LinkitStore {
         filters.push(isNotNull(posts.thumbnailUrl));
       }
 
+      if (input.providerFilter) {
+        filters.push(eq(posts.providerName, input.providerFilter));
+      }
+
       if (input.cursor) {
         const { providerName, createdAt, id } = input.cursor;
-        filters.push(
-          or(
-            sql`${posts.providerName} > ${providerName}`,
-            and(
-              eq(posts.providerName, providerName),
-              or(
-                lt(posts.createdAt, createdAt),
-                and(eq(posts.createdAt, createdAt), lt(posts.id, id))
+        if (input.providerFilter) {
+          // Within a single provider: keyset on (createdAt DESC, id DESC)
+          filters.push(
+            or(
+              lt(posts.createdAt, createdAt),
+              and(eq(posts.createdAt, createdAt), lt(posts.id, id))
+            )
+          );
+        } else {
+          filters.push(
+            or(
+              sql`${posts.providerName} > ${providerName}`,
+              and(
+                eq(posts.providerName, providerName),
+                or(
+                  lt(posts.createdAt, createdAt),
+                  and(eq(posts.createdAt, createdAt), lt(posts.id, id))
+                )
               )
             )
-          )
-        );
+          );
+        }
       }
 
       const rows = await db
@@ -205,7 +219,11 @@ export function createPostgresLinkitStore(db: LinkitDb): LinkitStore {
         .from(posts)
         .innerJoin(users, eq(posts.userId, users.id))
         .where(filters.length > 0 ? and(...filters) : undefined)
-        .orderBy(asc(posts.providerName), desc(posts.createdAt), desc(posts.id))
+        .orderBy(
+          ...(input.providerFilter
+            ? [desc(posts.createdAt), desc(posts.id)]
+            : [asc(posts.providerName), desc(posts.createdAt), desc(posts.id)])
+        )
         .limit(pageLimit + 1);
 
       const pageRows = rows.slice(0, pageLimit);
