@@ -21,7 +21,7 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url);
   const provider = url.searchParams.get("provider");
-  const cursor = url.searchParams.get("cursor") ?? null;
+  const cursor = url.searchParams.get("cursor");
   const limit = normalizePageLimit(Number(url.searchParams.get("limit")));
 
   // Only cache standard-size pages — non-standard limits are rare and shouldn't

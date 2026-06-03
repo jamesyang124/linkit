@@ -5,7 +5,7 @@ import {
   linkitExchange,
   routingKeyFor
 } from "@/queue/jobs";
-import type { LinkitJob, LinkitStore } from "@/domain/linkit";
+import type { LinkitJob } from "@/domain/linkit";
 import { createDb } from "@/db/client";
 import { createPostgresLinkitStore } from "@/db/linkit-store";
 import { createOpenGraphMetadataProvider } from "@/metadata/provider";
@@ -13,12 +13,7 @@ import path from "node:path";
 import { createSharpImageUploader } from "@/images/uploader";
 import { createMailgunMailer } from "@/notifications/comment";
 import { handleJob } from "@/worker/handlers";
-import {
-  getGalleryFeedPageFromStore,
-  getProviderFeedPageFromStore,
-  defaultGalleryPageSize
-} from "@/feed/load-feed";
-import { setCachedGalleryPage } from "@/server/redis";
+import { warmGalleryCache } from "@/worker/gallery-warmer";
 
 const queueName = "linkit.worker";
 const rabbitUrl = process.env.RABBITMQ_URL ?? "amqp://guest:guest@localhost:5672";
@@ -92,42 +87,6 @@ async function main() {
       console.error("Gallery cache warm failed", err)
     );
   }, 60_000);
-}
-
-// Walk the full cursor chain for a single feed (global or per-provider) and
-// store every page in Redis. Serial iteration is required because each page's
-// cursor is only known after fetching the previous one.
-async function warmFeedPages(
-  fetchPage: (cursor: string | null) => Promise<{ items: unknown[]; nextCursor: string | null }>,
-  provider: string | null
-): Promise<void> {
-  let cursor: string | null = null;
-  do {
-    const page = await fetchPage(cursor);
-    await setCachedGalleryPage(provider, cursor, page);
-    cursor = page.nextCursor;
-  } while (cursor !== null);
-}
-
-async function warmGalleryCache(store: LinkitStore): Promise<void> {
-  const providers = await store.listProviders();
-
-  await Promise.all([
-    warmFeedPages(
-      (cursor) => getGalleryFeedPageFromStore(store, { limit: defaultGalleryPageSize, cursor }),
-      null
-    ),
-    ...providers.map((p) =>
-      warmFeedPages(
-        (cursor) =>
-          getProviderFeedPageFromStore(store, p.providerName, {
-            limit: defaultGalleryPageSize,
-            cursor
-          }),
-        p.providerName
-      )
-    )
-  ]);
 }
 
 main().catch((error) => {
