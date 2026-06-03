@@ -1,0 +1,95 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    depends_on:
+      - web
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+  web:
+    build:
+      context: .
+      target: web
+    environment:
+      DATABASE_URL: postgres://linkit:linkit@postgres:5432/linkit
+      RABBITMQ_URL: amqp://linkit:linkit@rabbitmq:5672
+      REDIS_URL: redis://redis:6379
+      APP_URL: http://localhost:8080
+      AUTH_SECRET: development-change-me
+      REVALIDATE_SECRET: development-revalidate-secret-change-me
+      AUTH_TRUST_HOST: "true"
+    depends_on:
+      - postgres
+      - rabbitmq
+      - redis
+
+  worker:
+    build:
+      context: .
+      target: worker
+    environment:
+      DATABASE_URL: postgres://linkit:linkit@postgres:5432/linkit
+      RABBITMQ_URL: amqp://linkit:linkit@rabbitmq:5672
+      APP_URL: http://localhost:8080
+      MAILGUN_API_KEY: ${MAILGUN_API_KEY:-development-mailgun-key}
+      MAILGUN_DOMAIN: ${MAILGUN_DOMAIN:-mail.linkit.local}
+      MAIL_FROM: ${MAIL_FROM:-Linkit <notifications@linkit.local>}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
+    depends_on:
+      postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    restart: on-failure
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: linkit
+      POSTGRES_PASSWORD: linkit
+      POSTGRES_DB: linkit
+    ports:
+      - "55432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: linkit
+      RABBITMQ_DEFAULT_PASS: linkit
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 12
+      start_period: 15s
+
+volumes:
+  caddy_data:
+  caddy_config:
+  postgres_data:
+  rabbitmq_data:
+  redis_data:

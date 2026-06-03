@@ -1,0 +1,19 @@
+(linkit_proxy) {
+  encode zstd gzip
+
+  @health path /healthz
+  respond @health "ok" 200
+
+  reverse_proxy web:3000 {
+    flush_interval -1
+  }
+}
+
+{$CADDY_SITE_ADDRESS::80} {
+  import linkit_proxy
+}
+
+https://localhost {
+  tls internal
+  import linkit_proxy
+}
