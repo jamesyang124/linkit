@@ -1,116 +1,187 @@
 # Linkit
 
-Linkit is a fullstack TypeScript rewrite of the original Rails link-sharing app.
+A full-stack link-sharing app. Share links, browse by source, comment, save favourites. Built as a TypeScript rewrite of the original Rails app (2014).
 
 ## Stack
 
-- Next.js, React, TypeScript
-- Tailwind CSS
-- Auth.js
-- Postgres with Drizzle ORM
-- RabbitMQ worker jobs for link enrichment, image processing, and comment notifications
-- Docker Compose with Caddy, web, worker, Postgres, and RabbitMQ
-- Vitest and Playwright
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 15 (App Router, RSC + client components) |
+| Auth | Auth.js v5 — credentials + Facebook OAuth, JWT strategy |
+| Database | PostgreSQL + Drizzle ORM |
+| Cache | Redis — gallery pages pre-warmed every 60s, comment threads 60s TTL |
+| Queue | RabbitMQ — async link enrichment, image processing, email notifications |
+| Images | Sharp (local) or Cloudinary |
+| Styling | Tailwind CSS v3, 5 built-in themes |
+| Tests | Vitest (unit/integration) + Playwright (E2E) |
+| Dev infra | Docker Compose + Caddy (local HTTPS) |
 
-## Local Development
-
-Install dependencies:
-
-```sh
-npm install
-```
-
-Start the full development stack:
+## Quick Start
 
 ```sh
-npm run dev
+make install       # npm install
+cp .env.example .env
+make migrate       # apply DB migrations
+make dev           # full Docker stack: https://localhost:8443
 ```
 
-The default development app is served through Caddy at `https://localhost:8443`. The `web` container runs `next dev` with the project mounted into `/app`, so frontend/server changes hot reload without rebuilding or restarting the Compose stack. Caddy uses its internal local CA; browsers may ask you to trust the local certificate, and command-line checks should use `curl -k` unless the CA is trusted.
+Caddy uses its internal local CA — browsers may prompt to trust it once. Use `curl -k` for CLI checks.
 
-For direct Next.js debugging without Caddy:
+Seed test accounts and sample posts:
 
 ```sh
-npm run dev:web
+make seed
 ```
 
-Supporting services are still available through Docker Compose:
+## Development
 
 ```sh
-docker compose up -d postgres rabbitmq
+make test          # Vitest unit + integration tests
+make typecheck     # tsc --noEmit
+make build         # production Next.js build
+make test-e2e      # Playwright E2E (requires TEST_DATABASE_URL)
 ```
 
-## Docker Stack
-
-Build and start the full stack:
+Direct Next.js dev (without Caddy, useful for quick iteration):
 
 ```sh
-npm run dev:prod-stack
+npm run dev:web    # start Next.js only — needs Docker services running separately
+docker compose up -d postgres rabbitmq redis
 ```
 
-For the raw production-style Compose command:
+Worker (runs standalone alongside `dev:web`):
 
 ```sh
-docker compose up --build -d
+npm run worker
 ```
 
-Caddy exposes the app at:
+## Service Ports
 
-- `http://localhost:8080`
-- `https://localhost:8443`
+| Service | Address |
+|---------|---------|
+| App (HTTPS via Caddy) | https://localhost:8443 |
+| App (HTTP via Caddy) | http://localhost:8080 |
+| Postgres | localhost:55432 |
+| RabbitMQ AMQP | localhost:5673 |
+| RabbitMQ management | http://localhost:15673 |
 
-The local HTTPS endpoint uses Caddy's internal CA. Use `curl -k` for command-line smoke checks unless you install/trust the local Caddy root certificate.
-
-Useful service ports:
-
-- Postgres: `localhost:55432`
-- RabbitMQ AMQP: `localhost:5673`
-- RabbitMQ management: `http://localhost:15673`
-
-## Verification
+## Database
 
 ```sh
-npm test
-npm run typecheck
-npm run build
-TEST_DATABASE_URL=postgres://linkit:linkit@localhost:55432/linkit npm run test:e2e
-npm audit --omit=dev
-docker compose config
+make db-generate   # generate Drizzle migration after schema changes
+make migrate       # apply pending migrations
 ```
 
-Local HTTPS smoke check:
+Migration files live in `drizzle/`. Always run `db:generate` then `migrate` after editing `src/db/schema.ts`.
+
+## Environment Variables
+
+Copy `.env.example` → `.env`. Required variables:
+
+| Variable | Purpose |
+|----------|---------|
+| `DATABASE_URL` | Postgres connection string |
+| `RABBITMQ_URL` | RabbitMQ AMQP URL |
+| `REDIS_URL` | Redis connection URL |
+| `AUTH_SECRET` | Auth.js JWT secret (32+ chars in prod) |
+| `REVALIDATE_SECRET` | Cache revalidation API guard |
+| `AUTH_TRUST_HOST` | Set `true` behind a reverse proxy |
+| `APP_URL` | Public URL (used for email links) |
+
+Optional: `AUTH_FACEBOOK_ID/SECRET`, `CLOUDINARY_*`, `MAILGUN_API_KEY/DOMAIN`, `EMBEDLY_API_KEY`.
+
+Validate production env before deploy:
 
 ```sh
-curl -k https://localhost:8443/healthz
+make check-env
 ```
+
+## Architecture Notes
+
+- **Gallery feed**: first N pages per provider pre-warmed in Redis on worker startup and every 60s. API route reads from Redis; DB fallback on cold start or non-standard page size.
+- **Keyset pagination**: cursor = base64url `{ providerName, createdAt, id }`. No OFFSET. Stable under concurrent inserts/deletes.
+- **Async jobs**: RabbitMQ topic exchange `linkit.events`. Dead-letter exchange `linkit.dead`. Worker handles `link.enrich`, `image.process`, `comment.notify`.
+- **Post visibility**: gated on `thumbnailUrl IS NOT NULL` — unprocessed posts are hidden until the image job completes.
+- **JWT sessions**: required by Auth.js v5 credentials provider. No DB session table needed.
+
+See `docs/architecture.md` and `docs/decisions.md` for full reasoning.
 
 ## Production Preflight
 
-Copy `.env.production.example`, replace every placeholder, then run:
-
 ```sh
-npm run env:check
+npm run env:check      # validate all required env vars
+curl -k https://localhost:8443/healthz
 ```
-
-Production checks reject placeholder `AUTH_SECRET` values and partial OAuth, Cloudinary, or Mailgun settings.
 
 ## Cache Revalidation
 
-The public feed is cached with tag-based revalidation. Mutations revalidate the feed automatically. After a data migration or external import, refresh the cache explicitly:
+Mutations revalidate the feed automatically. After a data import, force a full refresh:
 
 ```sh
-APP_URL=http://localhost:8080 REVALIDATE_SECRET=development-revalidate-secret-change-me npm run cache:revalidate
+APP_URL=http://localhost:8080 \
+REVALIDATE_SECRET=your-secret \
+npm run cache:revalidate
 ```
 
-In production, set `REVALIDATE_SECRET` to a unique 32+ character value and call `POST /api/revalidate` with the `x-linkit-revalidate-secret` header after migration/import jobs.
+Or call `POST /api/revalidate` with header `x-linkit-revalidate-secret: <secret>`.
 
-## Legacy Migration Check
+---
 
-The synthetic fixture verifies the Rails export/import contract:
+## Origin Story — 2014 Rails App
+
+The original Linkit was a Rails app built in 2014 — a personal link-sharing tool deployed on Heroku with Redis and PostgreSQL. Below is the original README, preserved as a snapshot of how the same product was built with the tools of that era.
+
+---
+
+### linkit (2014)
+
+- Production URL: [https://linkit-dev.herokuapp.com/](https://linkit-dev.herokuapp.com/)
+
+Share links and posts.
+
+![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-12-07.png)
+
+![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-12-03-1.png)
+
+![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-11-25-2.png)
+
+![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-10-14.png)
+
+![](https://github.com/jamesyang124/linkit/blob/master/Screenshot2014-10-09.png)
+
+#### To-do List (2014)
+
+- Production with http version.
+- Capybara and integration test should on.
+- Prepare to deploy.
+- Email links should direct to **production** url.
+
+#### Notes
+
+**AJAX pattern (Rails)**
+
+```ruby
+# Set form to remote: true for AJAX
+form_for root_path, remote: true do |f|
+  # ...
+end
+
+# Respond with JS template
+def action
+  respond_to do |f|
+    f.js { render "js_file/erb" }
+  end
+end
+```
+
+`ajaxSuccess` listens to Ajax calls from the document; `$.ajax().success()` fires the request.
+
+**Session & cookie security**
+
+Each request creates a server-side session; a cookie carries the session ID. Rails CookieStore (since Rails 2) stores the session hash on the client, signed with SHA1 using `config.secret_key_base`. Force SSL to secure the cookie.
+
+**Redis flush (Heroku)**
 
 ```sh
-CLEAN_BEFORE_IMPORT=true LEGACY_EXPORT_JSON=./scripts/legacy/fixtures/rails-export.json DATABASE_URL=postgres://linkit:linkit@localhost:55432/linkit npm run legacy:import
-LEGACY_EXPORT_JSON=./scripts/legacy/fixtures/rails-export.json DATABASE_URL=postgres://linkit:linkit@localhost:55432/linkit npm run legacy:verify
+redis-cli -h mummichog.redistogo.com -p 9160 -a ${redis_basic_auth_credential} flushall
 ```
-
-See [docs/legacy-migration.md](docs/legacy-migration.md) for the export JSON shape.
