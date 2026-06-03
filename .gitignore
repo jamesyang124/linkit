@@ -8,4 +8,5 @@ tsconfig.tsbuildinfo
 .env
 .env.local
 .env.*.local
-.playwright-mcp/
+.claude
+public/uploads/*

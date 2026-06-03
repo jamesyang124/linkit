@@ -1,7 +1,6 @@
 "use server";
 
 import { AuthError } from "next-auth";
-import { redirect } from "next/navigation";
 
 import { signIn, signOut } from "@/auth";
 import { createDb } from "@/db/client";
@@ -45,5 +44,9 @@ export async function registerAction(
     password: String(formData.get("password") ?? "")
   });
   if (!result.ok) return { error: result.message, field: result.field };
-  redirect("/signin?registered=1");
+  await signIn("credentials", {
+    email: String(formData.get("email") ?? ""),
+    password: String(formData.get("password") ?? ""),
+    redirectTo: "/"
+  });
 }
